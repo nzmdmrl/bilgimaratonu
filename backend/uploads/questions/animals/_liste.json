@@ -1,0 +1,547 @@
+[
+  {
+    "slug": "aslan",
+    "ad": "Aslan",
+    "yol": "/uploads/questions/animals/aslan.jpg"
+  },
+  {
+    "slug": "kaplan",
+    "ad": "Kaplan",
+    "yol": "/uploads/questions/animals/kaplan.jpg"
+  },
+  {
+    "slug": "fil",
+    "ad": "Fil",
+    "yol": "/uploads/questions/animals/fil.jpg"
+  },
+  {
+    "slug": "zurafa",
+    "ad": "Zürafa",
+    "yol": "/uploads/questions/animals/zurafa.jpg"
+  },
+  {
+    "slug": "zebra",
+    "ad": "Zebra",
+    "yol": "/uploads/questions/animals/zebra.jpg"
+  },
+  {
+    "slug": "panda",
+    "ad": "Panda",
+    "yol": "/uploads/questions/animals/panda.jpg"
+  },
+  {
+    "slug": "kanguru",
+    "ad": "Kanguru",
+    "yol": "/uploads/questions/animals/kanguru.jpg"
+  },
+  {
+    "slug": "penguen",
+    "ad": "Penguen",
+    "yol": "/uploads/questions/animals/penguen.jpg"
+  },
+  {
+    "slug": "yunus",
+    "ad": "Yunus",
+    "yol": "/uploads/questions/animals/yunus.jpg"
+  },
+  {
+    "slug": "balina",
+    "ad": "Balina",
+    "yol": "/uploads/questions/animals/balina.jpg"
+  },
+  {
+    "slug": "kopekbaligi",
+    "ad": "Köpekbalığı",
+    "yol": "/uploads/questions/animals/kopekbaligi.jpg"
+  },
+  {
+    "slug": "ahtapot",
+    "ad": "Ahtapot",
+    "yol": "/uploads/questions/animals/ahtapot.jpg"
+  },
+  {
+    "slug": "kaplumbaga",
+    "ad": "Kaplumbağa",
+    "yol": "/uploads/questions/animals/kaplumbaga.jpg"
+  },
+  {
+    "slug": "timsah",
+    "ad": "Timsah",
+    "yol": "/uploads/questions/animals/timsah.jpg"
+  },
+  {
+    "slug": "yilan",
+    "ad": "Yılan",
+    "yol": "/uploads/questions/animals/yilan.jpg"
+  },
+  {
+    "slug": "kertenkele",
+    "ad": "Kertenkele",
+    "yol": "/uploads/questions/animals/kertenkele.jpg"
+  },
+  {
+    "slug": "kurbaga",
+    "ad": "Kurbağa",
+    "yol": "/uploads/questions/animals/kurbaga.jpg"
+  },
+  {
+    "slug": "bukalemun",
+    "ad": "Bukalemun",
+    "yol": "/uploads/questions/animals/bukalemun.jpg"
+  },
+  {
+    "slug": "kartal",
+    "ad": "Kartal",
+    "yol": "/uploads/questions/animals/kartal.jpg"
+  },
+  {
+    "slug": "baykus",
+    "ad": "Baykuş",
+    "yol": "/uploads/questions/animals/baykus.jpg"
+  },
+  {
+    "slug": "flamingo",
+    "ad": "Flamingo",
+    "yol": "/uploads/questions/animals/flamingo.jpg"
+  },
+  {
+    "slug": "tavuskusu",
+    "ad": "Tavus Kuşu",
+    "yol": "/uploads/questions/animals/tavuskusu.jpg"
+  },
+  {
+    "slug": "papagan",
+    "ad": "Papağan",
+    "yol": "/uploads/questions/animals/papagan.jpg"
+  },
+  {
+    "slug": "pelikan",
+    "ad": "Pelikan",
+    "yol": "/uploads/questions/animals/pelikan.jpg"
+  },
+  {
+    "slug": "leylek",
+    "ad": "Leylek",
+    "yol": "/uploads/questions/animals/leylek.jpg"
+  },
+  {
+    "slug": "kuzgun",
+    "ad": "Kuzgun",
+    "yol": "/uploads/questions/animals/kuzgun.jpg"
+  },
+  {
+    "slug": "sahin",
+    "ad": "Şahin",
+    "yol": "/uploads/questions/animals/sahin.jpg"
+  },
+  {
+    "slug": "devekusu",
+    "ad": "Devekuşu",
+    "yol": "/uploads/questions/animals/devekusu.jpg"
+  },
+  {
+    "slug": "kugu",
+    "ad": "Kuğu",
+    "yol": "/uploads/questions/animals/kugu.jpg"
+  },
+  {
+    "slug": "marti",
+    "ad": "Martı",
+    "yol": "/uploads/questions/animals/marti.jpg"
+  },
+  {
+    "slug": "kedi",
+    "ad": "Kedi",
+    "yol": "/uploads/questions/animals/kedi.jpg"
+  },
+  {
+    "slug": "kopek",
+    "ad": "Köpek",
+    "yol": "/uploads/questions/animals/kopek.jpg"
+  },
+  {
+    "slug": "at",
+    "ad": "At",
+    "yol": "/uploads/questions/animals/at.jpg"
+  },
+  {
+    "slug": "inek",
+    "ad": "İnek",
+    "yol": "/uploads/questions/animals/inek.jpg"
+  },
+  {
+    "slug": "koyun",
+    "ad": "Koyun",
+    "yol": "/uploads/questions/animals/koyun.jpg"
+  },
+  {
+    "slug": "keci",
+    "ad": "Keçi",
+    "yol": "/uploads/questions/animals/keci.jpg"
+  },
+  {
+    "slug": "domuz",
+    "ad": "Domuz",
+    "yol": "/uploads/questions/animals/domuz.jpg"
+  },
+  {
+    "slug": "tavsan",
+    "ad": "Tavşan",
+    "yol": "/uploads/questions/animals/tavsan.jpg"
+  },
+  {
+    "slug": "fare",
+    "ad": "Fare",
+    "yol": "/uploads/questions/animals/fare.jpg"
+  },
+  {
+    "slug": "sincap",
+    "ad": "Sincap",
+    "yol": "/uploads/questions/animals/sincap.jpg"
+  },
+  {
+    "slug": "tilki",
+    "ad": "Tilki",
+    "yol": "/uploads/questions/animals/tilki.jpg"
+  },
+  {
+    "slug": "kurt",
+    "ad": "Kurt",
+    "yol": "/uploads/questions/animals/kurt.jpg"
+  },
+  {
+    "slug": "ayi",
+    "ad": "Ayı",
+    "yol": "/uploads/questions/animals/ayi.jpg"
+  },
+  {
+    "slug": "kutup_ayisi",
+    "ad": "Kutup Ayısı",
+    "yol": "/uploads/questions/animals/kutup_ayisi.jpg"
+  },
+  {
+    "slug": "geyik",
+    "ad": "Geyik",
+    "yol": "/uploads/questions/animals/geyik.jpg"
+  },
+  {
+    "slug": "karaca",
+    "ad": "Karaca",
+    "yol": "/uploads/questions/animals/karaca.jpg"
+  },
+  {
+    "slug": "yaban_domuzu",
+    "ad": "Yaban Domuzu",
+    "yol": "/uploads/questions/animals/yaban_domuzu.jpg"
+  },
+  {
+    "slug": "rakun",
+    "ad": "Rakun",
+    "yol": "/uploads/questions/animals/rakun.jpg"
+  },
+  {
+    "slug": "kirpi",
+    "ad": "Kirpi",
+    "yol": "/uploads/questions/animals/kirpi.jpg"
+  },
+  {
+    "slug": "kunduz",
+    "ad": "Kunduz",
+    "yol": "/uploads/questions/animals/kunduz.jpg"
+  },
+  {
+    "slug": "su_samuru",
+    "ad": "Su Samuru",
+    "yol": "/uploads/questions/animals/su_samuru.jpg"
+  },
+  {
+    "slug": "gelincik",
+    "ad": "Gelincik",
+    "yol": "/uploads/questions/animals/gelincik.jpg"
+  },
+  {
+    "slug": "maymun",
+    "ad": "Maymun",
+    "yol": "/uploads/questions/animals/maymun.jpg"
+  },
+  {
+    "slug": "goril",
+    "ad": "Goril",
+    "yol": "/uploads/questions/animals/goril.jpg"
+  },
+  {
+    "slug": "sempanze",
+    "ad": "Şempanze",
+    "yol": "/uploads/questions/animals/sempanze.jpg"
+  },
+  {
+    "slug": "orangutan",
+    "ad": "Orangutan",
+    "yol": "/uploads/questions/animals/orangutan.jpg"
+  },
+  {
+    "slug": "lemur",
+    "ad": "Lemur",
+    "yol": "/uploads/questions/animals/lemur.jpg"
+  },
+  {
+    "slug": "deve",
+    "ad": "Deve",
+    "yol": "/uploads/questions/animals/deve.jpg"
+  },
+  {
+    "slug": "lama",
+    "ad": "Lama",
+    "yol": "/uploads/questions/animals/lama.jpg"
+  },
+  {
+    "slug": "alpaka",
+    "ad": "Alpaka",
+    "yol": "/uploads/questions/animals/alpaka.jpg"
+  },
+  {
+    "slug": "gergedan",
+    "ad": "Gergedan",
+    "yol": "/uploads/questions/animals/gergedan.jpg"
+  },
+  {
+    "slug": "sugygiri",
+    "ad": "Su Aygırı",
+    "yol": "/uploads/questions/animals/sugygiri.jpg"
+  },
+  {
+    "slug": "cita",
+    "ad": "Çita",
+    "yol": "/uploads/questions/animals/cita.jpg"
+  },
+  {
+    "slug": "leopar",
+    "ad": "Leopar",
+    "yol": "/uploads/questions/animals/leopar.jpg"
+  },
+  {
+    "slug": "jaguar",
+    "ad": "Jaguar",
+    "yol": "/uploads/questions/animals/jaguar.jpg"
+  },
+  {
+    "slug": "puma",
+    "ad": "Puma",
+    "yol": "/uploads/questions/animals/puma.jpg"
+  },
+  {
+    "slug": "vasak",
+    "ad": "Vaşak",
+    "yol": "/uploads/questions/animals/vasak.jpg"
+  },
+  {
+    "slug": "sirtlan",
+    "ad": "Sırtlan",
+    "yol": "/uploads/questions/animals/sirtlan.jpg"
+  },
+  {
+    "slug": "cakal",
+    "ad": "Çakal",
+    "yol": "/uploads/questions/animals/cakal.jpg"
+  },
+  {
+    "slug": "antilop",
+    "ad": "Antilop",
+    "yol": "/uploads/questions/animals/antilop.jpg"
+  },
+  {
+    "slug": "bizon",
+    "ad": "Bizon",
+    "yol": "/uploads/questions/animals/bizon.jpg"
+  },
+  {
+    "slug": "manda",
+    "ad": "Manda",
+    "yol": "/uploads/questions/animals/manda.jpg"
+  },
+  {
+    "slug": "yak",
+    "ad": "Yak",
+    "yol": "/uploads/questions/animals/yak.jpg"
+  },
+  {
+    "slug": "koala",
+    "ad": "Koala",
+    "yol": "/uploads/questions/animals/koala.jpg"
+  },
+  {
+    "slug": "tembel_hayvan",
+    "ad": "Tembel Hayvan",
+    "yol": "/uploads/questions/animals/tembel_hayvan.jpg"
+  },
+  {
+    "slug": "karincayiyen",
+    "ad": "Karıncayiyen",
+    "yol": "/uploads/questions/animals/karincayiyen.jpg"
+  },
+  {
+    "slug": "armadillo",
+    "ad": "Armadillo",
+    "yol": "/uploads/questions/animals/armadillo.jpg"
+  },
+  {
+    "slug": "yarasa",
+    "ad": "Yarasa",
+    "yol": "/uploads/questions/animals/yarasa.jpg"
+  },
+  {
+    "slug": "porsuk",
+    "ad": "Porsuk",
+    "yol": "/uploads/questions/animals/porsuk.jpg"
+  },
+  {
+    "slug": "fok",
+    "ad": "Fok",
+    "yol": "/uploads/questions/animals/fok.jpg"
+  },
+  {
+    "slug": "mors",
+    "ad": "Mors",
+    "yol": "/uploads/questions/animals/mors.jpg"
+  },
+  {
+    "slug": "deniz_ati",
+    "ad": "Deniz Atı",
+    "yol": "/uploads/questions/animals/deniz_ati.jpg"
+  },
+  {
+    "slug": "denizyildizi",
+    "ad": "Denizyıldızı",
+    "yol": "/uploads/questions/animals/denizyildizi.jpg"
+  },
+  {
+    "slug": "yengec",
+    "ad": "Yengeç",
+    "yol": "/uploads/questions/animals/yengec.jpg"
+  },
+  {
+    "slug": "istakoz",
+    "ad": "Istakoz",
+    "yol": "/uploads/questions/animals/istakoz.jpg"
+  },
+  {
+    "slug": "medusa",
+    "ad": "Denizanası",
+    "yol": "/uploads/questions/animals/medusa.jpg"
+  },
+  {
+    "slug": "mercan",
+    "ad": "Mercan",
+    "yol": "/uploads/questions/animals/mercan.jpg"
+  },
+  {
+    "slug": "kelebek",
+    "ad": "Kelebek",
+    "yol": "/uploads/questions/animals/kelebek.jpg"
+  },
+  {
+    "slug": "ari",
+    "ad": "Arı",
+    "yol": "/uploads/questions/animals/ari.jpg"
+  },
+  {
+    "slug": "karinca",
+    "ad": "Karınca",
+    "yol": "/uploads/questions/animals/karinca.jpg"
+  },
+  {
+    "slug": "orumcek",
+    "ad": "Örümcek",
+    "yol": "/uploads/questions/animals/orumcek.jpg"
+  },
+  {
+    "slug": "akrep",
+    "ad": "Akrep",
+    "yol": "/uploads/questions/animals/akrep.jpg"
+  },
+  {
+    "slug": "yusufcuk",
+    "ad": "Yusufçuk",
+    "yol": "/uploads/questions/animals/yusufcuk.jpg"
+  },
+  {
+    "slug": "ugurbocegi",
+    "ad": "Uğur Böceği",
+    "yol": "/uploads/questions/animals/ugurbocegi.jpg"
+  },
+  {
+    "slug": "cekirge",
+    "ad": "Çekirge",
+    "yol": "/uploads/questions/animals/cekirge.jpg"
+  },
+  {
+    "slug": "salyangoz",
+    "ad": "Salyangoz",
+    "yol": "/uploads/questions/animals/salyangoz.jpg"
+  },
+  {
+    "slug": "solucan",
+    "ad": "Solucan",
+    "yol": "/uploads/questions/animals/solucan.jpg"
+  },
+  {
+    "slug": "tavuk",
+    "ad": "Tavuk",
+    "yol": "/uploads/questions/animals/tavuk.jpg"
+  },
+  {
+    "slug": "horoz",
+    "ad": "Horoz",
+    "yol": "/uploads/questions/animals/horoz.jpg"
+  },
+  {
+    "slug": "ordek",
+    "ad": "Ördek",
+    "yol": "/uploads/questions/animals/ordek.jpg"
+  },
+  {
+    "slug": "kaz",
+    "ad": "Kaz",
+    "yol": "/uploads/questions/animals/kaz.jpg"
+  },
+  {
+    "slug": "hindi",
+    "ad": "Hindi",
+    "yol": "/uploads/questions/animals/hindi.jpg"
+  },
+  {
+    "slug": "guvercin",
+    "ad": "Güvercin",
+    "yol": "/uploads/questions/animals/guvercin.jpg"
+  },
+  {
+    "slug": "serce",
+    "ad": "Serçe",
+    "yol": "/uploads/questions/animals/serce.jpg"
+  },
+  {
+    "slug": "kirlangic",
+    "ad": "Kırlangıç",
+    "yol": "/uploads/questions/animals/kirlangic.jpg"
+  },
+  {
+    "slug": "agackakan",
+    "ad": "Ağaçkakan",
+    "yol": "/uploads/questions/animals/agackakan.jpg"
+  },
+  {
+    "slug": "sinekkus",
+    "ad": "Sinek Kuşu",
+    "yol": "/uploads/questions/animals/sinekkus.jpg"
+  },
+  {
+    "slug": "tukan",
+    "ad": "Tukan",
+    "yol": "/uploads/questions/animals/tukan.jpg"
+  },
+  {
+    "slug": "pengueni",
+    "ad": "İmparator Pengueni",
+    "yol": "/uploads/questions/animals/pengueni.jpg"
+  }
+]

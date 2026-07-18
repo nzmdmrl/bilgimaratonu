@@ -1,0 +1,1262 @@
+[
+  {
+    "kod": "ad",
+    "ulke_en": "Andorra",
+    "yol": "/uploads/questions/flags/ad.png"
+  },
+  {
+    "kod": "ae",
+    "ulke_en": "United Arab Emirates",
+    "yol": "/uploads/questions/flags/ae.png"
+  },
+  {
+    "kod": "af",
+    "ulke_en": "Afghanistan",
+    "yol": "/uploads/questions/flags/af.png"
+  },
+  {
+    "kod": "ag",
+    "ulke_en": "Antigua and Barbuda",
+    "yol": "/uploads/questions/flags/ag.png"
+  },
+  {
+    "kod": "ai",
+    "ulke_en": "Anguilla",
+    "yol": "/uploads/questions/flags/ai.png"
+  },
+  {
+    "kod": "al",
+    "ulke_en": "Albania",
+    "yol": "/uploads/questions/flags/al.png"
+  },
+  {
+    "kod": "am",
+    "ulke_en": "Armenia",
+    "yol": "/uploads/questions/flags/am.png"
+  },
+  {
+    "kod": "ao",
+    "ulke_en": "Angola",
+    "yol": "/uploads/questions/flags/ao.png"
+  },
+  {
+    "kod": "aq",
+    "ulke_en": "Antarctica",
+    "yol": "/uploads/questions/flags/aq.png"
+  },
+  {
+    "kod": "ar",
+    "ulke_en": "Argentina",
+    "yol": "/uploads/questions/flags/ar.png"
+  },
+  {
+    "kod": "as",
+    "ulke_en": "American Samoa",
+    "yol": "/uploads/questions/flags/as.png"
+  },
+  {
+    "kod": "at",
+    "ulke_en": "Austria",
+    "yol": "/uploads/questions/flags/at.png"
+  },
+  {
+    "kod": "au",
+    "ulke_en": "Australia",
+    "yol": "/uploads/questions/flags/au.png"
+  },
+  {
+    "kod": "aw",
+    "ulke_en": "Aruba",
+    "yol": "/uploads/questions/flags/aw.png"
+  },
+  {
+    "kod": "ax",
+    "ulke_en": "Åland Islands",
+    "yol": "/uploads/questions/flags/ax.png"
+  },
+  {
+    "kod": "az",
+    "ulke_en": "Azerbaijan",
+    "yol": "/uploads/questions/flags/az.png"
+  },
+  {
+    "kod": "ba",
+    "ulke_en": "Bosnia and Herzegovina",
+    "yol": "/uploads/questions/flags/ba.png"
+  },
+  {
+    "kod": "bb",
+    "ulke_en": "Barbados",
+    "yol": "/uploads/questions/flags/bb.png"
+  },
+  {
+    "kod": "bd",
+    "ulke_en": "Bangladesh",
+    "yol": "/uploads/questions/flags/bd.png"
+  },
+  {
+    "kod": "be",
+    "ulke_en": "Belgium",
+    "yol": "/uploads/questions/flags/be.png"
+  },
+  {
+    "kod": "bf",
+    "ulke_en": "Burkina Faso",
+    "yol": "/uploads/questions/flags/bf.png"
+  },
+  {
+    "kod": "bg",
+    "ulke_en": "Bulgaria",
+    "yol": "/uploads/questions/flags/bg.png"
+  },
+  {
+    "kod": "bh",
+    "ulke_en": "Bahrain",
+    "yol": "/uploads/questions/flags/bh.png"
+  },
+  {
+    "kod": "bi",
+    "ulke_en": "Burundi",
+    "yol": "/uploads/questions/flags/bi.png"
+  },
+  {
+    "kod": "bj",
+    "ulke_en": "Benin",
+    "yol": "/uploads/questions/flags/bj.png"
+  },
+  {
+    "kod": "bl",
+    "ulke_en": "Saint Barthélemy",
+    "yol": "/uploads/questions/flags/bl.png"
+  },
+  {
+    "kod": "bm",
+    "ulke_en": "Bermuda",
+    "yol": "/uploads/questions/flags/bm.png"
+  },
+  {
+    "kod": "bn",
+    "ulke_en": "Brunei",
+    "yol": "/uploads/questions/flags/bn.png"
+  },
+  {
+    "kod": "bo",
+    "ulke_en": "Bolivia",
+    "yol": "/uploads/questions/flags/bo.png"
+  },
+  {
+    "kod": "bq",
+    "ulke_en": "Caribbean Netherlands",
+    "yol": "/uploads/questions/flags/bq.png"
+  },
+  {
+    "kod": "br",
+    "ulke_en": "Brazil",
+    "yol": "/uploads/questions/flags/br.png"
+  },
+  {
+    "kod": "bs",
+    "ulke_en": "Bahamas",
+    "yol": "/uploads/questions/flags/bs.png"
+  },
+  {
+    "kod": "bt",
+    "ulke_en": "Bhutan",
+    "yol": "/uploads/questions/flags/bt.png"
+  },
+  {
+    "kod": "bv",
+    "ulke_en": "Bouvet Island",
+    "yol": "/uploads/questions/flags/bv.png"
+  },
+  {
+    "kod": "bw",
+    "ulke_en": "Botswana",
+    "yol": "/uploads/questions/flags/bw.png"
+  },
+  {
+    "kod": "by",
+    "ulke_en": "Belarus",
+    "yol": "/uploads/questions/flags/by.png"
+  },
+  {
+    "kod": "bz",
+    "ulke_en": "Belize",
+    "yol": "/uploads/questions/flags/bz.png"
+  },
+  {
+    "kod": "ca",
+    "ulke_en": "Canada",
+    "yol": "/uploads/questions/flags/ca.png"
+  },
+  {
+    "kod": "cc",
+    "ulke_en": "Cocos (Keeling) Islands",
+    "yol": "/uploads/questions/flags/cc.png"
+  },
+  {
+    "kod": "cd",
+    "ulke_en": "DR Congo",
+    "yol": "/uploads/questions/flags/cd.png"
+  },
+  {
+    "kod": "cf",
+    "ulke_en": "Central African Republic",
+    "yol": "/uploads/questions/flags/cf.png"
+  },
+  {
+    "kod": "cg",
+    "ulke_en": "Republic of the Congo",
+    "yol": "/uploads/questions/flags/cg.png"
+  },
+  {
+    "kod": "ch",
+    "ulke_en": "Switzerland",
+    "yol": "/uploads/questions/flags/ch.png"
+  },
+  {
+    "kod": "ci",
+    "ulke_en": "Côte d'Ivoire (Ivory Coast)",
+    "yol": "/uploads/questions/flags/ci.png"
+  },
+  {
+    "kod": "ck",
+    "ulke_en": "Cook Islands",
+    "yol": "/uploads/questions/flags/ck.png"
+  },
+  {
+    "kod": "cl",
+    "ulke_en": "Chile",
+    "yol": "/uploads/questions/flags/cl.png"
+  },
+  {
+    "kod": "cm",
+    "ulke_en": "Cameroon",
+    "yol": "/uploads/questions/flags/cm.png"
+  },
+  {
+    "kod": "cn",
+    "ulke_en": "China",
+    "yol": "/uploads/questions/flags/cn.png"
+  },
+  {
+    "kod": "co",
+    "ulke_en": "Colombia",
+    "yol": "/uploads/questions/flags/co.png"
+  },
+  {
+    "kod": "cr",
+    "ulke_en": "Costa Rica",
+    "yol": "/uploads/questions/flags/cr.png"
+  },
+  {
+    "kod": "cu",
+    "ulke_en": "Cuba",
+    "yol": "/uploads/questions/flags/cu.png"
+  },
+  {
+    "kod": "cv",
+    "ulke_en": "Cape Verde",
+    "yol": "/uploads/questions/flags/cv.png"
+  },
+  {
+    "kod": "cw",
+    "ulke_en": "Curaçao",
+    "yol": "/uploads/questions/flags/cw.png"
+  },
+  {
+    "kod": "cx",
+    "ulke_en": "Christmas Island",
+    "yol": "/uploads/questions/flags/cx.png"
+  },
+  {
+    "kod": "cy",
+    "ulke_en": "Cyprus",
+    "yol": "/uploads/questions/flags/cy.png"
+  },
+  {
+    "kod": "cz",
+    "ulke_en": "Czechia",
+    "yol": "/uploads/questions/flags/cz.png"
+  },
+  {
+    "kod": "de",
+    "ulke_en": "Germany",
+    "yol": "/uploads/questions/flags/de.png"
+  },
+  {
+    "kod": "dj",
+    "ulke_en": "Djibouti",
+    "yol": "/uploads/questions/flags/dj.png"
+  },
+  {
+    "kod": "dk",
+    "ulke_en": "Denmark",
+    "yol": "/uploads/questions/flags/dk.png"
+  },
+  {
+    "kod": "dm",
+    "ulke_en": "Dominica",
+    "yol": "/uploads/questions/flags/dm.png"
+  },
+  {
+    "kod": "do",
+    "ulke_en": "Dominican Republic",
+    "yol": "/uploads/questions/flags/do.png"
+  },
+  {
+    "kod": "dz",
+    "ulke_en": "Algeria",
+    "yol": "/uploads/questions/flags/dz.png"
+  },
+  {
+    "kod": "ec",
+    "ulke_en": "Ecuador",
+    "yol": "/uploads/questions/flags/ec.png"
+  },
+  {
+    "kod": "ee",
+    "ulke_en": "Estonia",
+    "yol": "/uploads/questions/flags/ee.png"
+  },
+  {
+    "kod": "eg",
+    "ulke_en": "Egypt",
+    "yol": "/uploads/questions/flags/eg.png"
+  },
+  {
+    "kod": "eh",
+    "ulke_en": "Western Sahara",
+    "yol": "/uploads/questions/flags/eh.png"
+  },
+  {
+    "kod": "er",
+    "ulke_en": "Eritrea",
+    "yol": "/uploads/questions/flags/er.png"
+  },
+  {
+    "kod": "es",
+    "ulke_en": "Spain",
+    "yol": "/uploads/questions/flags/es.png"
+  },
+  {
+    "kod": "et",
+    "ulke_en": "Ethiopia",
+    "yol": "/uploads/questions/flags/et.png"
+  },
+  {
+    "kod": "eu",
+    "ulke_en": "European Union",
+    "yol": "/uploads/questions/flags/eu.png"
+  },
+  {
+    "kod": "fi",
+    "ulke_en": "Finland",
+    "yol": "/uploads/questions/flags/fi.png"
+  },
+  {
+    "kod": "fj",
+    "ulke_en": "Fiji",
+    "yol": "/uploads/questions/flags/fj.png"
+  },
+  {
+    "kod": "fk",
+    "ulke_en": "Falkland Islands",
+    "yol": "/uploads/questions/flags/fk.png"
+  },
+  {
+    "kod": "fm",
+    "ulke_en": "Micronesia",
+    "yol": "/uploads/questions/flags/fm.png"
+  },
+  {
+    "kod": "fo",
+    "ulke_en": "Faroe Islands",
+    "yol": "/uploads/questions/flags/fo.png"
+  },
+  {
+    "kod": "fr",
+    "ulke_en": "France",
+    "yol": "/uploads/questions/flags/fr.png"
+  },
+  {
+    "kod": "ga",
+    "ulke_en": "Gabon",
+    "yol": "/uploads/questions/flags/ga.png"
+  },
+  {
+    "kod": "gb",
+    "ulke_en": "United Kingdom",
+    "yol": "/uploads/questions/flags/gb.png"
+  },
+  {
+    "kod": "gd",
+    "ulke_en": "Grenada",
+    "yol": "/uploads/questions/flags/gd.png"
+  },
+  {
+    "kod": "ge",
+    "ulke_en": "Georgia",
+    "yol": "/uploads/questions/flags/ge.png"
+  },
+  {
+    "kod": "gf",
+    "ulke_en": "French Guiana",
+    "yol": "/uploads/questions/flags/gf.png"
+  },
+  {
+    "kod": "gg",
+    "ulke_en": "Guernsey",
+    "yol": "/uploads/questions/flags/gg.png"
+  },
+  {
+    "kod": "gh",
+    "ulke_en": "Ghana",
+    "yol": "/uploads/questions/flags/gh.png"
+  },
+  {
+    "kod": "gi",
+    "ulke_en": "Gibraltar",
+    "yol": "/uploads/questions/flags/gi.png"
+  },
+  {
+    "kod": "gl",
+    "ulke_en": "Greenland",
+    "yol": "/uploads/questions/flags/gl.png"
+  },
+  {
+    "kod": "gm",
+    "ulke_en": "Gambia",
+    "yol": "/uploads/questions/flags/gm.png"
+  },
+  {
+    "kod": "gn",
+    "ulke_en": "Guinea",
+    "yol": "/uploads/questions/flags/gn.png"
+  },
+  {
+    "kod": "gp",
+    "ulke_en": "Guadeloupe",
+    "yol": "/uploads/questions/flags/gp.png"
+  },
+  {
+    "kod": "gq",
+    "ulke_en": "Equatorial Guinea",
+    "yol": "/uploads/questions/flags/gq.png"
+  },
+  {
+    "kod": "gr",
+    "ulke_en": "Greece",
+    "yol": "/uploads/questions/flags/gr.png"
+  },
+  {
+    "kod": "gs",
+    "ulke_en": "South Georgia",
+    "yol": "/uploads/questions/flags/gs.png"
+  },
+  {
+    "kod": "gt",
+    "ulke_en": "Guatemala",
+    "yol": "/uploads/questions/flags/gt.png"
+  },
+  {
+    "kod": "gu",
+    "ulke_en": "Guam",
+    "yol": "/uploads/questions/flags/gu.png"
+  },
+  {
+    "kod": "gw",
+    "ulke_en": "Guinea-Bissau",
+    "yol": "/uploads/questions/flags/gw.png"
+  },
+  {
+    "kod": "gy",
+    "ulke_en": "Guyana",
+    "yol": "/uploads/questions/flags/gy.png"
+  },
+  {
+    "kod": "hk",
+    "ulke_en": "Hong Kong",
+    "yol": "/uploads/questions/flags/hk.png"
+  },
+  {
+    "kod": "hm",
+    "ulke_en": "Heard Island and McDonald Islands",
+    "yol": "/uploads/questions/flags/hm.png"
+  },
+  {
+    "kod": "hn",
+    "ulke_en": "Honduras",
+    "yol": "/uploads/questions/flags/hn.png"
+  },
+  {
+    "kod": "hr",
+    "ulke_en": "Croatia",
+    "yol": "/uploads/questions/flags/hr.png"
+  },
+  {
+    "kod": "ht",
+    "ulke_en": "Haiti",
+    "yol": "/uploads/questions/flags/ht.png"
+  },
+  {
+    "kod": "hu",
+    "ulke_en": "Hungary",
+    "yol": "/uploads/questions/flags/hu.png"
+  },
+  {
+    "kod": "id",
+    "ulke_en": "Indonesia",
+    "yol": "/uploads/questions/flags/id.png"
+  },
+  {
+    "kod": "ie",
+    "ulke_en": "Ireland",
+    "yol": "/uploads/questions/flags/ie.png"
+  },
+  {
+    "kod": "il",
+    "ulke_en": "Israel",
+    "yol": "/uploads/questions/flags/il.png"
+  },
+  {
+    "kod": "im",
+    "ulke_en": "Isle of Man",
+    "yol": "/uploads/questions/flags/im.png"
+  },
+  {
+    "kod": "in",
+    "ulke_en": "India",
+    "yol": "/uploads/questions/flags/in.png"
+  },
+  {
+    "kod": "io",
+    "ulke_en": "British Indian Ocean Territory",
+    "yol": "/uploads/questions/flags/io.png"
+  },
+  {
+    "kod": "iq",
+    "ulke_en": "Iraq",
+    "yol": "/uploads/questions/flags/iq.png"
+  },
+  {
+    "kod": "ir",
+    "ulke_en": "Iran",
+    "yol": "/uploads/questions/flags/ir.png"
+  },
+  {
+    "kod": "is",
+    "ulke_en": "Iceland",
+    "yol": "/uploads/questions/flags/is.png"
+  },
+  {
+    "kod": "it",
+    "ulke_en": "Italy",
+    "yol": "/uploads/questions/flags/it.png"
+  },
+  {
+    "kod": "je",
+    "ulke_en": "Jersey",
+    "yol": "/uploads/questions/flags/je.png"
+  },
+  {
+    "kod": "jm",
+    "ulke_en": "Jamaica",
+    "yol": "/uploads/questions/flags/jm.png"
+  },
+  {
+    "kod": "jo",
+    "ulke_en": "Jordan",
+    "yol": "/uploads/questions/flags/jo.png"
+  },
+  {
+    "kod": "jp",
+    "ulke_en": "Japan",
+    "yol": "/uploads/questions/flags/jp.png"
+  },
+  {
+    "kod": "ke",
+    "ulke_en": "Kenya",
+    "yol": "/uploads/questions/flags/ke.png"
+  },
+  {
+    "kod": "kg",
+    "ulke_en": "Kyrgyzstan",
+    "yol": "/uploads/questions/flags/kg.png"
+  },
+  {
+    "kod": "kh",
+    "ulke_en": "Cambodia",
+    "yol": "/uploads/questions/flags/kh.png"
+  },
+  {
+    "kod": "ki",
+    "ulke_en": "Kiribati",
+    "yol": "/uploads/questions/flags/ki.png"
+  },
+  {
+    "kod": "km",
+    "ulke_en": "Comoros",
+    "yol": "/uploads/questions/flags/km.png"
+  },
+  {
+    "kod": "kn",
+    "ulke_en": "Saint Kitts and Nevis",
+    "yol": "/uploads/questions/flags/kn.png"
+  },
+  {
+    "kod": "kp",
+    "ulke_en": "North Korea",
+    "yol": "/uploads/questions/flags/kp.png"
+  },
+  {
+    "kod": "kr",
+    "ulke_en": "South Korea",
+    "yol": "/uploads/questions/flags/kr.png"
+  },
+  {
+    "kod": "kw",
+    "ulke_en": "Kuwait",
+    "yol": "/uploads/questions/flags/kw.png"
+  },
+  {
+    "kod": "ky",
+    "ulke_en": "Cayman Islands",
+    "yol": "/uploads/questions/flags/ky.png"
+  },
+  {
+    "kod": "kz",
+    "ulke_en": "Kazakhstan",
+    "yol": "/uploads/questions/flags/kz.png"
+  },
+  {
+    "kod": "la",
+    "ulke_en": "Laos",
+    "yol": "/uploads/questions/flags/la.png"
+  },
+  {
+    "kod": "lb",
+    "ulke_en": "Lebanon",
+    "yol": "/uploads/questions/flags/lb.png"
+  },
+  {
+    "kod": "lc",
+    "ulke_en": "Saint Lucia",
+    "yol": "/uploads/questions/flags/lc.png"
+  },
+  {
+    "kod": "li",
+    "ulke_en": "Liechtenstein",
+    "yol": "/uploads/questions/flags/li.png"
+  },
+  {
+    "kod": "lk",
+    "ulke_en": "Sri Lanka",
+    "yol": "/uploads/questions/flags/lk.png"
+  },
+  {
+    "kod": "lr",
+    "ulke_en": "Liberia",
+    "yol": "/uploads/questions/flags/lr.png"
+  },
+  {
+    "kod": "ls",
+    "ulke_en": "Lesotho",
+    "yol": "/uploads/questions/flags/ls.png"
+  },
+  {
+    "kod": "lt",
+    "ulke_en": "Lithuania",
+    "yol": "/uploads/questions/flags/lt.png"
+  },
+  {
+    "kod": "lu",
+    "ulke_en": "Luxembourg",
+    "yol": "/uploads/questions/flags/lu.png"
+  },
+  {
+    "kod": "lv",
+    "ulke_en": "Latvia",
+    "yol": "/uploads/questions/flags/lv.png"
+  },
+  {
+    "kod": "ly",
+    "ulke_en": "Libya",
+    "yol": "/uploads/questions/flags/ly.png"
+  },
+  {
+    "kod": "ma",
+    "ulke_en": "Morocco",
+    "yol": "/uploads/questions/flags/ma.png"
+  },
+  {
+    "kod": "mc",
+    "ulke_en": "Monaco",
+    "yol": "/uploads/questions/flags/mc.png"
+  },
+  {
+    "kod": "md",
+    "ulke_en": "Moldova",
+    "yol": "/uploads/questions/flags/md.png"
+  },
+  {
+    "kod": "me",
+    "ulke_en": "Montenegro",
+    "yol": "/uploads/questions/flags/me.png"
+  },
+  {
+    "kod": "mf",
+    "ulke_en": "Saint Martin",
+    "yol": "/uploads/questions/flags/mf.png"
+  },
+  {
+    "kod": "mg",
+    "ulke_en": "Madagascar",
+    "yol": "/uploads/questions/flags/mg.png"
+  },
+  {
+    "kod": "mh",
+    "ulke_en": "Marshall Islands",
+    "yol": "/uploads/questions/flags/mh.png"
+  },
+  {
+    "kod": "mk",
+    "ulke_en": "North Macedonia",
+    "yol": "/uploads/questions/flags/mk.png"
+  },
+  {
+    "kod": "ml",
+    "ulke_en": "Mali",
+    "yol": "/uploads/questions/flags/ml.png"
+  },
+  {
+    "kod": "mm",
+    "ulke_en": "Myanmar",
+    "yol": "/uploads/questions/flags/mm.png"
+  },
+  {
+    "kod": "mn",
+    "ulke_en": "Mongolia",
+    "yol": "/uploads/questions/flags/mn.png"
+  },
+  {
+    "kod": "mo",
+    "ulke_en": "Macau",
+    "yol": "/uploads/questions/flags/mo.png"
+  },
+  {
+    "kod": "mp",
+    "ulke_en": "Northern Mariana Islands",
+    "yol": "/uploads/questions/flags/mp.png"
+  },
+  {
+    "kod": "mq",
+    "ulke_en": "Martinique",
+    "yol": "/uploads/questions/flags/mq.png"
+  },
+  {
+    "kod": "mr",
+    "ulke_en": "Mauritania",
+    "yol": "/uploads/questions/flags/mr.png"
+  },
+  {
+    "kod": "ms",
+    "ulke_en": "Montserrat",
+    "yol": "/uploads/questions/flags/ms.png"
+  },
+  {
+    "kod": "mt",
+    "ulke_en": "Malta",
+    "yol": "/uploads/questions/flags/mt.png"
+  },
+  {
+    "kod": "mu",
+    "ulke_en": "Mauritius",
+    "yol": "/uploads/questions/flags/mu.png"
+  },
+  {
+    "kod": "mv",
+    "ulke_en": "Maldives",
+    "yol": "/uploads/questions/flags/mv.png"
+  },
+  {
+    "kod": "mw",
+    "ulke_en": "Malawi",
+    "yol": "/uploads/questions/flags/mw.png"
+  },
+  {
+    "kod": "mx",
+    "ulke_en": "Mexico",
+    "yol": "/uploads/questions/flags/mx.png"
+  },
+  {
+    "kod": "my",
+    "ulke_en": "Malaysia",
+    "yol": "/uploads/questions/flags/my.png"
+  },
+  {
+    "kod": "mz",
+    "ulke_en": "Mozambique",
+    "yol": "/uploads/questions/flags/mz.png"
+  },
+  {
+    "kod": "na",
+    "ulke_en": "Namibia",
+    "yol": "/uploads/questions/flags/na.png"
+  },
+  {
+    "kod": "nc",
+    "ulke_en": "New Caledonia",
+    "yol": "/uploads/questions/flags/nc.png"
+  },
+  {
+    "kod": "ne",
+    "ulke_en": "Niger",
+    "yol": "/uploads/questions/flags/ne.png"
+  },
+  {
+    "kod": "nf",
+    "ulke_en": "Norfolk Island",
+    "yol": "/uploads/questions/flags/nf.png"
+  },
+  {
+    "kod": "ng",
+    "ulke_en": "Nigeria",
+    "yol": "/uploads/questions/flags/ng.png"
+  },
+  {
+    "kod": "ni",
+    "ulke_en": "Nicaragua",
+    "yol": "/uploads/questions/flags/ni.png"
+  },
+  {
+    "kod": "nl",
+    "ulke_en": "Netherlands",
+    "yol": "/uploads/questions/flags/nl.png"
+  },
+  {
+    "kod": "no",
+    "ulke_en": "Norway",
+    "yol": "/uploads/questions/flags/no.png"
+  },
+  {
+    "kod": "np",
+    "ulke_en": "Nepal",
+    "yol": "/uploads/questions/flags/np.png"
+  },
+  {
+    "kod": "nr",
+    "ulke_en": "Nauru",
+    "yol": "/uploads/questions/flags/nr.png"
+  },
+  {
+    "kod": "nu",
+    "ulke_en": "Niue",
+    "yol": "/uploads/questions/flags/nu.png"
+  },
+  {
+    "kod": "nz",
+    "ulke_en": "New Zealand",
+    "yol": "/uploads/questions/flags/nz.png"
+  },
+  {
+    "kod": "om",
+    "ulke_en": "Oman",
+    "yol": "/uploads/questions/flags/om.png"
+  },
+  {
+    "kod": "pa",
+    "ulke_en": "Panama",
+    "yol": "/uploads/questions/flags/pa.png"
+  },
+  {
+    "kod": "pe",
+    "ulke_en": "Peru",
+    "yol": "/uploads/questions/flags/pe.png"
+  },
+  {
+    "kod": "pf",
+    "ulke_en": "French Polynesia",
+    "yol": "/uploads/questions/flags/pf.png"
+  },
+  {
+    "kod": "pg",
+    "ulke_en": "Papua New Guinea",
+    "yol": "/uploads/questions/flags/pg.png"
+  },
+  {
+    "kod": "ph",
+    "ulke_en": "Philippines",
+    "yol": "/uploads/questions/flags/ph.png"
+  },
+  {
+    "kod": "pk",
+    "ulke_en": "Pakistan",
+    "yol": "/uploads/questions/flags/pk.png"
+  },
+  {
+    "kod": "pl",
+    "ulke_en": "Poland",
+    "yol": "/uploads/questions/flags/pl.png"
+  },
+  {
+    "kod": "pm",
+    "ulke_en": "Saint Pierre and Miquelon",
+    "yol": "/uploads/questions/flags/pm.png"
+  },
+  {
+    "kod": "pn",
+    "ulke_en": "Pitcairn Islands",
+    "yol": "/uploads/questions/flags/pn.png"
+  },
+  {
+    "kod": "pr",
+    "ulke_en": "Puerto Rico",
+    "yol": "/uploads/questions/flags/pr.png"
+  },
+  {
+    "kod": "ps",
+    "ulke_en": "Palestine",
+    "yol": "/uploads/questions/flags/ps.png"
+  },
+  {
+    "kod": "pt",
+    "ulke_en": "Portugal",
+    "yol": "/uploads/questions/flags/pt.png"
+  },
+  {
+    "kod": "pw",
+    "ulke_en": "Palau",
+    "yol": "/uploads/questions/flags/pw.png"
+  },
+  {
+    "kod": "py",
+    "ulke_en": "Paraguay",
+    "yol": "/uploads/questions/flags/py.png"
+  },
+  {
+    "kod": "qa",
+    "ulke_en": "Qatar",
+    "yol": "/uploads/questions/flags/qa.png"
+  },
+  {
+    "kod": "re",
+    "ulke_en": "Réunion",
+    "yol": "/uploads/questions/flags/re.png"
+  },
+  {
+    "kod": "ro",
+    "ulke_en": "Romania",
+    "yol": "/uploads/questions/flags/ro.png"
+  },
+  {
+    "kod": "rs",
+    "ulke_en": "Serbia",
+    "yol": "/uploads/questions/flags/rs.png"
+  },
+  {
+    "kod": "ru",
+    "ulke_en": "Russia",
+    "yol": "/uploads/questions/flags/ru.png"
+  },
+  {
+    "kod": "rw",
+    "ulke_en": "Rwanda",
+    "yol": "/uploads/questions/flags/rw.png"
+  },
+  {
+    "kod": "sa",
+    "ulke_en": "Saudi Arabia",
+    "yol": "/uploads/questions/flags/sa.png"
+  },
+  {
+    "kod": "sb",
+    "ulke_en": "Solomon Islands",
+    "yol": "/uploads/questions/flags/sb.png"
+  },
+  {
+    "kod": "sc",
+    "ulke_en": "Seychelles",
+    "yol": "/uploads/questions/flags/sc.png"
+  },
+  {
+    "kod": "sd",
+    "ulke_en": "Sudan",
+    "yol": "/uploads/questions/flags/sd.png"
+  },
+  {
+    "kod": "se",
+    "ulke_en": "Sweden",
+    "yol": "/uploads/questions/flags/se.png"
+  },
+  {
+    "kod": "sg",
+    "ulke_en": "Singapore",
+    "yol": "/uploads/questions/flags/sg.png"
+  },
+  {
+    "kod": "sh",
+    "ulke_en": "Saint Helena, Ascension and Tristan da Cunha",
+    "yol": "/uploads/questions/flags/sh.png"
+  },
+  {
+    "kod": "si",
+    "ulke_en": "Slovenia",
+    "yol": "/uploads/questions/flags/si.png"
+  },
+  {
+    "kod": "sj",
+    "ulke_en": "Svalbard and Jan Mayen",
+    "yol": "/uploads/questions/flags/sj.png"
+  },
+  {
+    "kod": "sk",
+    "ulke_en": "Slovakia",
+    "yol": "/uploads/questions/flags/sk.png"
+  },
+  {
+    "kod": "sl",
+    "ulke_en": "Sierra Leone",
+    "yol": "/uploads/questions/flags/sl.png"
+  },
+  {
+    "kod": "sm",
+    "ulke_en": "San Marino",
+    "yol": "/uploads/questions/flags/sm.png"
+  },
+  {
+    "kod": "sn",
+    "ulke_en": "Senegal",
+    "yol": "/uploads/questions/flags/sn.png"
+  },
+  {
+    "kod": "so",
+    "ulke_en": "Somalia",
+    "yol": "/uploads/questions/flags/so.png"
+  },
+  {
+    "kod": "sr",
+    "ulke_en": "Suriname",
+    "yol": "/uploads/questions/flags/sr.png"
+  },
+  {
+    "kod": "ss",
+    "ulke_en": "South Sudan",
+    "yol": "/uploads/questions/flags/ss.png"
+  },
+  {
+    "kod": "st",
+    "ulke_en": "São Tomé and Príncipe",
+    "yol": "/uploads/questions/flags/st.png"
+  },
+  {
+    "kod": "sv",
+    "ulke_en": "El Salvador",
+    "yol": "/uploads/questions/flags/sv.png"
+  },
+  {
+    "kod": "sx",
+    "ulke_en": "Sint Maarten",
+    "yol": "/uploads/questions/flags/sx.png"
+  },
+  {
+    "kod": "sy",
+    "ulke_en": "Syria",
+    "yol": "/uploads/questions/flags/sy.png"
+  },
+  {
+    "kod": "sz",
+    "ulke_en": "Eswatini (Swaziland)",
+    "yol": "/uploads/questions/flags/sz.png"
+  },
+  {
+    "kod": "tc",
+    "ulke_en": "Turks and Caicos Islands",
+    "yol": "/uploads/questions/flags/tc.png"
+  },
+  {
+    "kod": "td",
+    "ulke_en": "Chad",
+    "yol": "/uploads/questions/flags/td.png"
+  },
+  {
+    "kod": "tf",
+    "ulke_en": "French Southern and Antarctic Lands",
+    "yol": "/uploads/questions/flags/tf.png"
+  },
+  {
+    "kod": "tg",
+    "ulke_en": "Togo",
+    "yol": "/uploads/questions/flags/tg.png"
+  },
+  {
+    "kod": "th",
+    "ulke_en": "Thailand",
+    "yol": "/uploads/questions/flags/th.png"
+  },
+  {
+    "kod": "tj",
+    "ulke_en": "Tajikistan",
+    "yol": "/uploads/questions/flags/tj.png"
+  },
+  {
+    "kod": "tk",
+    "ulke_en": "Tokelau",
+    "yol": "/uploads/questions/flags/tk.png"
+  },
+  {
+    "kod": "tl",
+    "ulke_en": "Timor-Leste",
+    "yol": "/uploads/questions/flags/tl.png"
+  },
+  {
+    "kod": "tm",
+    "ulke_en": "Turkmenistan",
+    "yol": "/uploads/questions/flags/tm.png"
+  },
+  {
+    "kod": "tn",
+    "ulke_en": "Tunisia",
+    "yol": "/uploads/questions/flags/tn.png"
+  },
+  {
+    "kod": "to",
+    "ulke_en": "Tonga",
+    "yol": "/uploads/questions/flags/to.png"
+  },
+  {
+    "kod": "tr",
+    "ulke_en": "Turkey",
+    "yol": "/uploads/questions/flags/tr.png"
+  },
+  {
+    "kod": "tt",
+    "ulke_en": "Trinidad and Tobago",
+    "yol": "/uploads/questions/flags/tt.png"
+  },
+  {
+    "kod": "tv",
+    "ulke_en": "Tuvalu",
+    "yol": "/uploads/questions/flags/tv.png"
+  },
+  {
+    "kod": "tw",
+    "ulke_en": "Taiwan",
+    "yol": "/uploads/questions/flags/tw.png"
+  },
+  {
+    "kod": "tz",
+    "ulke_en": "Tanzania",
+    "yol": "/uploads/questions/flags/tz.png"
+  },
+  {
+    "kod": "ua",
+    "ulke_en": "Ukraine",
+    "yol": "/uploads/questions/flags/ua.png"
+  },
+  {
+    "kod": "ug",
+    "ulke_en": "Uganda",
+    "yol": "/uploads/questions/flags/ug.png"
+  },
+  {
+    "kod": "um",
+    "ulke_en": "United States Minor Outlying Islands",
+    "yol": "/uploads/questions/flags/um.png"
+  },
+  {
+    "kod": "un",
+    "ulke_en": "United Nations",
+    "yol": "/uploads/questions/flags/un.png"
+  },
+  {
+    "kod": "us",
+    "ulke_en": "United States",
+    "yol": "/uploads/questions/flags/us.png"
+  },
+  {
+    "kod": "uy",
+    "ulke_en": "Uruguay",
+    "yol": "/uploads/questions/flags/uy.png"
+  },
+  {
+    "kod": "uz",
+    "ulke_en": "Uzbekistan",
+    "yol": "/uploads/questions/flags/uz.png"
+  },
+  {
+    "kod": "va",
+    "ulke_en": "Vatican City (Holy See)",
+    "yol": "/uploads/questions/flags/va.png"
+  },
+  {
+    "kod": "vc",
+    "ulke_en": "Saint Vincent and the Grenadines",
+    "yol": "/uploads/questions/flags/vc.png"
+  },
+  {
+    "kod": "ve",
+    "ulke_en": "Venezuela",
+    "yol": "/uploads/questions/flags/ve.png"
+  },
+  {
+    "kod": "vg",
+    "ulke_en": "British Virgin Islands",
+    "yol": "/uploads/questions/flags/vg.png"
+  },
+  {
+    "kod": "vi",
+    "ulke_en": "United States Virgin Islands",
+    "yol": "/uploads/questions/flags/vi.png"
+  },
+  {
+    "kod": "vn",
+    "ulke_en": "Vietnam",
+    "yol": "/uploads/questions/flags/vn.png"
+  },
+  {
+    "kod": "vu",
+    "ulke_en": "Vanuatu",
+    "yol": "/uploads/questions/flags/vu.png"
+  },
+  {
+    "kod": "wf",
+    "ulke_en": "Wallis and Futuna",
+    "yol": "/uploads/questions/flags/wf.png"
+  },
+  {
+    "kod": "ws",
+    "ulke_en": "Samoa",
+    "yol": "/uploads/questions/flags/ws.png"
+  },
+  {
+    "kod": "xk",
+    "ulke_en": "Kosovo",
+    "yol": "/uploads/questions/flags/xk.png"
+  },
+  {
+    "kod": "ye",
+    "ulke_en": "Yemen",
+    "yol": "/uploads/questions/flags/ye.png"
+  },
+  {
+    "kod": "yt",
+    "ulke_en": "Mayotte",
+    "yol": "/uploads/questions/flags/yt.png"
+  },
+  {
+    "kod": "za",
+    "ulke_en": "South Africa",
+    "yol": "/uploads/questions/flags/za.png"
+  },
+  {
+    "kod": "zm",
+    "ulke_en": "Zambia",
+    "yol": "/uploads/questions/flags/zm.png"
+  },
+  {
+    "kod": "zw",
+    "ulke_en": "Zimbabwe",
+    "yol": "/uploads/questions/flags/zw.png"
+  }
+]

@@ -1,0 +1,678 @@
+from typing import Optional, Dict
+from fastapi import WebSocket, WebSocketDisconnect
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
+from sqlalchemy.orm import selectinload
+import asyncio
+import random
+from datetime import datetime
+
+from app.core.database import AsyncSessionLocal
+from app.core.security import decode_token
+from app.models.user import User
+from app.models.marathon import (
+    Marathon, MarathonParticipant, MarathonMatch,
+    MarathonStatus, MarathonParticipantStatus
+)
+from app.models.question import Question
+from app.services.elo import get_points, POINTS
+from app.services.bot import bot_answer, bot_response_time
+
+
+# ─── Bağlantı Yöneticisi ────────────────────────────────────────────────────
+
+class MarathonManager:
+    def __init__(self):
+        # marathon_id -> {user_id -> websocket}
+        self.connections: Dict[str, Dict[str, WebSocket]] = {}
+        # marathon_id -> {match_id -> {user_id -> asyncio.Queue}}
+        self.match_queues: Dict[str, Dict[str, Dict[str, asyncio.Queue]]] = {}
+
+    async def connect(self, marathon_id: str, user_id: str, ws: WebSocket):
+        await ws.accept()
+        if marathon_id not in self.connections:
+            self.connections[marathon_id] = {}
+        self.connections[marathon_id][user_id] = ws
+
+    async def disconnect(self, marathon_id: str, user_id: str):
+        if marathon_id in self.connections:
+            self.connections[marathon_id].pop(user_id, None)
+
+    async def send(self, marathon_id: str, user_id: str, data: dict):
+        ws = self.connections.get(marathon_id, {}).get(user_id)
+        if ws:
+            try:
+                await ws.send_json(data)
+            except Exception:
+                pass
+
+    async def broadcast(self, marathon_id: str, data: dict):
+        for uid, ws in list(self.connections.get(marathon_id, {}).items()):
+            try:
+                await ws.send_json(data)
+            except Exception:
+                pass
+
+    def is_connected(self, marathon_id: str, user_id: str) -> bool:
+        return user_id in self.connections.get(marathon_id, {})
+
+    def get_queue(self, marathon_id: str, match_id: str, user_id: str) -> asyncio.Queue:
+        if marathon_id not in self.match_queues:
+            self.match_queues[marathon_id] = {}
+        if match_id not in self.match_queues[marathon_id]:
+            self.match_queues[marathon_id][match_id] = {}
+        if user_id not in self.match_queues[marathon_id][match_id]:
+            self.match_queues[marathon_id][match_id][user_id] = asyncio.Queue()
+        return self.match_queues[marathon_id][match_id][user_id]
+
+    def clear_match_queue(self, marathon_id: str, match_id: str):
+        if marathon_id in self.match_queues:
+            self.match_queues[marathon_id].pop(match_id, None)
+
+
+marathon_manager = MarathonManager()
+
+
+# ─── Yardımcı Fonksiyonlar ──────────────────────────────────────────────────
+
+ROUND_DIFFICULTIES = {
+    1: "easy", 2: "easy",
+    3: "medium", 4: "medium",
+    5: "hard", 6: "hard",
+    7: "very_hard",
+}
+
+def round_label(active_count: int) -> str:
+    if active_count <= 2:
+        return "Final"
+    elif active_count <= 4:
+        return "Yarı Final"
+    elif active_count <= 8:
+        return "Çeyrek Final"
+    elif active_count <= 16:
+        return "Son 16"
+    elif active_count <= 32:
+        return "Son 32"
+    elif active_count <= 64:
+        return "Son 64"
+    else:
+        return "Son 128"
+
+async def get_round_questions(db: AsyncSession, marathon_id: str, round_num: int) -> list:
+    """Her turda ortak soru seti — aynı turdaki herkes aynı soruları görür."""
+    from sqlalchemy import func
+
+    result = await db.execute(select(Marathon).where(Marathon.id == marathon_id))
+    marathon = result.scalar_one_or_none()
+    if not marathon:
+        return []
+
+    rq = marathon.round_questions or {}
+    key = str(round_num)
+
+    if key in rq:
+        q_result = await db.execute(
+            select(Question)
+            .options(selectinload(Question.category))
+            .where(Question.id.in_(rq[key]))
+        )
+        questions = q_result.scalars().all()
+        q_map = {str(q.id): q for q in questions}
+        return [q_map[qid] for qid in rq[key] if qid in q_map]
+
+    difficulty = ROUND_DIFFICULTIES.get(round_num, "easy")
+    q_result = await db.execute(
+        select(Question)
+        .options(selectinload(Question.category))
+        .where(
+            Question.is_active == True,
+            Question.is_approved == True,
+            Question.difficulty == difficulty,
+        )
+        .order_by(func.random())
+        .limit(3)
+    )
+    questions = q_result.scalars().all()
+
+    rq[key] = [str(q.id) for q in questions]
+    marathon.round_questions = rq
+    await db.commit()
+    return questions
+
+
+async def get_active_participants(db: AsyncSession, marathon_id: str) -> list:
+    result = await db.execute(
+        select(MarathonParticipant)
+        .options(selectinload(MarathonParticipant.user))
+        .where(
+            MarathonParticipant.marathon_id == marathon_id,
+            MarathonParticipant.status == MarathonParticipantStatus.active,
+        )
+    )
+    return result.scalars().all()
+
+
+# ─── Tek Maç Motoru ─────────────────────────────────────────────────────────
+
+async def run_marathon_match(
+    marathon_id: str,
+    match_id: str,
+    p1_id: str,
+    p2_id: str,
+    questions: list,
+    round_num: int,
+    p1_is_human: bool,
+    p2_elo: float,
+) -> str:
+    """
+    Tek bir maraton maçını çalıştır.
+    Returns: winner_id
+    """
+    scores = {p1_id: 0, p2_id: 0}
+
+    for q_index, question in enumerate(questions):
+        correct = question.correct_answer
+        time_limit = POINTS.get(question.difficulty.value, POINTS["easy"])["time_limit"]
+
+        q_payload = {
+            "id": str(question.id),
+            "text": question.text,
+            "difficulty": question.difficulty.value,
+            "category_name": question.category.name if question.category else "",
+            "option_a": question.option_a,
+            "option_b": question.option_b,
+            "option_c": question.option_c,
+            "option_d": question.option_d,
+            "time_limit": time_limit,
+            "index": q_index,
+            "total": len(questions),
+        }
+
+        if p1_is_human:
+            await marathon_manager.send(marathon_id, p1_id, {
+                "type": "question",
+                "question": q_payload,
+                "scores": {"me": scores[p1_id], "opponent": scores[p2_id]},
+            })
+
+        # Bot cevap zamanı — bağımsız
+        bot_wait = bot_response_time(p2_elo, time_limit)
+        bot_ans = bot_answer(correct, p2_elo)
+        import time as time_mod
+        q_start = time_mod.time()
+
+        p1_answered = False
+        p1_correct = False
+
+        if p1_is_human:
+            queue = marathon_manager.get_queue(marathon_id, match_id, p1_id)
+
+            # Oyuncu ile bot yarışı — oyuncuyu en az time_limit kadar bekle
+            async def wait_player():
+                try:
+                    return await asyncio.wait_for(queue.get(), timeout=time_limit)
+                except asyncio.TimeoutError:
+                    return None
+
+            player_data = await wait_player()
+
+            if player_data and player_data.get("type") == "answer":
+                p1_answered = True
+                answer = player_data.get("answer", "").upper()
+                p1_correct = answer == correct
+                points = get_points(question.difficulty.value, p1_correct)
+                scores[p1_id] += points
+
+                await marathon_manager.send(marathon_id, p1_id, {
+                    "type": "answer_result",
+                    "is_correct": p1_correct,
+                    "correct_answer": correct if p1_correct else None,
+                    "points": points,
+                    "scores": {"me": scores[p1_id], "opponent": scores[p2_id]},
+                    "question_index": q_index,
+                })
+
+                if p1_correct:
+                    # Bot da cevap versin (sessizce)
+                    b_correct = bot_ans == correct
+                    scores[p2_id] += get_points(question.difficulty.value, b_correct)
+                    await asyncio.sleep(2)
+                    continue
+
+                # Oyuncu yanlış — bot kalan sürede cevap verecek
+                elapsed = time_mod.time() - q_start
+                remaining = max(int(time_limit - elapsed), 3)
+                bot_wait2 = bot_response_time(p2_elo, remaining)
+                await asyncio.sleep(min(bot_wait2, remaining - 0.3))
+
+                b_correct = bot_ans == correct
+                b_points = get_points(question.difficulty.value, b_correct)
+                scores[p2_id] += b_points
+
+                if b_correct:
+                    await marathon_manager.send(marathon_id, p1_id, {
+                        "type": "opponent_correct",
+                        "correct_answer": correct,
+                        "scores": {"me": scores[p1_id], "opponent": scores[p2_id]},
+                        "question_index": q_index,
+                    })
+                else:
+                    await marathon_manager.send(marathon_id, p1_id, {
+                        "type": "both_wrong",
+                        "correct_answer": correct,
+                        "scores": {"me": scores[p1_id], "opponent": scores[p2_id]},
+                        "question_index": q_index,
+                    })
+                await asyncio.sleep(2)
+                continue
+
+        # Bot önce cevapladı
+        if not p1_answered:
+            await asyncio.sleep(bot_wait)
+            b_correct = bot_ans == correct
+            b_points = get_points(question.difficulty.value, b_correct)
+            scores[p2_id] += b_points
+
+            if p1_is_human:
+                if b_correct:
+                    await marathon_manager.send(marathon_id, p1_id, {
+                        "type": "opponent_correct",
+                        "correct_answer": correct,
+                        "scores": {"me": scores[p1_id], "opponent": scores[p2_id]},
+                        "question_index": q_index,
+                    })
+                    await asyncio.sleep(2)
+                else:
+                    elapsed = time_mod.time() - q_start
+                    remaining = max(int(time_limit - elapsed), 3)
+                    await marathon_manager.send(marathon_id, p1_id, {
+                        "type": "opponent_wrong",
+                        "wrong_answer": bot_ans,
+                        "remaining_time": remaining,
+                        "scores": {"me": scores[p1_id], "opponent": scores[p2_id]},
+                        "question_index": q_index,
+                    })
+
+                    # Oyuncunun cevabını bekle
+                    queue = marathon_manager.get_queue(marathon_id, match_id, p1_id)
+                    try:
+                        data = await asyncio.wait_for(queue.get(), timeout=remaining)
+                        if data.get("type") == "answer":
+                            answer = data.get("answer", "").upper()
+                            is_correct = answer == correct
+                            points = get_points(question.difficulty.value, is_correct)
+                            scores[p1_id] += points
+                            await marathon_manager.send(marathon_id, p1_id, {
+                                "type": "answer_result",
+                                "is_correct": is_correct,
+                                "correct_answer": correct if is_correct else None,
+                                "points": points,
+                                "scores": {"me": scores[p1_id], "opponent": scores[p2_id]},
+                                "question_index": q_index,
+                            })
+                            await asyncio.sleep(2)
+                    except asyncio.TimeoutError:
+                        await marathon_manager.send(marathon_id, p1_id, {
+                            "type": "both_wrong",
+                            "correct_answer": correct,
+                            "scores": {"me": scores[p1_id], "opponent": scores[p2_id]},
+                            "question_index": q_index,
+                        })
+                        await asyncio.sleep(2)
+            else:
+                await asyncio.sleep(0.1)
+
+    # Kazananı belirle
+    if scores[p1_id] > scores[p2_id]:
+        winner_id = p1_id
+    elif scores[p2_id] > scores[p1_id]:
+        winner_id = p2_id
+    else:
+        winner_id = random.choice([p1_id, p2_id])
+
+    # Sonuç mesajı
+    if p1_is_human:
+        won = winner_id == p1_id
+        await marathon_manager.send(marathon_id, p1_id, {
+            "type": "match_end",
+            "won": won,
+            "my_score": scores[p1_id],
+            "opponent_score": scores[p2_id],
+        })
+
+    marathon_manager.clear_match_queue(marathon_id, match_id)
+    return winner_id
+
+
+# ─── Maraton Motoru ─────────────────────────────────────────────────────────
+
+async def run_marathon_engine(marathon_id: str):
+    """
+    128 kişilik maraton motoru.
+    7 tur eleme — her tur maçlar paralel çalışır.
+    """
+    await asyncio.sleep(8)  # WS bağlantıları kurulsun
+
+    async with AsyncSessionLocal() as db:
+        result = await db.execute(select(Marathon).where(Marathon.id == marathon_id))
+        marathon = result.scalar_one_or_none()
+        if not marathon:
+            return
+
+        # Botları doldur
+        from app.services.marathon import fill_with_bots
+        await fill_with_bots(db, marathon_id)
+
+        marathon.status = MarathonStatus.in_progress
+        marathon.started_at = datetime.utcnow()
+        await db.commit()
+
+    await marathon_manager.broadcast(marathon_id, {
+        "type": "marathon_started",
+        "message": "Maraton başlıyor! Hazır ol...",
+    })
+    await asyncio.sleep(4)
+
+    print(f"[Engine] Maraton başladı: {marathon_id}")
+    for round_num in range(1, 8):
+        async with AsyncSessionLocal() as db:
+            active = await get_active_participants(db, marathon_id)
+
+            if len(active) <= 1:
+                break
+
+            label = round_label(len(active))
+
+            # Tur başlangıcı bildirimi
+            await marathon_manager.broadcast(marathon_id, {
+                "type": "round_start",
+                "round": round_num,
+                "round_label": label,
+                "active_count": len(active),
+                "difficulty": ROUND_DIFFICULTIES.get(round_num, "easy"),
+            })
+            await asyncio.sleep(6)
+
+            # Soru setini çek
+            questions = await get_round_questions(db, marathon_id, round_num)
+
+            # Katılımcıları eşleştir — insanlar önce
+            humans = [p for p in active if not p.user.is_bot]
+            bots_list = [p for p in active if p.user.is_bot]
+            random.shuffle(bots_list)
+            ordered = humans + bots_list
+
+            matches_data = []
+            for i in range(0, len(ordered) - 1, 2):
+                p1 = ordered[i]
+                p2 = ordered[i + 1]
+
+                match = MarathonMatch(
+                    marathon_id=marathon_id,
+                    round_number=round_num,
+                    player1_id=str(p1.user_id),
+                    player2_id=str(p2.user_id),
+                    status="in_progress",
+                    started_at=datetime.utcnow(),
+                )
+                db.add(match)
+                await db.flush()
+
+                matches_data.append({
+                    "match_id": str(match.id),
+                    "p1_id": str(p1.user_id),
+                    "p2_id": str(p2.user_id),
+                    "p1_is_bot": p1.user.is_bot,
+                    "p2_elo": p2.user.elo_rating,
+                })
+
+                # Rakip bildir
+                if not p1.user.is_bot:
+                    await marathon_manager.send(marathon_id, str(p1.user_id), {
+                        "type": "match_start",
+                        "match_id": str(match.id),
+                        "round": round_num,
+                        "round_label": label,
+                        "opponent": p2.user.username,
+                        "total_questions": len(questions),
+                    })
+                if not p2.user.is_bot:
+                    await marathon_manager.send(marathon_id, str(p2.user_id), {
+                        "type": "match_start",
+                        "match_id": str(match.id),
+                        "round": round_num,
+                        "round_label": label,
+                        "opponent": p1.user.username,
+                        "total_questions": len(questions),
+                    })
+
+            # Tek kişi kalırsa bye
+            if len(ordered) % 2 == 1:
+                bye = ordered[-1]
+                bye_match = MarathonMatch(
+                    marathon_id=marathon_id,
+                    round_number=round_num,
+                    player1_id=str(bye.user_id),
+                    player2_id=None,
+                    winner_id=str(bye.user_id),
+                    status="finished",
+                    started_at=datetime.utcnow(),
+                    finished_at=datetime.utcnow(),
+                )
+                db.add(bye_match)
+
+            await db.commit()
+
+        # Frontend maç ekranına geçsin (match_end 4sn + geçiş için 8sn)
+        await asyncio.sleep(10)
+
+        # Tüm maçları paralel çalıştır
+        tasks = []
+        for m in matches_data:
+            task = asyncio.ensure_future(
+                run_marathon_match(
+                    marathon_id=marathon_id,
+                    match_id=m["match_id"],
+                    p1_id=m["p1_id"],
+                    p2_id=m["p2_id"],
+                    questions=questions,
+                    round_num=round_num,
+                    p1_is_human=not m["p1_is_bot"],
+                    p2_elo=m["p2_elo"],
+                )
+            )
+            tasks.append((m["match_id"], m["p1_id"], m["p2_id"], task))
+
+        # Kazananları kaydet
+        winners = {}
+        if tasks:
+            results = await asyncio.gather(*[t for _, _, _, t in tasks], return_exceptions=True)
+            for idx, (match_id, p1_id, p2_id, _) in enumerate(tasks):
+                winner_id = results[idx]
+                if isinstance(winner_id, Exception):
+                    winner_id = p1_id  # Hata varsa p1 kazansın
+                winners[match_id] = winner_id
+
+        # DB güncelle — kazananlar ve kaybedenler
+        async with AsyncSessionLocal() as db:
+            for match_id, winner_id in winners.items():
+                r = await db.execute(
+                    select(MarathonMatch).where(MarathonMatch.id == match_id)
+                )
+                match_obj = r.scalar_one_or_none()
+                if match_obj:
+                    match_obj.winner_id = winner_id
+                    match_obj.status = "finished"
+                    match_obj.finished_at = datetime.utcnow()
+
+                    # Kaybeden kim?
+                    loser_id = match_obj.player2_id if str(winner_id) == str(match_obj.player1_id) else match_obj.player1_id
+                    if loser_id:
+                        loser_part = await db.execute(
+                            select(MarathonParticipant).where(
+                                MarathonParticipant.marathon_id == marathon_id,
+                                MarathonParticipant.user_id == loser_id,
+                            )
+                        )
+                        loser = loser_part.scalar_one_or_none()
+                        if loser:
+                            loser.status = MarathonParticipantStatus.eliminated
+                            loser.eliminated_at_round = round_num
+
+            await db.commit()
+
+        # Tur sonu — lobi güncelle
+        async with AsyncSessionLocal() as db:
+            remaining = await get_active_participants(db, marathon_id)
+
+            # Tüm katılımcı durumunu çek
+            from sqlalchemy.orm import selectinload as _sil
+            all_parts = await db.execute(
+                select(MarathonParticipant)
+                .options(_sil(MarathonParticipant.user))
+                .where(MarathonParticipant.marathon_id == marathon_id)
+            )
+            all_participants = all_parts.scalars().all()
+            lobby_data = [{
+                "username": p.user.username if p.user else "?",
+                "status": p.status.value,
+                "total_score": p.total_score,
+                "eliminated_at_round": p.eliminated_at_round,
+                "is_bot": p.user.is_bot if p.user else True,
+            } for p in all_participants]
+
+        await marathon_manager.broadcast(marathon_id, {
+            "type": "round_end",
+            "round": round_num,
+            "remaining": len(remaining),
+            "participants": lobby_data,
+        })
+        await asyncio.sleep(6)  # Lobi göster, sonraki tur başlasın
+
+        if round_num == 7 or len(remaining) <= 1:
+            break
+
+    # Maraton bitti — şampiyon belirle
+    async with AsyncSessionLocal() as db:
+        result = await db.execute(select(Marathon).where(Marathon.id == marathon_id))
+        marathon = result.scalar_one_or_none()
+        if marathon:
+            marathon.status = MarathonStatus.finished
+            marathon.finished_at = datetime.utcnow()
+
+        # Son tur maçından kazananı bul
+        last_round = round_num
+        final_match = await db.execute(
+            select(MarathonMatch)
+            .where(
+                MarathonMatch.marathon_id == marathon_id,
+                MarathonMatch.round_number == last_round,
+                MarathonMatch.status == "finished",
+            )
+        )
+        finals = final_match.scalars().all()
+
+        for fm in finals:
+            if fm.winner_id:
+                # Şampiyon
+                champ = await db.execute(
+                    select(MarathonParticipant).where(
+                        MarathonParticipant.marathon_id == marathon_id,
+                        MarathonParticipant.user_id == fm.winner_id,
+                    )
+                )
+                champ_part = champ.scalar_one_or_none()
+                if champ_part:
+                    champ_part.status = MarathonParticipantStatus.champion
+                    champ_part.xp_earned = 500
+
+                # 2.
+                loser_id = fm.player2_id if str(fm.winner_id) == str(fm.player1_id) else fm.player1_id
+                if loser_id:
+                    second = await db.execute(
+                        select(MarathonParticipant).where(
+                            MarathonParticipant.marathon_id == marathon_id,
+                            MarathonParticipant.user_id == loser_id,
+                        )
+                    )
+                    second_part = second.scalar_one_or_none()
+                    if second_part:
+                        second_part.status = MarathonParticipantStatus.second
+                        second_part.xp_earned = 200
+
+        await db.commit()
+
+        # Podyum bilgisini çek
+        podium_result = await db.execute(
+            select(MarathonParticipant)
+            .options(selectinload(MarathonParticipant.user))
+            .where(
+                MarathonParticipant.marathon_id == marathon_id,
+                MarathonParticipant.status.in_([
+                    MarathonParticipantStatus.champion,
+                    MarathonParticipantStatus.second,
+                    MarathonParticipantStatus.third,
+                ])
+            )
+        )
+        podium = podium_result.scalars().all()
+        podium_data = []
+        for p in podium:
+            place = 1 if p.status == MarathonParticipantStatus.champion else 2 if p.status == MarathonParticipantStatus.second else 3
+            podium_data.append({
+                "username": p.user.username if p.user else "?",
+                "place": place,
+                "xp_earned": p.xp_earned,
+                "total_score": p.total_score,
+            })
+
+    await marathon_manager.broadcast(marathon_id, {
+        "type": "marathon_end",
+        "message": "Maraton sona erdi!",
+        "podium": sorted(podium_data, key=lambda x: x["place"]),
+    })
+
+
+# ─── WebSocket Handler ──────────────────────────────────────────────────────
+
+async def handle_marathon_ws(websocket: WebSocket, marathon_id: str, token: str):
+    payload = decode_token(token)
+    if not payload:
+        await websocket.close(code=4001)
+        return
+
+    user_id = payload.get("sub")
+    await marathon_manager.connect(marathon_id, user_id, websocket)
+
+    async with AsyncSessionLocal() as db:
+        result = await db.execute(select(User).where(User.id == user_id))
+        user = result.scalar_one_or_none()
+        if not user:
+            await websocket.close(code=4001)
+            return
+
+    try:
+        await websocket.send_json({
+            "type": "connected",
+            "username": user.username,
+            "marathon_id": marathon_id,
+        })
+
+        while True:
+            data = await websocket.receive_json()
+            msg_type = data.get("type")
+
+            if msg_type == "answer":
+                match_id = data.get("match_id")
+                if match_id:
+                    q = marathon_manager.get_queue(marathon_id, match_id, user_id)
+                    await q.put(data)
+
+            elif msg_type == "ping":
+                await websocket.send_json({"type": "pong"})
+
+    except WebSocketDisconnect:
+        await marathon_manager.disconnect(marathon_id, user_id)
+    except Exception as e:
+        print(f"[Marathon WS Error] {user_id}: {e}")
+        await marathon_manager.disconnect(marathon_id, user_id)

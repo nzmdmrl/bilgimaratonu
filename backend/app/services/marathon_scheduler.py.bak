@@ -1,0 +1,253 @@
+import asyncio
+from datetime import datetime, timedelta
+from sqlalchemy import select
+from app.core.database import AsyncSessionLocal
+from app.models.marathon import Marathon, MarathonStatus, MarathonParticipant, MarathonParticipantStatus
+from app.models.user import User
+import random
+
+MARATHON_INTERVAL_MINUTES = 15
+LOBBY_DURATION_SECONDS = 180   # 3 dakika lobi
+BOT_FILL_INTERVAL_SECONDS = 5  # Her 5 saniyede bot ekle
+
+
+async def get_or_create_next_marathon() -> dict:
+    """Bir sonraki maratonun ne zaman başlayacağını hesapla."""
+    from app.services.settings import get_settings
+    from app.core.database import AsyncSessionLocal
+    
+    # UTC offset ayarını çek
+    utc_offset = 3  # varsayılan Türkiye
+    try:
+        async with AsyncSessionLocal() as _db:
+            _s = await get_settings(_db, "marathon")
+            utc_offset = int(_s.get("utc_offset", 3))
+    except Exception:
+        pass
+    
+    now = datetime.utcnow()
+    local_now = now + timedelta(hours=utc_offset)
+    
+    minutes = local_now.minute
+    interval = MARATHON_INTERVAL_MINUTES
+    next_slot = ((minutes // interval) + 1) * interval
+    if next_slot >= 60:
+        next_local = local_now.replace(minute=0, second=0, microsecond=0) + timedelta(hours=1)
+    else:
+        next_local = local_now.replace(minute=next_slot, second=0, microsecond=0)
+    
+    # UTC'ye çevir
+    next_utc = next_local - timedelta(hours=utc_offset)
+    return {"next_marathon_at": next_utc.isoformat()}
+
+
+async def marathon_scheduler():
+    """
+    Ana zamanlayıcı döngüsü.
+    15 dakikada bir maraton oluşturur, lobiye açar, başlatır.
+    """
+    print("[Scheduler] Maraton zamanlayıcı başladı.")
+
+    while True:
+        try:
+            from app.services.settings_cache import get_cached_setting
+            marathon_settings = await get_cached_setting("marathon")
+            MARATHON_INTERVAL_MINUTES = marathon_settings.get("interval_minutes", 15)
+
+            now = datetime.utcnow()
+            minutes = now.minute
+            seconds = now.second
+
+            # Bir sonraki dilime kaç saniye kaldı?
+            current_slot = (minutes // MARATHON_INTERVAL_MINUTES) * MARATHON_INTERVAL_MINUTES
+            next_slot_minutes = current_slot + MARATHON_INTERVAL_MINUTES
+            if next_slot_minutes >= 60:
+                next_time = now.replace(minute=0, second=0, microsecond=0) + timedelta(hours=1)
+            else:
+                next_time = now.replace(minute=next_slot_minutes, second=0, microsecond=0)
+
+            wait_seconds = (next_time - now).total_seconds()
+            print(f"[Scheduler] Sonraki maraton: {next_time.strftime('%H:%M')} ({int(wait_seconds)}sn sonra)")
+
+            # Bir sonraki dilime kadar bekle
+            await asyncio.sleep(wait_seconds)
+
+            # Maraton oluştur
+            await create_and_run_marathon()
+
+        except Exception as e:
+            print(f"[Scheduler] Hata: {e}")
+            import traceback
+            traceback.print_exc()
+            await asyncio.sleep(60)  # Hata varsa 1 dakika bekle
+
+
+async def create_and_run_marathon():
+    """Yeni maraton oluştur, lobi aç, başlat."""
+    from app.websocket.marathon_ws import marathon_manager, run_marathon_engine
+    from app.services.settings_cache import get_cached_setting
+    
+    # Maraton modülü açık mı?
+    modules = await get_cached_setting("modules")
+    if not modules.get("marathon", True):
+        print("[Scheduler] Maraton modülü kapalı, atlanıyor.")
+        return
+
+    async with AsyncSessionLocal() as db:
+        # Zaten aktif maraton var mı?
+        existing = await db.execute(
+            select(Marathon).where(
+                Marathon.status.in_([MarathonStatus.waiting, MarathonStatus.in_progress])
+            )
+        )
+        if existing.scalar_one_or_none():
+            print("[Scheduler] Zaten aktif maraton var, atlanıyor.")
+            return
+
+        # Yeni maraton
+        marathon_settings = await get_cached_setting("marathon")
+        max_p = marathon_settings.get("max_participants", 128)
+        lobby_dur = marathon_settings.get("lobby_duration_seconds", 180)
+
+        marathon = Marathon(
+            status=MarathonStatus.waiting,
+            max_participants=max_p,
+            lobby_opens_at=datetime.utcnow(),
+        )
+        db.add(marathon)
+        await db.commit()
+        await db.refresh(marathon)
+        marathon_id = str(marathon.id)
+        print(f"[Scheduler] Yeni maraton oluşturuldu: {marathon_id}")
+
+    # Lobi dönemi — 2 dakika
+    # Bu sürede insanlar katılabilir, botlar yavaş yavaş eklenir
+    lobby_start = datetime.utcnow()
+    bot_fill_task = asyncio.ensure_future(
+        gradual_bot_fill(marathon_id, lobby_start)
+    )
+
+    # Lobi süresini bekle — ama 128 dolunca 10sn sonra başlat
+    max_wait = lobby_dur if "lobby_dur" in dir() else LOBBY_DURATION_SECONDS
+    elapsed = 0
+    while elapsed < max_wait:
+        await asyncio.sleep(5)
+        elapsed += 5
+        async with AsyncSessionLocal() as _check_db:
+            from app.models.marathon import MarathonParticipant as _MP
+            _count = await _check_db.execute(
+                select(_MP).where(_MP.marathon_id == marathon_id)
+            )
+            if len(_count.scalars().all()) >= max_p:
+                # 5 saniye geri sayım bildirimi
+                from app.websocket.marathon_ws import marathon_manager
+                for i in range(5, 0, -1):
+                    await marathon_manager.broadcast(marathon_id, {
+                        "type": "countdown",
+                        "seconds": i,
+                        "message": f"Maraton {i} saniye içinde başlıyor!"
+                    })
+                    await asyncio.sleep(1)
+                break
+    bot_fill_task.cancel()
+
+    # Başlatmadan önce 128'e tamamla
+    async with AsyncSessionLocal() as db:
+        from app.models.marathon import MarathonParticipant, MarathonParticipantStatus
+        from app.models.user import User
+        parts = await db.execute(
+            select(MarathonParticipant).where(MarathonParticipant.marathon_id == marathon_id)
+        )
+        current = parts.scalars().all()
+        current_ids = {str(p.user_id) for p in current}
+        needed = max_p - len(current)
+
+        if needed > 0:
+            bots = await db.execute(
+                select(User).where(
+                    User.is_bot == True,
+                    User.is_active == True,
+                    User.id.notin_(current_ids),
+                ).limit(needed)
+            )
+            for bot in bots.scalars().all():
+                db.add(MarathonParticipant(
+                    marathon_id=marathon_id,
+                    user_id=str(bot.id),
+                    status=MarathonParticipantStatus.active,
+                ))
+            await db.commit()
+            print(f"[Scheduler] Son {needed} bot eklendi, toplam {max_p}")
+
+    # Maraton motorunu başlat
+    print(f"[Scheduler] Maraton başlatılıyor: {marathon_id}")
+    asyncio.ensure_future(run_marathon_engine(marathon_id))
+
+
+async def gradual_bot_fill(marathon_id: str, lobby_start: datetime):
+    """
+    Lobi süresince yavaş yavaş bot ekle.
+    İnsan gelirse bot çıkar, insan ekle.
+    """
+    print(f"[BotFill] {marathon_id} için bot doldurma başladı.")
+
+    while True:
+        try:
+            await asyncio.sleep(BOT_FILL_INTERVAL_SECONDS)
+
+            async with AsyncSessionLocal() as db:
+                # Mevcut katılımcı sayısı
+                result = await db.execute(
+                    select(MarathonParticipant).where(
+                        MarathonParticipant.marathon_id == marathon_id
+                    )
+                )
+                participants = result.scalars().all()
+                current_count = len(participants)
+                current_ids = {str(p.user_id) for p in participants}
+
+                marathon_result = await db.execute(
+                    select(Marathon).where(Marathon.id == marathon_id)
+                )
+                marathon = marathon_result.scalar_one_or_none()
+                if not marathon or marathon.status != MarathonStatus.waiting:
+                    break
+
+                needed = marathon.max_participants - current_count
+                if needed <= 0:
+                    break
+
+                # Kaç bot ekleyeceğiz? Zamanla artan oranda
+                elapsed = (datetime.utcnow() - lobby_start).total_seconds()
+                fill_rate = min(int(elapsed / 5) + 5, needed, 20)  # Her 5sn +5 bot, max 20
+
+                # Bot çek
+                bots_result = await db.execute(
+                    select(User).where(
+                        User.is_bot == True,
+                        User.is_active == True,
+                        User.id.notin_([p for p in current_ids]),
+                    ).order_by(User.elo_rating).limit(fill_rate * 2)
+                )
+                available_bots = bots_result.scalars().all()
+
+                if not available_bots:
+                    continue
+
+                selected = random.sample(available_bots, min(fill_rate, len(available_bots)))
+                for bot in selected:
+                    db.add(MarathonParticipant(
+                        marathon_id=marathon_id,
+                        user_id=str(bot.id),
+                        status=MarathonParticipantStatus.active,
+                    ))
+                    current_count += 1
+
+                await db.commit()
+                print(f"[BotFill] {current_count}/128 katılımcı")
+
+        except asyncio.CancelledError:
+            break
+        except Exception as e:
+            print(f"[BotFill] Hata: {e}")
+            await asyncio.sleep(5)

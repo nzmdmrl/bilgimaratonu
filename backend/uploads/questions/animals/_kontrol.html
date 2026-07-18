@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>Hayvan Kontrol</title>
+<style>
+body{font-family:system-ui,sans-serif;background:#1a1a2e;color:#eee;padding:20px}
+h1{color:#FFD700}
+.info{background:rgba(255,255,255,.06);padding:12px;border-radius:8px;margin-bottom:20px;font-size:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+.card{background:rgba(255,255,255,.05);border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,.1)}
+.card img{width:100%;height:150px;object-fit:cover;display:block;background:#333}
+.card .name{padding:8px;font-weight:600;font-size:14px}
+.card .slug{padding:0 8px 8px;font-size:11px;color:#888;font-family:monospace}
+</style></head><body>
+<h1>Hayvan Gorselleri Kontrol</h1>
+<div class="info">
+Toplam: <b>109</b> hayvan.
+Yanlis/kotu olanlarin <b>slug</b> degerini not al (gri yazi).
+</div>
+<div class="grid">
+<div class="card"><img src="aslan.jpg" alt="Aslan"><div class="name">Aslan</div><div class="slug">aslan</div></div>
+<div class="card"><img src="kaplan.jpg" alt="Kaplan"><div class="name">Kaplan</div><div class="slug">kaplan</div></div>
+<div class="card"><img src="fil.jpg" alt="Fil"><div class="name">Fil</div><div class="slug">fil</div></div>
+<div class="card"><img src="zurafa.jpg" alt="Zürafa"><div class="name">Zürafa</div><div class="slug">zurafa</div></div>
+<div class="card"><img src="zebra.jpg" alt="Zebra"><div class="name">Zebra</div><div class="slug">zebra</div></div>
+<div class="card"><img src="panda.jpg" alt="Panda"><div class="name">Panda</div><div class="slug">panda</div></div>
+<div class="card"><img src="kanguru.jpg" alt="Kanguru"><div class="name">Kanguru</div><div class="slug">kanguru</div></div>
+<div class="card"><img src="penguen.jpg" alt="Penguen"><div class="name">Penguen</div><div class="slug">penguen</div></div>
+<div class="card"><img src="yunus.jpg" alt="Yunus"><div class="name">Yunus</div><div class="slug">yunus</div></div>
+<div class="card"><img src="balina.jpg" alt="Balina"><div class="name">Balina</div><div class="slug">balina</div></div>
+<div class="card"><img src="kopekbaligi.jpg" alt="Köpekbalığı"><div class="name">Köpekbalığı</div><div class="slug">kopekbaligi</div></div>
+<div class="card"><img src="ahtapot.jpg" alt="Ahtapot"><div class="name">Ahtapot</div><div class="slug">ahtapot</div></div>
+<div class="card"><img src="kaplumbaga.jpg" alt="Kaplumbağa"><div class="name">Kaplumbağa</div><div class="slug">kaplumbaga</div></div>
+<div class="card"><img src="timsah.jpg" alt="Timsah"><div class="name">Timsah</div><div class="slug">timsah</div></div>
+<div class="card"><img src="yilan.jpg" alt="Yılan"><div class="name">Yılan</div><div class="slug">yilan</div></div>
+<div class="card"><img src="kertenkele.jpg" alt="Kertenkele"><div class="name">Kertenkele</div><div class="slug">kertenkele</div></div>
+<div class="card"><img src="kurbaga.jpg" alt="Kurbağa"><div class="name">Kurbağa</div><div class="slug">kurbaga</div></div>
+<div class="card"><img src="bukalemun.jpg" alt="Bukalemun"><div class="name">Bukalemun</div><div class="slug">bukalemun</div></div>
+<div class="card"><img src="kartal.jpg" alt="Kartal"><div class="name">Kartal</div><div class="slug">kartal</div></div>
+<div class="card"><img src="baykus.jpg" alt="Baykuş"><div class="name">Baykuş</div><div class="slug">baykus</div></div>
+<div class="card"><img src="flamingo.jpg" alt="Flamingo"><div class="name">Flamingo</div><div class="slug">flamingo</div></div>
+<div class="card"><img src="tavuskusu.jpg" alt="Tavus Kuşu"><div class="name">Tavus Kuşu</div><div class="slug">tavuskusu</div></div>
+<div class="card"><img src="papagan.jpg" alt="Papağan"><div class="name">Papağan</div><div class="slug">papagan</div></div>
+<div class="card"><img src="pelikan.jpg" alt="Pelikan"><div class="name">Pelikan</div><div class="slug">pelikan</div></div>
+<div class="card"><img src="leylek.jpg" alt="Leylek"><div class="name">Leylek</div><div class="slug">leylek</div></div>
+<div class="card"><img src="kuzgun.jpg" alt="Kuzgun"><div class="name">Kuzgun</div><div class="slug">kuzgun</div></div>
+<div class="card"><img src="sahin.jpg" alt="Şahin"><div class="name">Şahin</div><div class="slug">sahin</div></div>
+<div class="card"><img src="devekusu.jpg" alt="Devekuşu"><div class="name">Devekuşu</div><div class="slug">devekusu</div></div>
+<div class="card"><img src="kugu.jpg" alt="Kuğu"><div class="name">Kuğu</div><div class="slug">kugu</div></div>
+<div class="card"><img src="marti.jpg" alt="Martı"><div class="name">Martı</div><div class="slug">marti</div></div>
+<div class="card"><img src="kedi.jpg" alt="Kedi"><div class="name">Kedi</div><div class="slug">kedi</div></div>
+<div class="card"><img src="kopek.jpg" alt="Köpek"><div class="name">Köpek</div><div class="slug">kopek</div></div>
+<div class="card"><img src="at.jpg" alt="At"><div class="name">At</div><div class="slug">at</div></div>
+<div class="card"><img src="inek.jpg" alt="İnek"><div class="name">İnek</div><div class="slug">inek</div></div>
+<div class="card"><img src="koyun.jpg" alt="Koyun"><div class="name">Koyun</div><div class="slug">koyun</div></div>
+<div class="card"><img src="keci.jpg" alt="Keçi"><div class="name">Keçi</div><div class="slug">keci</div></div>
+<div class="card"><img src="domuz.jpg" alt="Domuz"><div class="name">Domuz</div><div class="slug">domuz</div></div>
+<div class="card"><img src="tavsan.jpg" alt="Tavşan"><div class="name">Tavşan</div><div class="slug">tavsan</div></div>
+<div class="card"><img src="fare.jpg" alt="Fare"><div class="name">Fare</div><div class="slug">fare</div></div>
+<div class="card"><img src="sincap.jpg" alt="Sincap"><div class="name">Sincap</div><div class="slug">sincap</div></div>
+<div class="card"><img src="tilki.jpg" alt="Tilki"><div class="name">Tilki</div><div class="slug">tilki</div></div>
+<div class="card"><img src="kurt.jpg" alt="Kurt"><div class="name">Kurt</div><div class="slug">kurt</div></div>
+<div class="card"><img src="ayi.jpg" alt="Ayı"><div class="name">Ayı</div><div class="slug">ayi</div></div>
+<div class="card"><img src="kutup_ayisi.jpg" alt="Kutup Ayısı"><div class="name">Kutup Ayısı</div><div class="slug">kutup_ayisi</div></div>
+<div class="card"><img src="geyik.jpg" alt="Geyik"><div class="name">Geyik</div><div class="slug">geyik</div></div>
+<div class="card"><img src="karaca.jpg" alt="Karaca"><div class="name">Karaca</div><div class="slug">karaca</div></div>
+<div class="card"><img src="yaban_domuzu.jpg" alt="Yaban Domuzu"><div class="name">Yaban Domuzu</div><div class="slug">yaban_domuzu</div></div>
+<div class="card"><img src="rakun.jpg" alt="Rakun"><div class="name">Rakun</div><div class="slug">rakun</div></div>
+<div class="card"><img src="kirpi.jpg" alt="Kirpi"><div class="name">Kirpi</div><div class="slug">kirpi</div></div>
+<div class="card"><img src="kunduz.jpg" alt="Kunduz"><div class="name">Kunduz</div><div class="slug">kunduz</div></div>
+<div class="card"><img src="su_samuru.jpg" alt="Su Samuru"><div class="name">Su Samuru</div><div class="slug">su_samuru</div></div>
+<div class="card"><img src="gelincik.jpg" alt="Gelincik"><div class="name">Gelincik</div><div class="slug">gelincik</div></div>
+<div class="card"><img src="maymun.jpg" alt="Maymun"><div class="name">Maymun</div><div class="slug">maymun</div></div>
+<div class="card"><img src="goril.jpg" alt="Goril"><div class="name">Goril</div><div class="slug">goril</div></div>
+<div class="card"><img src="sempanze.jpg" alt="Şempanze"><div class="name">Şempanze</div><div class="slug">sempanze</div></div>
+<div class="card"><img src="orangutan.jpg" alt="Orangutan"><div class="name">Orangutan</div><div class="slug">orangutan</div></div>
+<div class="card"><img src="lemur.jpg" alt="Lemur"><div class="name">Lemur</div><div class="slug">lemur</div></div>
+<div class="card"><img src="deve.jpg" alt="Deve"><div class="name">Deve</div><div class="slug">deve</div></div>
+<div class="card"><img src="lama.jpg" alt="Lama"><div class="name">Lama</div><div class="slug">lama</div></div>
+<div class="card"><img src="alpaka.jpg" alt="Alpaka"><div class="name">Alpaka</div><div class="slug">alpaka</div></div>
+<div class="card"><img src="gergedan.jpg" alt="Gergedan"><div class="name">Gergedan</div><div class="slug">gergedan</div></div>
+<div class="card"><img src="sugygiri.jpg" alt="Su Aygırı"><div class="name">Su Aygırı</div><div class="slug">sugygiri</div></div>
+<div class="card"><img src="cita.jpg" alt="Çita"><div class="name">Çita</div><div class="slug">cita</div></div>
+<div class="card"><img src="leopar.jpg" alt="Leopar"><div class="name">Leopar</div><div class="slug">leopar</div></div>
+<div class="card"><img src="jaguar.jpg" alt="Jaguar"><div class="name">Jaguar</div><div class="slug">jaguar</div></div>
+<div class="card"><img src="puma.jpg" alt="Puma"><div class="name">Puma</div><div class="slug">puma</div></div>
+<div class="card"><img src="vasak.jpg" alt="Vaşak"><div class="name">Vaşak</div><div class="slug">vasak</div></div>
+<div class="card"><img src="sirtlan.jpg" alt="Sırtlan"><div class="name">Sırtlan</div><div class="slug">sirtlan</div></div>
+<div class="card"><img src="cakal.jpg" alt="Çakal"><div class="name">Çakal</div><div class="slug">cakal</div></div>
+<div class="card"><img src="antilop.jpg" alt="Antilop"><div class="name">Antilop</div><div class="slug">antilop</div></div>
+<div class="card"><img src="bizon.jpg" alt="Bizon"><div class="name">Bizon</div><div class="slug">bizon</div></div>
+<div class="card"><img src="manda.jpg" alt="Manda"><div class="name">Manda</div><div class="slug">manda</div></div>
+<div class="card"><img src="yak.jpg" alt="Yak"><div class="name">Yak</div><div class="slug">yak</div></div>
+<div class="card"><img src="koala.jpg" alt="Koala"><div class="name">Koala</div><div class="slug">koala</div></div>
+<div class="card"><img src="tembel_hayvan.jpg" alt="Tembel Hayvan"><div class="name">Tembel Hayvan</div><div class="slug">tembel_hayvan</div></div>
+<div class="card"><img src="karincayiyen.jpg" alt="Karıncayiyen"><div class="name">Karıncayiyen</div><div class="slug">karincayiyen</div></div>
+<div class="card"><img src="armadillo.jpg" alt="Armadillo"><div class="name">Armadillo</div><div class="slug">armadillo</div></div>
+<div class="card"><img src="yarasa.jpg" alt="Yarasa"><div class="name">Yarasa</div><div class="slug">yarasa</div></div>
+<div class="card"><img src="porsuk.jpg" alt="Porsuk"><div class="name">Porsuk</div><div class="slug">porsuk</div></div>
+<div class="card"><img src="fok.jpg" alt="Fok"><div class="name">Fok</div><div class="slug">fok</div></div>
+<div class="card"><img src="mors.jpg" alt="Mors"><div class="name">Mors</div><div class="slug">mors</div></div>
+<div class="card"><img src="deniz_ati.jpg" alt="Deniz Atı"><div class="name">Deniz Atı</div><div class="slug">deniz_ati</div></div>
+<div class="card"><img src="denizyildizi.jpg" alt="Denizyıldızı"><div class="name">Denizyıldızı</div><div class="slug">denizyildizi</div></div>
+<div class="card"><img src="yengec.jpg" alt="Yengeç"><div class="name">Yengeç</div><div class="slug">yengec</div></div>
+<div class="card"><img src="istakoz.jpg" alt="Istakoz"><div class="name">Istakoz</div><div class="slug">istakoz</div></div>
+<div class="card"><img src="medusa.jpg" alt="Denizanası"><div class="name">Denizanası</div><div class="slug">medusa</div></div>
+<div class="card"><img src="mercan.jpg" alt="Mercan"><div class="name">Mercan</div><div class="slug">mercan</div></div>
+<div class="card"><img src="kelebek.jpg" alt="Kelebek"><div class="name">Kelebek</div><div class="slug">kelebek</div></div>
+<div class="card"><img src="ari.jpg" alt="Arı"><div class="name">Arı</div><div class="slug">ari</div></div>
+<div class="card"><img src="karinca.jpg" alt="Karınca"><div class="name">Karınca</div><div class="slug">karinca</div></div>
+<div class="card"><img src="orumcek.jpg" alt="Örümcek"><div class="name">Örümcek</div><div class="slug">orumcek</div></div>
+<div class="card"><img src="akrep.jpg" alt="Akrep"><div class="name">Akrep</div><div class="slug">akrep</div></div>
+<div class="card"><img src="yusufcuk.jpg" alt="Yusufçuk"><div class="name">Yusufçuk</div><div class="slug">yusufcuk</div></div>
+<div class="card"><img src="ugurbocegi.jpg" alt="Uğur Böceği"><div class="name">Uğur Böceği</div><div class="slug">ugurbocegi</div></div>
+<div class="card"><img src="cekirge.jpg" alt="Çekirge"><div class="name">Çekirge</div><div class="slug">cekirge</div></div>
+<div class="card"><img src="salyangoz.jpg" alt="Salyangoz"><div class="name">Salyangoz</div><div class="slug">salyangoz</div></div>
+<div class="card"><img src="solucan.jpg" alt="Solucan"><div class="name">Solucan</div><div class="slug">solucan</div></div>
+<div class="card"><img src="tavuk.jpg" alt="Tavuk"><div class="name">Tavuk</div><div class="slug">tavuk</div></div>
+<div class="card"><img src="horoz.jpg" alt="Horoz"><div class="name">Horoz</div><div class="slug">horoz</div></div>
+<div class="card"><img src="ordek.jpg" alt="Ördek"><div class="name">Ördek</div><div class="slug">ordek</div></div>
+<div class="card"><img src="kaz.jpg" alt="Kaz"><div class="name">Kaz</div><div class="slug">kaz</div></div>
+<div class="card"><img src="hindi.jpg" alt="Hindi"><div class="name">Hindi</div><div class="slug">hindi</div></div>
+<div class="card"><img src="guvercin.jpg" alt="Güvercin"><div class="name">Güvercin</div><div class="slug">guvercin</div></div>
+<div class="card"><img src="serce.jpg" alt="Serçe"><div class="name">Serçe</div><div class="slug">serce</div></div>
+<div class="card"><img src="kirlangic.jpg" alt="Kırlangıç"><div class="name">Kırlangıç</div><div class="slug">kirlangic</div></div>
+<div class="card"><img src="agackakan.jpg" alt="Ağaçkakan"><div class="name">Ağaçkakan</div><div class="slug">agackakan</div></div>
+<div class="card"><img src="sinekkus.jpg" alt="Sinek Kuşu"><div class="name">Sinek Kuşu</div><div class="slug">sinekkus</div></div>
+<div class="card"><img src="tukan.jpg" alt="Tukan"><div class="name">Tukan</div><div class="slug">tukan</div></div>
+<div class="card"><img src="pengueni.jpg" alt="İmparator Pengueni"><div class="name">İmparator Pengueni</div><div class="slug">pengueni</div></div>
+</div></body></html>

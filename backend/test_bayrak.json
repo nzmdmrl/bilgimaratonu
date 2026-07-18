@@ -1,0 +1,5 @@
+[
+  {"kategori":"Ülke Bayrakları","zorluk":"easy","gorsel":"/uploads/questions/flags/tr.png","soru":"Bu hangi ülkenin bayrağıdır?","a":"Türkiye","b":"Tunus","c":"Fas","d":"Azerbaycan","dogru":"A","aciklama":"Kırmızı zemin üzerinde ay-yıldız — Türkiye bayrağı."},
+  {"kategori":"Ülke Bayrakları","zorluk":"easy","gorsel":"/uploads/questions/flags/jp.png","soru":"Bu hangi ülkenin bayrağıdır?","a":"Çin","b":"Japonya","c":"Güney Kore","d":"Vietnam","dogru":"B","aciklama":"Beyaz zemin üzerinde kırmızı daire — Japonya bayrağı."},
+  {"kategori":"Ülke Bayrakları","zorluk":"medium","gorsel":"/uploads/questions/flags/br.png","soru":"Bu hangi ülkenin bayrağıdır?","a":"Arjantin","b":"Kolombiya","c":"Brezilya","d":"Meksika","dogru":"C","aciklama":"Yeşil zemin, sarı eşkenar dörtgen, mavi küre — Brezilya."}
+]

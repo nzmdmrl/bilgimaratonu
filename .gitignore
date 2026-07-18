@@ -1,0 +1,45 @@
+# Ortam degiskenleri / sifreler - ASLA yuklenmez
+.env
+.env.*
+*/.env
+*/.env.*
+backend/.env
+frontend/.env
+mobile/.env
+
+# Python
+venv/
+*/venv/
+__pycache__/
+*/__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# Node / Next.js
+node_modules/
+*/node_modules/
+.next/
+*/.next/
+out/
+build/
+dist/
+
+# Mobile
+mobile/node_modules/
+*.apk
+*.ipa
+
+# Veritabani dumplari
+*.sql
+*.sqlite
+*.db
+
+# Sistem / editor
+.DS_Store
+*.log
+.vscode/
+.idea/
+
+# Yedekler
+yedek/

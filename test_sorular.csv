@@ -1,0 +1,7 @@
+kategori,zorluk,soru_tipi,soru_metni,sik_a,sik_b,sik_c,sik_d,dogru_cevap,aciklama
+Tarih,kolay,coktan_secmeli,Türkiye Cumhuriyeti hangi yıl kurulmuştur?,1920,1922,1923,1924,C,Türkiye Cumhuriyeti 29 Ekim 1923'te ilan edilmiştir.
+Coğrafya,kolay,coktan_secmeli,Türkiye'nin başkenti hangisidir?,İstanbul,Ankara,İzmir,Bursa,B,Ankara 1923'ten beri Türkiye'nin başkentidir.
+Matematik,kolay,coktan_secmeli,15 x 8 kaç eder?,100,110,120,130,C,15 x 8 = 120
+Bilim,kolay,dogru_yanlis,Işık ses'ten hızlıdır.,Doğru,Yanlış,,,A,Işık hızı saniyede 300.000 km iken ses hızı saniyede 340 metredir.
+Spor,kolay,coktan_secmeli,FIFA Dünya Kupası kaç yılda bir düzenlenir?,2,4,6,8,B,FIFA Dünya Kupası her 4 yılda bir düzenlenir.
+Gündem,kolay,coktan_secmeli,1 dolar kaç TL'dir? (Örnek),35,40,45,50,C,Bu soru admin tarafından güncellenir.
