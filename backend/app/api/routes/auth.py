@@ -135,7 +135,7 @@ async def google_login(req: GoogleLoginRequest, db: AsyncSession = Depends(get_d
     from google.oauth2 import id_token
     from google.auth.transport import requests as grequests
 
-    GOOGLE_CLIENT_ID = "333092245094-ln0d8r2t3i1rs0p81db5ub9haala3e2d.apps.googleusercontent.com"
+    GOOGLE_CLIENT_ID = "567100837956-svlujc1p8tskl8j49p9gnu43hg1l2e7j.apps.googleusercontent.com"
 
     try:
         idinfo = id_token.verify_oauth2_token(req.token, grequests.Request(), GOOGLE_CLIENT_ID)

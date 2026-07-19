@@ -134,7 +134,7 @@ export default function KayitPage() {
               <div className="flex-grow border-t border-gray-700"></div>
             </div>
             <div id="g_id_onload"
-              data-client_id="333092245094-ln0d8r2t3i1rs0p81db5ub9haala3e2d.apps.googleusercontent.com"
+              data-client_id="567100837956-svlujc1p8tskl8j49p9gnu43hg1l2e7j.apps.googleusercontent.com"
               data-callback="handleGoogleLogin"
               data-auto_prompt="false">
             </div>
