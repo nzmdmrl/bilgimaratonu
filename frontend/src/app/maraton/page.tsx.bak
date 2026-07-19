@@ -1,0 +1,629 @@
+'use client'
+import { useEffect, useState, useRef } from 'react'
+import { useAuthStore } from '@/lib/store'
+import api from '@/lib/api'
+import Link from 'next/link'
+
+// ─── Tipler ──────────────────────────────────────────────────────────────────
+
+interface MarathonInfo {
+  id: string
+  status: string
+  max_participants: number
+  current_participants: number
+  lobby_opens_at: string | null
+}
+
+interface Participant {
+  username: string
+  status: string
+  total_score: number
+  eliminated_at_round: number | null
+  is_bot: boolean
+  elo?: number
+  xp?: number
+}
+
+interface Question {
+  id: string
+  text: string
+  difficulty: string
+  category_name: string
+  option_a: string
+  option_b: string
+  option_c: string | null
+  option_d: string | null
+  time_limit: number
+  index: number
+  total: number
+}
+
+const DIFF_COLORS: Record<string, string> = {
+  easy: '#4CAF50', medium: '#FFC107', hard: '#FF7043', very_hard: '#E91E63'
+}
+const DIFF_LABELS: Record<string, string> = {
+  easy: 'Kolay', medium: 'Orta', hard: 'Zor', very_hard: 'Çok Zor'
+}
+
+// ─── Ana Bileşen ─────────────────────────────────────────────────────────────
+
+export default function MaratonPage() {
+  const { user, fetchMe } = useAuthStore()
+  const wsRef = useRef<WebSocket | null>(null)
+  const timerRef = useRef<NodeJS.Timeout | null>(null)
+  const matchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const pollRef = useRef<NodeJS.Timeout | null>(null)
+  const countdownRef = useRef<NodeJS.Timeout | null>(null)
+
+  // ─ Genel durum
+  const [marathon, setMarathon] = useState<MarathonInfo | null>(null)
+  const [nextTime, setNextTime] = useState<string>('')
+  const [countdown, setCountdown] = useState('')
+  const [joined, setJoined] = useState(false)
+  const [statusMsg, setStatusMsg] = useState('')
+
+  // ─ Lobi
+  const [participants, setParticipants] = useState<Participant[]>([])
+  const [roundNum, setRoundNum] = useState(0)
+  const [roundLabel, setRoundLabel] = useState('')
+  const [activeCount, setActiveCount] = useState(0)
+  const [myOpponent, setMyOpponent] = useState('')
+  const [matchId, setMatchId] = useState<string | null>(null)
+
+  // ─ Maç (modal)
+  const [showMatch, setShowMatch] = useState(false)
+  const [question, setQuestion] = useState<Question | null>(null)
+  const [myScore, setMyScore] = useState(0)
+  const [oppScore, setOppScore] = useState(0)
+  const [timeLeft, setTimeLeft] = useState(30)
+  const [maxTime, setMaxTime] = useState(30)
+  const [myAnswer, setMyAnswer] = useState<string | null>(null)
+  const [correctAnswer, setCorrectAnswer] = useState<string | null>(null)
+  const [oppWrong, setOppWrong] = useState<string | null>(null)
+  const [canAnswer, setCanAnswer] = useState(true)
+  const [matchWon, setMatchWon] = useState<boolean | null>(null)
+  const [myFinalScore, setMyFinalScore] = useState(0)
+  const [oppFinalScore, setOppFinalScore] = useState(0)
+  const [showMatchResult, setShowMatchResult] = useState(false)
+
+  // ─ Podyum
+  const [showPodium, setShowPodium] = useState(false)
+  const [podium, setPodium] = useState<any[]>([])
+
+  // ─ Elendi
+  const [eliminated, setEliminated] = useState(false)
+
+  useEffect(() => {
+    fetchMe()
+    init()
+    return () => {
+      if (pollRef.current) clearInterval(pollRef.current)
+      if (countdownRef.current) clearInterval(countdownRef.current)
+      if (wsRef.current) wsRef.current.close()
+    }
+  }, [])
+
+  const init = async () => {
+    try {
+      // Maraton modülü açık mı?
+      const pubSettings = await api.get('/api/admin/settings/public')
+      if (!pubSettings.data.modules?.marathon) {
+        setStatusMsg('⛔ Maraton şu an kapalı.')
+        return
+      }
+      const r = await api.get('/api/marathon/active')
+      if (r.data.marathon) {
+        setMarathon(r.data.marathon)
+        // Katılımcı mıyım?
+        const pRes = await api.get(`/api/marathon/${r.data.marathon.id}/participants`)
+        setParticipants(pRes.data.participants)
+        const me = pRes.data.participants.find((p: any) => p.username === useAuthStore.getState().user?.username)
+        if (me) {
+          setJoined(true)
+          if (!wsRef.current || wsRef.current.readyState === WebSocket.CLOSED) {
+            connectWS(r.data.marathon.id)
+          }
+          // in_progress ise polling yok, sadece WS
+          if (r.data.marathon.status !== 'in_progress') {
+            startLobbyPoll(r.data.marathon.id)
+          }
+        } else {
+          // Katılımcı değilsem sadece lobi polling
+          startLobbyPoll(r.data.marathon.id)
+        }
+      } else {
+        const nr = await api.get('/api/marathon/next')
+        const target = new Date(nr.data.next_marathon_at + 'Z')
+        setNextTime(target.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }))
+        startCountdown(target)
+        // 30sn'de bir tekrar kontrol
+        pollRef.current = setInterval(init, 30000)
+      }
+    } catch {}
+  }
+
+  const startCountdown = (target: Date) => {
+    if (countdownRef.current) clearInterval(countdownRef.current)
+    countdownRef.current = setInterval(() => {
+      const diff = target.getTime() - Date.now()
+      if (diff <= 0) {
+        clearInterval(countdownRef.current!)
+        setCountdown('00:00')
+        init()
+        return
+      }
+      const m = Math.floor(diff / 60000)
+      const s = Math.floor((diff % 60000) / 1000)
+      setCountdown(`${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`)
+    }, 1000)
+  }
+
+  const startLobbyPoll = (marathonId: string) => {
+    if (pollRef.current) clearInterval(pollRef.current)
+    const fetch = async () => {
+      try {
+        const r = await api.get(`/api/marathon/${marathonId}/participants`)
+        setParticipants(r.data.participants)
+        setMarathon(prev => prev ? { ...prev, current_participants: r.data.participants.length } : prev)
+      } catch {}
+    }
+    fetch()
+    pollRef.current = setInterval(fetch, 30000)
+  }
+
+  const joinMarathon = async () => {
+    if (!marathon) return
+    try {
+      await api.post(`/api/marathon/${marathon.id}/join`)
+      setJoined(true)
+      connectWS(marathon.id)
+      const r = await api.get(`/api/marathon/${marathon.id}/participants`)
+      setParticipants(r.data.participants)
+    } catch (e: any) {
+      setStatusMsg(e.response?.data?.detail || 'Hata')
+    }
+  }
+
+  const connectWS = (marathonId: string) => {
+    if (wsRef.current) wsRef.current.close()
+    const token = localStorage.getItem('access_token')
+    if (!token) return
+    const ws = new WebSocket(`wss://api.bilgimaratonu.com/api/marathon/${marathonId}/ws?token=${token}`)
+    wsRef.current = ws
+    ws.onmessage = e => handleMsg(JSON.parse(e.data))
+    ws.onclose = () => setStatusMsg('Bağlantı kesildi')
+  }
+
+  // ─── WebSocket Mesajları ─────────────────────────────────────────────────
+
+  const handleMsg = (msg: any) => {
+    switch (msg.type) {
+
+      case 'connected':
+        setStatusMsg('✓ Bağlandı')
+        break
+
+      case 'marathon_started':
+        setStatusMsg('🏁 Maraton başlıyor!')
+        break
+
+      case 'countdown':
+        setStatusMsg(`🚀 Maraton ${msg.seconds} saniye içinde başlıyor!`)
+        break
+
+      case 'round_start':
+        setRoundNum(msg.round)
+        setRoundLabel(msg.round_label)
+        setActiveCount(msg.active_count)
+        setShowMatch(false)
+        setShowMatchResult(false)
+        setStatusMsg(`⚔️ ${msg.round_label} — ${msg.active_count} kişi`)
+        break
+
+      case 'match_start':
+        setMatchId(msg.match_id)
+        setMyOpponent(msg.opponent)
+        setMyScore(0)
+        setOppScore(0)
+        setMyAnswer(null)
+        setCorrectAnswer(null)
+        setOppWrong(null)
+        setCanAnswer(true)
+        setShowMatchResult(false)
+        setMatchWon(null)
+        setEliminated(false)
+        // Önceki timeout'ları temizle ve lobi göster, 3sn sonra maça geç
+        setShowMatch(false)
+        setStatusMsg(`🎯 Rakibiniz: ${msg.opponent} — Maç başlıyor...`)
+        if (matchTimeoutRef.current) clearTimeout(matchTimeoutRef.current)
+        matchTimeoutRef.current = setTimeout(() => setShowMatch(true), 3000)
+        break
+
+      case 'question':
+        setQuestion(msg.question)
+        setMyAnswer(null)
+        setCorrectAnswer(null)
+        setOppWrong(null)
+        setCanAnswer(true)
+        setMyScore(msg.scores?.me ?? 0)
+        setOppScore(msg.scores?.opponent ?? 0)
+        startTimer(msg.question.time_limit)
+        break
+
+      case 'answer_result':
+        if (msg.is_correct) {
+          stopTimer()
+          setCorrectAnswer(msg.correct_answer)
+          setMyScore(msg.scores?.me ?? 0)
+        } else {
+          setCanAnswer(false)
+          setMyScore(msg.scores?.me ?? 0)
+          setCorrectAnswer('__wrong__')
+        }
+        break
+
+      case 'opponent_correct':
+        stopTimer()
+        setCorrectAnswer(msg.correct_answer)
+        setOppScore(msg.scores?.opponent ?? 0)
+        setCanAnswer(false)
+        break
+
+      case 'opponent_wrong':
+        setOppWrong(msg.wrong_answer)
+        setMyAnswer(null)
+        setCorrectAnswer(null)
+        setCanAnswer(true)
+        setOppScore(msg.scores?.opponent ?? 0)
+        if (msg.remaining_time) { stopTimer(); startTimer(msg.remaining_time) }
+        break
+
+      case 'both_wrong':
+        stopTimer()
+        setCorrectAnswer(msg.correct_answer)
+        setCanAnswer(false)
+        break
+
+      case 'match_end':
+        stopTimer()
+        setMatchWon(msg.won)
+        setMyFinalScore(msg.my_score)
+        setOppFinalScore(msg.opponent_score)
+        setShowMatchResult(true)
+        if (!msg.won) setEliminated(true)
+        // 4sn sonra lobi
+        if (matchTimeoutRef.current) clearTimeout(matchTimeoutRef.current)
+        matchTimeoutRef.current = setTimeout(() => {
+          setShowMatch(false)
+          setShowMatchResult(false)
+          if (!msg.won) {
+            setStatusMsg('❌ Elendi. Lobiden diğer maçları izleyebilirsiniz.')
+          } else {
+            setStatusMsg('✅ Kazandın! Sonraki tur bekleniyor...')
+          }
+        }, 4000)
+        break
+
+      case 'round_end':
+        // Katılımcı listesini güncelle
+        if (msg.participants) setParticipants(msg.participants)
+        setActiveCount(msg.remaining)
+        setStatusMsg(`Tur ${msg.round} bitti. ${msg.remaining} kişi kaldı.`)
+        break
+
+      case 'marathon_end':
+        if (pollRef.current) clearInterval(pollRef.current)
+        if (msg.podium) setPodium(msg.podium)
+        setShowPodium(true)
+        setShowMatch(false)
+        break
+    }
+  }
+
+  // ─── Timer ────────────────────────────────────────────────────────────────
+
+  const startTimer = (secs: number) => {
+    if (timerRef.current) clearInterval(timerRef.current)
+    setMaxTime(secs)
+    setTimeLeft(secs)
+    timerRef.current = setInterval(() => {
+      setTimeLeft(t => { if (t <= 1) { clearInterval(timerRef.current!); return 0 } return t - 1 })
+    }, 1000)
+  }
+
+  const stopTimer = () => { if (timerRef.current) clearInterval(timerRef.current) }
+
+  // ─── Cevap ────────────────────────────────────────────────────────────────
+
+  const sendAnswer = (answer: string) => {
+    if (!question || !wsRef.current || myAnswer || !canAnswer || oppWrong === answer) return
+    setMyAnswer(answer)
+    wsRef.current.send(JSON.stringify({ type: 'answer', match_id: matchId, question_id: question.id, answer }))
+  }
+
+  const getOptionStyle = (label: string) => {
+    const isOppWrong = oppWrong === label
+    const isMine = myAnswer === label
+    const isCorrect = correctAnswer === label && correctAnswer !== '__wrong__'
+    const isMyWrong = isMine && (correctAnswer === '__wrong__' || (correctAnswer && label !== correctAnswer))
+
+    let bg = 'rgba(255,255,255,0.08)'
+    let border = '1px solid rgba(255,255,255,0.12)'
+
+    if (isCorrect) { bg = 'rgba(76,175,80,0.4)'; border = '2px solid #4CAF50' }
+    else if (isMyWrong) { bg = 'rgba(244,67,54,0.35)'; border = '2px solid #F44336' }
+    else if (isOppWrong) { bg = 'rgba(255,152,0,0.15)'; border = '1px solid rgba(255,152,0,0.4)' }
+    else if (isMine) { bg = 'rgba(79,195,247,0.2)'; border = '2px solid #4FC3F7' }
+
+    return {
+      background: bg, border, borderRadius: 12, padding: '14px 18px',
+      color: isOppWrong ? 'rgba(255,255,255,0.3)' : 'white',
+      cursor: (!canAnswer || !!myAnswer || isOppWrong) ? 'not-allowed' : 'pointer',
+      transition: 'all 0.2s', textAlign: 'left' as const, fontSize: 14, width: '100%',
+    }
+  }
+
+  const options = question ? [
+    { label: 'A', text: question.option_a },
+    { label: 'B', text: question.option_b },
+    ...(question.option_c ? [{ label: 'C', text: question.option_c }] : []),
+    ...(question.option_d ? [{ label: 'D', text: question.option_d }] : []),
+  ] : []
+
+  // ─── Katılımcı Listesi ────────────────────────────────────────────────────
+
+  const renderParticipants = () => {
+    const active = participants.filter(p => p.status === 'active')
+    const eliminated_list = participants.filter(p => p.status === 'eliminated')
+    const champions = participants.filter(p => ['champion','second','third'].includes(p.status))
+
+    return (
+      <div>
+        {/* Aktif oyuncular */}
+        {active.length > 0 && (
+          <div className="mb-4">
+            <div className="text-sm font-bold mb-2" style={{ color: '#4CAF50' }}>
+              ✅ Aktif — {active.length} kişi
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              {active.map((p, i) => (
+                <div key={i} className="glass p-2 flex items-center gap-2"
+                  style={{ border: p.username === user?.username ? '1px solid #FFD700' : '1px solid rgba(255,255,255,0.08)' }}>
+                  <span className="text-sm">{p.is_bot ? '🤖' : '👤'}</span>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-xs font-bold truncate"
+                      style={{ color: p.username === user?.username ? '#FFD700' : 'white' }}>
+                      {p.username}
+                    </div>
+                    {p.total_score > 0 && (
+                      <div className="text-xs" style={{ color: '#4FC3F7' }}>{p.total_score}p</div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Elenenleri küçük göster */}
+        {eliminated_list.length > 0 && (
+          <div>
+            <div className="text-sm font-bold mb-2" style={{ color: '#F44336' }}>
+              ❌ Elendi — {eliminated_list.length} kişi
+            </div>
+            <div className="grid grid-cols-4 gap-1">
+              {eliminated_list.map((p, i) => (
+                <div key={i} className="text-xs px-2 py-1 rounded opacity-40 truncate"
+                  style={{ background: 'rgba(244,67,54,0.1)', color: '#F44336' }}>
+                  {p.username}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  // ─── PODYUM ───────────────────────────────────────────────────────────────
+
+  if (showPodium) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="glass p-10 max-w-md w-full text-center animate-fade-in">
+          <div className="text-6xl mb-4">🏆</div>
+          <h2 className="text-3xl font-black mb-8" style={{ color: '#FFD700' }}>Maraton Bitti!</h2>
+          <div className="space-y-3 mb-8">
+            {podium.sort((a, b) => a.place - b.place).map(p => (
+              <div key={p.username} className="glass p-4 flex items-center gap-3">
+                <span className="text-3xl">
+                  {p.place === 1 ? '🥇' : p.place === 2 ? '🥈' : '🥉'}
+                </span>
+                <div className="flex-1 text-left">
+                  <div className="font-bold">{p.username}</div>
+                  <div className="text-sm" style={{ color: '#B0BEC5' }}>{p.total_score} puan</div>
+                </div>
+                <div style={{ color: '#FFD700' }}>+{p.xp_earned} XP</div>
+              </div>
+            ))}
+          </div>
+          <Link href="/" className="btn-gold">🏠 Ana Sayfa</Link>
+        </div>
+      </div>
+    )
+  }
+
+  // ─── COUNTDOWN (Lobi açılmadı) ────────────────────────────────────────────
+
+  if (!marathon) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="glass p-10 max-w-md w-full text-center animate-fade-in">
+          <div className="text-6xl mb-4">🏅</div>
+          <h1 className="text-3xl font-black mb-1" style={{ color: '#FFD700' }}>Bilgi Maratonu</h1>
+          <p className="mb-8" style={{ color: '#B0BEC5' }}>128 kişilik eleme turnuvası — 7 tur</p>
+          <div className="glass p-6 mb-8">
+            <p className="text-sm mb-2" style={{ color: '#B0BEC5' }}>Sonraki Maraton</p>
+            <div className="text-6xl font-black" style={{ color: '#4FC3F7' }}>
+              {countdown || nextTime || '--:--'}
+            </div>
+          </div>
+          <button disabled className="btn-gold w-full opacity-40 cursor-not-allowed">
+            Lobi Henüz Açılmadı
+          </button>
+          <Link href="/" className="inline-block mt-4 text-sm" style={{ color: '#B0BEC5' }}>← Ana Sayfa</Link>
+        </div>
+      </div>
+    )
+  }
+
+  // ─── LOBİ ─────────────────────────────────────────────────────────────────
+
+  const total = participants.length
+  const maxP = marathon.max_participants
+  const humanCount = participants.filter(p => !p.is_bot).length
+  const botCount = participants.filter(p => p.is_bot).length
+  const pct = Math.round((total / maxP) * 100)
+  const startHour = marathon.lobby_opens_at
+    ? new Date(new Date(marathon.lobby_opens_at).getTime() + 3*60*60*1000).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })
+    : ''
+
+  return (
+    <div className="min-h-screen p-4" style={{ maxWidth: 960, margin: '0 auto' }}>
+
+      {/* Lobi Header */}
+      <div className="glass p-4 mb-4 flex items-center justify-between">
+        <div>
+          <h1 className="text-xl font-black" style={{ color: '#FFD700' }}>🏅 Bilgi Maratonu</h1>
+          {startHour && <div className="text-xs mt-0.5" style={{ color: '#B0BEC5' }}>⏰ {startHour}</div>}
+          {nextTime && <div className="text-xs mt-0.5" style={{ color: '#555' }}>Sonraki: ⏰ {nextTime}</div>}
+          {roundLabel && (
+            <div className="text-sm font-bold mt-1" style={{ color: '#4FC3F7' }}>
+              {roundLabel} — {activeCount} kişi yarışıyor
+            </div>
+          )}
+        </div>
+        <div className="text-right">
+          <div className="text-2xl font-black" style={{ color: '#4FC3F7' }}>{total}/{maxP}</div>
+          {user?.role === 'admin' && <div className="text-xs" style={{ color: '#B0BEC5' }}>👤 {humanCount} · 🤖 {botCount}</div>}
+        </div>
+      </div>
+
+      {/* İlerleme */}
+      <div className="h-2 rounded-full mb-3 overflow-hidden" style={{ background: 'rgba(255,255,255,0.1)' }}>
+        <div className="h-full rounded-full transition-all duration-500"
+          style={{ width: `${pct}%`, background: 'linear-gradient(90deg,#4FC3F7,#FFD700)' }} />
+      </div>
+
+      {/* Durum */}
+      {statusMsg && (
+        <div className="glass p-3 mb-4 text-center text-sm font-bold" style={{ color: '#FFD700' }}>
+          {statusMsg}
+        </div>
+      )}
+
+      {/* Katıl butonu */}
+      {!joined && marathon.status === 'waiting' && (
+        <button onClick={joinMarathon} className="btn-gold w-full mb-4">
+          🏅 Maratona Katıl
+        </button>
+      )}
+
+      {/* Katılımcı listesi */}
+      {renderParticipants()}
+
+      <Link href="/" className="inline-block mt-6 text-sm" style={{ color: '#B0BEC5' }}>← Ana Sayfa</Link>
+
+      {/* MAÇ MODAL */}
+      {showMatch && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ background: 'rgba(0,0,0,0.85)' }}>
+          <div className="glass p-4 w-full" style={{ maxWidth: 680 }}>
+
+            {/* Maç sonucu overlay */}
+            {showMatchResult && (
+              <div className="text-center py-8 animate-fade-in">
+                <div className="text-7xl mb-4">{matchWon ? '🎉' : '😔'}</div>
+                <h2 className="text-2xl font-black mb-2" style={{ color: matchWon ? '#FFD700' : '#F44336' }}>
+                  {matchWon ? 'Kazandın!' : 'Elendi!'}
+                </h2>
+                <div className="text-4xl font-black">
+                  <span style={{ color: '#4FC3F7' }}>{myFinalScore}</span>
+                  <span className="mx-3" style={{ color: '#B0BEC5' }}>-</span>
+                  <span style={{ color: '#FF7043' }}>{oppFinalScore}</span>
+                </div>
+                <p className="mt-3 text-sm" style={{ color: '#B0BEC5' }}>Lobi'ye dönülüyor...</p>
+              </div>
+            )}
+
+            {/* Aktif maç */}
+            {!showMatchResult && (
+              <>
+                {/* Tur + rakip */}
+                <div className="flex items-center justify-between mb-3">
+                  <span className="font-bold text-sm" style={{ color: '#FFD700' }}>{roundLabel}</span>
+                  <span className="text-sm" style={{ color: '#B0BEC5' }}>vs {myOpponent}</span>
+                </div>
+
+                {/* Skor */}
+                <div className="glass p-3 mb-3 flex items-center">
+                  <div className="text-center flex-1">
+                    <div className="text-xs font-bold truncate" style={{ color: '#4FC3F7' }}>{user?.username}</div>
+                    <div className="text-3xl font-black">{myScore}</div>
+                  </div>
+                  <div className="text-center px-3">
+                    <div className="text-xs mb-1" style={{ color: '#B0BEC5' }}>
+                      {(question?.index ?? 0) + 1}/{question?.total ?? 3}
+                    </div>
+                    <div className="text-4xl font-black" style={{
+                      color: timeLeft <= 5 ? '#F44336' : timeLeft <= 10 ? '#FF7043' : '#FFD700'
+                    }}>{timeLeft}</div>
+                    {question && (
+                      <div className="flex flex-col items-center mt-1">
+                        <span className="text-xs px-2 py-0.5 rounded-full" style={{
+                          background: DIFF_COLORS[question.difficulty] + '33',
+                          color: DIFF_COLORS[question.difficulty],
+                        }}>{DIFF_LABELS[question.difficulty]}</span>
+                        <span className="text-xs" style={{ color: '#B0BEC5' }}>{question.category_name}</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="text-center flex-1">
+                    <div className="text-xs font-bold truncate" style={{ color: '#FF7043' }}>{myOpponent}</div>
+                    <div className="text-3xl font-black">{oppScore}</div>
+                  </div>
+                </div>
+
+                {/* Süre çubuğu */}
+                <div className="h-1.5 rounded-full mb-3 overflow-hidden" style={{ background: 'rgba(255,255,255,0.1)' }}>
+                  <div className="h-full rounded-full transition-all duration-1000" style={{
+                    width: `${maxTime > 0 ? (timeLeft / maxTime) * 100 : 0}%`,
+                    background: timeLeft <= 5 ? '#F44336' : '#4FC3F7',
+                  }} />
+                </div>
+
+                {/* Soru */}
+                <div className="glass p-5 mb-3 text-center" style={{ minHeight: 80 }}>
+                  <p className="text-base font-semibold leading-relaxed">{question?.text || '...'}</p>
+                </div>
+
+                {/* Şıklar */}
+                <div className="grid grid-cols-2 gap-2">
+                  {options.map(({ label, text }) => (
+                    <button key={label} onClick={() => sendAnswer(label)}
+                      disabled={!canAnswer || !!myAnswer || oppWrong === label}
+                      style={getOptionStyle(label)}>
+                      <span className="font-bold mr-2" style={{ color: '#4FC3F7' }}>{label})</span>
+                      {text}
+                      {oppWrong === label && <span className="ml-1 text-xs" style={{ color: '#FF9800' }}> ✗</span>}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
