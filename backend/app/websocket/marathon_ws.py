@@ -656,7 +656,7 @@ async def finish_marathon(marathon_id: str):
                 try:
                     from app.services.achievement import award_trophy_or_medal
                     from app.models.notification import Notification
-                    await award_trophy_or_medal(db, str(p.user_id), "marathon", str(marathon_id), rank=1)
+                    await award_trophy_or_medal(db, str(p.user_id), "marathon", str(marathon_id)[:8], rank=1)
                     db.add(Notification(user_id=str(p.user_id), type="trophy", title="🏆 Maraton Sampiyonu!", message="Maratonu kazandin, kupa senin!", data={"rank": 1, "marathon_id": str(marathon_id)}))
                 except Exception as _e:
                     print(f"[Engine] kupa hatasi: {_e}")
@@ -666,7 +666,7 @@ async def finish_marathon(marathon_id: str):
                 try:
                     from app.services.achievement import award_trophy_or_medal
                     from app.models.notification import Notification
-                    await award_trophy_or_medal(db, str(p.user_id), "marathon", str(marathon_id), rank=2)
+                    await award_trophy_or_medal(db, str(p.user_id), "marathon", str(marathon_id)[:8], rank=2)
                     db.add(Notification(user_id=str(p.user_id), type="medal", title="🥈 Maraton Ikincisi!", message="Maratonda 2. oldun, madalya kazandin!", data={"rank": 2, "marathon_id": str(marathon_id)}))
                 except Exception as _e:
                     print(f"[Engine] madalya hatasi: {_e}")
