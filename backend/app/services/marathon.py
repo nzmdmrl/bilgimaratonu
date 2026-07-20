@@ -297,6 +297,7 @@ async def finalize_marathon(db: AsyncSession, marathon_id: str):
     """Maraton bitti — 1./2./3. belirle, XP ver."""
     from app.services.xp import award_xp
     from app.services.achievement import award_trophy_or_medal
+    from app.models.notification import Notification
 
     result = await db.execute(select(Marathon).where(Marathon.id == marathon_id))
     marathon = result.scalar_one_or_none()
@@ -329,6 +330,7 @@ async def finalize_marathon(db: AsyncSession, marathon_id: str):
             winner_part.status = MarathonParticipantStatus.champion
             winner_part.xp_earned = PLACE_XP[1]
             await award_trophy_or_medal(db, winner_id, "marathon", str(marathon_id), rank=1)
+            db.add(Notification(user_id=winner_id, type="trophy", title="🏆 Maraton Sampiyonu!", message="Maratonu kazandin, kupa senin!", data={"rank": 1, "marathon_id": str(marathon_id)}))
 
         # 2.
         l_part = await db.execute(
@@ -342,6 +344,7 @@ async def finalize_marathon(db: AsyncSession, marathon_id: str):
             loser_part.status = MarathonParticipantStatus.second
             loser_part.xp_earned = PLACE_XP[2]
             await award_trophy_or_medal(db, loser_id, "marathon", str(marathon_id), rank=2)
+            db.add(Notification(user_id=loser_id, type="medal", title="🥈 Maraton Ikincisi!", message="Maratonda 2. oldun, madalya kazandin!", data={"rank": 2, "marathon_id": str(marathon_id)}))
 
     # 3. — Yarı final kaybedenlerinden
     semi_matches = await db.execute(
