@@ -311,6 +311,15 @@ async def get_profile_achievements(username: str, db: AsyncSession = Depends(get
                 "league": lig_name, "period_type": pt,
             })
 
+    # Maraton kupasi
+    m_trophy = won.get((1, "marathon", None), 0)
+    trophies.append({
+        "icon": "🏆",
+        "title": "Maraton Şampiyonu",
+        "count": m_trophy, "earned": m_trophy > 0,
+        "league": "Maraton", "period_type": "marathon",
+    })
+
     medals = []
     for cat_id, lig_name in leagues:
         for pt in PERIODS:
@@ -322,6 +331,15 @@ async def get_profile_achievements(username: str, db: AsyncSession = Depends(get
                     "count": cnt, "earned": cnt > 0,
                     "league": lig_name, "period_type": pt, "rank": rank,
                 })
+
+    # Maraton madalyasi (2.lik)
+    m_medal = won.get((2, "marathon", None), 0)
+    medals.append({
+        "icon": "🥈",
+        "title": "Maraton İkincisi",
+        "count": m_medal, "earned": m_medal > 0,
+        "league": "Maraton", "period_type": "marathon", "rank": 2,
+    })
 
     # Rozetler: tüm aktif tanımlar + kazanım durumu (kilitli/açık)
     all_badges = (await db.execute(_t("""
