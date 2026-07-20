@@ -58,6 +58,10 @@ from app.services.settings import seed_settings
 async def startup():
     async with AsyncSessionLocal() as db:
         await seed_categories(db)
+        # Yarim kalmis maratonlari temizle (redeploy sonrasi takilmayi onler)
+        from sqlalchemy import text as _sqltext
+        await db.execute(_sqltext("UPDATE marathons SET status='finished', finished_at=NOW() WHERE status IN ('waiting','in_progress')"))
+        await db.commit()
     await seed_badges(db)
     await seed_settings(db)
     # Cache temizle ve zamanlayıcıyı başlat
