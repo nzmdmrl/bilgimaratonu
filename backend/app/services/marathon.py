@@ -296,6 +296,7 @@ async def eliminate_losers(
 async def finalize_marathon(db: AsyncSession, marathon_id: str):
     """Maraton bitti — 1./2./3. belirle, XP ver."""
     from app.services.xp import award_xp
+    from app.services.achievement import award_trophy_or_medal
 
     result = await db.execute(select(Marathon).where(Marathon.id == marathon_id))
     marathon = result.scalar_one_or_none()
@@ -327,6 +328,7 @@ async def finalize_marathon(db: AsyncSession, marathon_id: str):
         if winner_part:
             winner_part.status = MarathonParticipantStatus.champion
             winner_part.xp_earned = PLACE_XP[1]
+            await award_trophy_or_medal(db, winner_id, "marathon", str(marathon_id), rank=1)
 
         # 2.
         l_part = await db.execute(
@@ -339,6 +341,7 @@ async def finalize_marathon(db: AsyncSession, marathon_id: str):
         if loser_part:
             loser_part.status = MarathonParticipantStatus.second
             loser_part.xp_earned = PLACE_XP[2]
+            await award_trophy_or_medal(db, loser_id, "marathon", str(marathon_id), rank=2)
 
     # 3. — Yarı final kaybedenlerinden
     semi_matches = await db.execute(
