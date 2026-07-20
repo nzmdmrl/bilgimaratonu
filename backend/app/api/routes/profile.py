@@ -28,7 +28,6 @@ async def get_profile(username: str, db: AsyncSession = Depends(get_db)):
         "xp": user.xp,
         "elo_rating": round(user.elo_rating, 0),
         "trust_level": user.trust_level,
-        "role": user.role.value,
         "total_matches": total,
         "total_wins": wins,
         "total_losses": user.total_losses,
