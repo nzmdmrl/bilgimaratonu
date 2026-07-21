@@ -57,22 +57,22 @@ async def marathon_scheduler():
 async def create_and_run_marathon():
     from app.websocket.marathon_ws import run_marathon_engine, marathon_manager
 
-    async with AsyncSessionLocal() as db:
-        existing = await db.execute(
-            select(Marathon).where(
-                Marathon.status.in_([MarathonStatus.waiting, MarathonStatus.in_progress])
-            )
-        )
-        if existing.scalar_one_or_none():
-            print("[Scheduler] Aktif maraton var, atlanıyor.")
-            return
-
     settings = await get_marathon_settings()
     max_p = settings["max_participants"]
     lobby_dur = settings["lobby_duration_seconds"]
     questions_per_round = settings["questions_per_round"]
 
     async with AsyncSessionLocal() as db:
+        # Kontrol + olusturma ayni session'da (race condition onlenir)
+        existing = await db.execute(
+            select(Marathon).where(
+                Marathon.status.in_([MarathonStatus.waiting, MarathonStatus.in_progress])
+            )
+        )
+        if existing.scalars().first():
+            print("[Scheduler] Aktif maraton var, atlanıyor.")
+            return
+
         marathon = Marathon(
             status=MarathonStatus.waiting,
             max_participants=max_p,
