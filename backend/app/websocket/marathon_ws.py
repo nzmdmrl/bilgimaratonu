@@ -127,7 +127,7 @@ async def get_active_participants(db, marathon_id: str):
 async def get_round_questions(db, marathon_id: str, round_num: int, count: int) -> list:
     from sqlalchemy.orm import selectinload
     from app.models.question import Question as Q
-    from app.models.category import Category as Cat
+    from app.models.question import Category as Cat
     from sqlalchemy import func
     difficulty = ROUND_DIFFICULTIES.get(round_num, "easy")
     result = await db.execute(
