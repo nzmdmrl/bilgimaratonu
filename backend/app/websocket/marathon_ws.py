@@ -127,17 +127,23 @@ async def get_active_participants(db, marathon_id: str):
 async def get_round_questions(db, marathon_id: str, round_num: int, count: int) -> list:
     from sqlalchemy.orm import selectinload
     from app.models.question import Question as Q
+    from app.models.category import Category as Cat
+    from sqlalchemy import func
     difficulty = ROUND_DIFFICULTIES.get(round_num, "easy")
     result = await db.execute(
-        select(Q).where(
+        select(Q).join(Cat, Q.category_id == Cat.id).where(
             Q.difficulty == difficulty,
             Q.is_active == True,
-        ).options(selectinload(Q.category)).limit(count * 5)
+            Cat.has_category_match == True,
+        ).options(selectinload(Q.category)).order_by(func.random()).limit(count * 5)
     )
     all_qs = result.scalars().all()
     if not all_qs:
         result = await db.execute(
-            select(Q).where(Q.is_active == True).options(selectinload(Q.category)).limit(count * 5)
+            select(Q).join(Cat, Q.category_id == Cat.id).where(
+                Q.is_active == True,
+                Cat.has_category_match == True,
+            ).options(selectinload(Q.category)).order_by(func.random()).limit(count * 5)
         )
         all_qs = result.scalars().all()
     selected = random.sample(all_qs, min(count, len(all_qs))) if all_qs else []
