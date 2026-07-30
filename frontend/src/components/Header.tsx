@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useAuthStore } from '@/lib/store'
 import { useEffect, useState } from 'react'
+import NotificationBell from './NotificationBell'
 
 export default function Header() {
   const { user, fetchMe, logout } = useAuthStore()
@@ -73,6 +74,7 @@ export default function Header() {
             {user ? (
               <>
                 <span className="hidden sm:block text-sm" style={{ color: '#FFD700' }}>⭐ {user.xp}</span>
+                <NotificationBell />
                 <Link href={`/p/${user.username}`}
                   className="text-sm font-bold px-2 py-1.5 rounded-lg"
                   style={{ color: '#4FC3F7', background: 'rgba(79,195,247,0.1)' }}>
@@ -140,6 +142,19 @@ export default function Header() {
             )}
 
             <div style={{ flex: 1, padding: '8px 0', overflowY: 'auto' }}>
+              {user && (
+                <Link href="/bildirimler" onClick={() => setMenuOpen(false)}
+                  style={{
+                    display: 'block', padding: '13px 20px',
+                    color: pathname === '/bildirimler' ? '#4FC3F7' : '#B0BEC5',
+                    background: pathname === '/bildirimler' ? '#4FC3F720' : 'transparent',
+                    fontWeight: pathname === '/bildirimler' ? 700 : 500,
+                    fontSize: 15, textDecoration: 'none',
+                    borderLeft: pathname === '/bildirimler' ? '3px solid #4FC3F7' : '3px solid transparent',
+                  }}>
+                  🔔 Bildirimler
+                </Link>
+              )}
               {navLinks.map(link => (
                 <Link key={link.href} href={link.href} onClick={() => setMenuOpen(false)}
                   style={{
