@@ -1,7 +1,7 @@
 # YOL: backend/app/api/routes/league.py
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, text
 from datetime import datetime, date
 from app.core.database import get_db
 from app.services.league import get_league_table
@@ -94,6 +94,73 @@ async def yearly_league(
         "period_label": f"{year} Yılı",
         "category": category or "genel",
         "table": table,
+    }
+
+
+def _period_label(period_type: str, pkey: str) -> str:
+    """period_key -> okunur etiket."""
+    try:
+        if period_type == "daily":
+            y, m, d = pkey.split("-")
+            return f"{int(d)} {MONTHS_TR[int(m)]} {y}"
+        if period_type == "monthly":
+            y, m = pkey.split("-")
+            return f"{MONTHS_TR[int(m)]} {y}"
+        return f"{pkey} Yılı"
+    except Exception:
+        return pkey
+
+
+@router.get("/past-winners")
+async def past_winners(
+    period_type: str = "daily",
+    category: str = None,
+    limit: int = 3,
+    offset: int = 0,
+    db: AsyncSession = Depends(get_db),
+):
+    """Önceki dönem kazananları (1-2-3). En yeni dönem başta.
+    limit = kaç dönem, offset = kaçıncı dönemden itibaren (arşiv için)."""
+    if period_type not in ("daily", "monthly", "yearly"):
+        period_type = "daily"
+    limit = max(1, min(60, limit))
+    offset = max(0, offset)
+    cat_id = await _resolve_category_id(db, category)
+
+    cat_clause = "category_id IS NULL" if cat_id is None else "category_id = :cat"
+    cat_clause_a = "a.category_id IS NULL" if cat_id is None else "a.category_id = :cat"
+    params = {"pt": period_type, "lim": limit, "off": offset}
+    if cat_id is not None:
+        params["cat"] = cat_id
+
+    rows = (await db.execute(text(f"""
+        WITH pk AS (
+            SELECT DISTINCT period_key FROM achievements
+            WHERE ach_type IN ('trophy','medal') AND period_type = :pt
+                  AND {cat_clause} AND period_key IS NOT NULL AND rank IN (1,2,3)
+            ORDER BY period_key DESC
+            LIMIT :lim OFFSET :off
+        )
+        SELECT a.period_key, a.rank, u.username, u.avatar_url
+        FROM achievements a
+        JOIN users u ON u.id = a.user_id
+        WHERE a.ach_type IN ('trophy','medal') AND a.period_type = :pt
+              AND {cat_clause_a} AND a.rank IN (1,2,3)
+              AND a.period_key IN (SELECT period_key FROM pk)
+        ORDER BY a.period_key DESC, a.rank ASC
+    """), params)).fetchall()
+
+    periods = []
+    for pkey, rank, username, avatar in rows:
+        if not periods or periods[-1]["period_key"] != pkey:
+            periods.append({"period_key": pkey, "label": _period_label(period_type, pkey), "winners": []})
+        periods[-1]["winners"].append({"rank": rank, "username": username, "avatar_url": avatar or ""})
+
+    return {
+        "period_type": period_type,
+        "category": category or "genel",
+        "periods": periods,
+        "has_more": len(periods) >= limit,
     }
 
 

@@ -35,6 +35,7 @@ export default function LigPage() {
   // 'genel' = genel lig, aksi halde kategori slug'ı
   const [category, setCategory] = useState<string>('genel')
   const [categories, setCategories] = useState<CategoryOpt[]>([])
+  const [pastWinners, setPastWinners] = useState<any[]>([])
 
   // Kategori listesini bir kez çek
   useEffect(() => {
@@ -48,6 +49,14 @@ export default function LigPage() {
   useEffect(() => {
     loadLeague(category)
   }, [category])
+
+  // Önceki dönem kazananları (seçili dönem + kategori) — son 3 dönem
+  useEffect(() => {
+    const q = category && category !== 'genel' ? `&category=${encodeURIComponent(category)}` : ''
+    api.get(`/api/league/past-winners?period_type=${tab}&limit=3${q}`)
+      .then(res => setPastWinners(res.data.periods || []))
+      .catch(() => setPastWinners([]))
+  }, [tab, category])
 
   const loadLeague = async (cat: string) => {
     setLoading(true)
@@ -230,6 +239,42 @@ export default function LigPage() {
           )}
         </div>
       )}
+
+      {/* Önceki Dönem Kazananları */}
+      <div className="mt-6">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="font-bold" style={{ color: '#FFD700' }}>🏅 Önceki Dönem Kazananları</h3>
+          <Link href={`/lig/arsiv?period=${tab}&category=${category}`} className="text-sm font-bold" style={{ color: '#4FC3F7' }}>
+            Arşiv →
+          </Link>
+        </div>
+        {pastWinners.length === 0 ? (
+          <div className="glass p-4 text-center text-sm" style={{ color: '#B0BEC5' }}>
+            Bu lig için henüz geçmiş dönem kaydı yok.
+          </div>
+        ) : (
+          <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))' }}>
+            {pastWinners.map((p: any) => (
+              <div key={p.period_key} className="glass p-4">
+                <div className="text-sm font-bold mb-2" style={{ color: '#4FC3F7' }}>{p.label}</div>
+                {(!p.winners || p.winners.length === 0) ? (
+                  <div className="text-xs" style={{ color: '#B0BEC5' }}>—</div>
+                ) : (
+                  p.winners.map((w: any) => (
+                    <div key={w.rank} className="flex items-center gap-2 py-1">
+                      <span style={{ width: 24, fontSize: 16, textAlign: 'center' }}>{rankEmoji(w.rank)}</span>
+                      <Link href={`/p/${w.username}`} className="font-bold hover:underline text-sm"
+                        style={{ color: w.rank === 1 ? '#FFD700' : w.rank === 2 ? '#B0BEC5' : '#CD7F32' }}>
+                        {w.username}
+                      </Link>
+                    </div>
+                  ))
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   )
 }
