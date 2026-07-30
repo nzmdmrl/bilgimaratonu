@@ -112,20 +112,47 @@ async def start_solo(
         )
     )
 
+    # Kategori çeşitliliği: her zorluk için geniş rastgele aday havuzu çek,
+    # sonra mümkün olduğunca farklı kategorilerden seç (bayraklar/anagram gibi
+    # kalabalık kategorilerin tüm soruları domine etmesini önler).
     questions = []
     picked = set()
-    for diff, n in LEVEL_DISTRIBUTION:
+    used_categories = set()
+
+    async def _pick(difficulty: str, n: int):
         r = await db.execute(
-            base.where(Question.difficulty == diff).order_by(func.random()).limit(n)
+            base.where(Question.difficulty == difficulty).order_by(func.random()).limit(60)
         )
-        for question in r.scalars().all():
+        cands = r.scalars().all()
+        chosen = 0
+        # 1. tur: henüz kullanılmamış kategorilerden
+        for question in cands:
+            if chosen >= n:
+                break
+            if str(question.id) in picked or question.category_id in used_categories:
+                continue
             questions.append(question)
             picked.add(str(question.id))
+            used_categories.add(question.category_id)
+            chosen += 1
+        # 2. tur: yetmezse aynı kategoriye izin ver
+        if chosen < n:
+            for question in cands:
+                if chosen >= n:
+                    break
+                if str(question.id) in picked:
+                    continue
+                questions.append(question)
+                picked.add(str(question.id))
+                chosen += 1
+
+    for diff, n in LEVEL_DISTRIBUTION:
+        await _pick(diff, n)
 
     # Eksik kaldıysa (bir zorlukta yeterli soru yoksa) genel havuzdan tamamla
     if len(questions) < LEVEL_QUESTION_COUNT:
         need = LEVEL_QUESTION_COUNT - len(questions)
-        r = await db.execute(base.order_by(func.random()).limit(need + len(picked) + 5))
+        r = await db.execute(base.order_by(func.random()).limit(need + len(picked) + 10))
         for question in r.scalars().all():
             if str(question.id) in picked:
                 continue

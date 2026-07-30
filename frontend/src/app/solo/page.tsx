@@ -318,7 +318,16 @@ export default function SoloPage() {
           }} />
         </div>
 
-        <div className="text-xs mb-3 text-center" style={{ color: '#B0BEC5' }}>{q.category_name}</div>
+        <div className="flex items-center justify-center gap-2 mb-3 flex-wrap">
+          <span style={{
+            fontSize: 12, fontWeight: 700, padding: '3px 10px', borderRadius: 999,
+            background: 'rgba(79,195,247,0.15)', color: '#4FC3F7',
+          }}>📁 {q.category_name}</span>
+          <span style={{
+            fontSize: 12, fontWeight: 700, padding: '3px 10px', borderRadius: 999,
+            background: (DIFF_COLORS[q.difficulty] || '#888') + '22', color: DIFF_COLORS[q.difficulty] || '#B0BEC5',
+          }}>{DIFF_LABELS[q.difficulty] || q.difficulty}</span>
+        </div>
 
         <div className="glass p-5 mb-4 text-center" style={{ minHeight: 80 }}>
           {q?.question_image && (
