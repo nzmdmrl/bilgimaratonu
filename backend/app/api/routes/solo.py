@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 from sqlalchemy.orm import selectinload
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List
 from datetime import datetime
 import uuid
 import json
@@ -13,23 +13,24 @@ from app.core.deps import get_current_user
 from app.models.user import User
 from app.models.question import Question, Category
 from app.models.match import MatchAnswer
+from app.models.solo import SoloProgress
 
 router = APIRouter(prefix="/api/solo", tags=["solo"])
 
+# Her level 7 soru: 3 kolay, 2 orta, 1 zor, 1 çok zor (genel havuz)
+LEVEL_DISTRIBUTION = [("easy", 3), ("medium", 2), ("hard", 1), ("very_hard", 1)]
+LEVEL_QUESTION_COUNT = 7
+
+
 class SoloStartRequest(BaseModel):
-    category_ids: List[str] = []   # Boşsa tüm kategoriler
-    difficulty: str = "mixed"       # mixed, easy, medium, hard, very_hard, ascending
-    question_count: int = 15
+    level: int = 1
+
 
 class SoloSubmitRequest(BaseModel):
     session_id: str
-    answers: List[dict]             # [{question_id, selected, time_ms}]
+    answers: List[dict]  # [{question_id, selected, time_ms}]
     total_time_seconds: int
 
-class SoloSession(BaseModel):
-    session_id: str
-    questions: List[dict]
-    settings: dict
 
 async def _get_redis():
     import redis.asyncio as aioredis
@@ -37,47 +38,105 @@ async def _get_redis():
     redis_url = os.getenv("REDIS_URL", "redis://localhost:6379")
     return await aioredis.from_url(redis_url, decode_responses=True)
 
+
+def _stars_for(correct: int) -> int:
+    """7 sorudan doğru sayısına göre yıldız."""
+    if correct >= 6:
+        return 3
+    if correct >= 3:
+        return 2
+    if correct >= 1:
+        return 1
+    return 0
+
+
+async def _progress_map(db: AsyncSession, user_id) -> dict:
+    """{level: stars} — kullanıcının level başına en iyi yıldızları."""
+    r = await db.execute(select(SoloProgress).where(SoloProgress.user_id == user_id))
+    return {p.level: p.stars for p in r.scalars().all()}
+
+
+def _unlocked_level(pmap: dict) -> int:
+    """Oynanabilir en yüksek level. Level N için N-1 en az 1 yıldızla bitmeli."""
+    k = 0
+    while pmap.get(k + 1, 0) >= 1:
+        k += 1
+    return k + 1
+
+
+async def _xp_per_star(db: AsyncSession) -> int:
+    from app.services.settings import get_settings
+    solo = await get_settings(db, "solo")
+    try:
+        return int(solo.get("xp_per_star", 20))
+    except Exception:
+        return 20
+
+
+@router.get("/progress")
+async def solo_progress(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Level haritası verisi."""
+    pmap = await _progress_map(db, current_user.id)
+    return {
+        "unlocked_level": _unlocked_level(pmap),
+        "total_stars": sum(pmap.values()),
+        "xp_per_star": await _xp_per_star(db),
+        "levels": {str(k): v for k, v in pmap.items()},
+    }
+
+
 @router.post("/start")
 async def start_solo(
     req: SoloStartRequest,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    """Solo pratik başlat — sorular döndür."""
-    count = max(7, min(50, req.question_count))
+    """Bir level başlat — 7 soru (3/2/1/1) genel havuzdan rastgele."""
+    level = max(1, int(req.level or 1))
+    pmap = await _progress_map(db, current_user.id)
+    if level > _unlocked_level(pmap):
+        raise HTTPException(status_code=403, detail="Bu level henüz açılmadı.")
 
-    # Soruları çek
-    q = select(Question).options(selectinload(Question.category)).where(Question.is_active == True)
+    # Genel havuz temel filtresi
+    base = (
+        select(Question)
+        .options(selectinload(Question.category))
+        .join(Question.category)
+        .where(
+            Question.is_active == True,
+            Question.is_approved == True,
+            Category.in_general_match == True,
+        )
+    )
 
-    if req.category_ids:
-        q = q.where(Question.category_id.in_(req.category_ids))
+    questions = []
+    picked = set()
+    for diff, n in LEVEL_DISTRIBUTION:
+        r = await db.execute(
+            base.where(Question.difficulty == diff).order_by(func.random()).limit(n)
+        )
+        for question in r.scalars().all():
+            questions.append(question)
+            picked.add(str(question.id))
 
-    if req.difficulty == "mixed":
-        # Karma dağılım
-        questions = []
-        dists = [("easy", count//3 + (1 if count%3>0 else 0)),
-                 ("medium", count//3 + (1 if count%3>1 else 0)),
-                 ("hard", count//3)]
-        for diff, n in dists:
-            r = await db.execute(q.where(Question.difficulty == diff).order_by(func.random()).limit(n))
-            questions.extend(r.scalars().all())
-    elif req.difficulty == "ascending":
-        # Yükselen zorluk
-        questions = []
-        easy_n = count // 3 + (count % 3 > 0)
-        med_n = count // 3 + (count % 3 > 1)
-        hard_n = count // 3
-        for diff, n in [("easy", easy_n), ("medium", med_n), ("hard", hard_n)]:
-            r = await db.execute(q.where(Question.difficulty == diff).order_by(func.random()).limit(n))
-            questions.extend(r.scalars().all())
-    else:
-        r = await db.execute(q.where(Question.difficulty == req.difficulty).order_by(func.random()).limit(count))
-        questions = r.scalars().all()
+    # Eksik kaldıysa (bir zorlukta yeterli soru yoksa) genel havuzdan tamamla
+    if len(questions) < LEVEL_QUESTION_COUNT:
+        need = LEVEL_QUESTION_COUNT - len(questions)
+        r = await db.execute(base.order_by(func.random()).limit(need + len(picked) + 5))
+        for question in r.scalars().all():
+            if str(question.id) in picked:
+                continue
+            questions.append(question)
+            picked.add(str(question.id))
+            if len(questions) >= LEVEL_QUESTION_COUNT:
+                break
 
     if not questions:
         raise HTTPException(status_code=404, detail="Yeterli soru bulunamadı.")
 
-    # Session oluştur
     session_id = str(uuid.uuid4())
     q_data = []
     for i, question in enumerate(questions):
@@ -92,7 +151,7 @@ async def start_solo(
             "option_b": question.option_b,
             "option_c": question.option_c,
             "option_d": question.option_d,
-            "correct_answer": question.correct_answer,  # Session'da saklanır, frontend'e gönderilmez
+            "correct_answer": question.correct_answer,
             "time_limit": 30,
             "index": i,
             "total": len(questions),
@@ -100,24 +159,19 @@ async def start_solo(
 
     session_data = {
         "user_id": str(current_user.id),
+        "level": level,
         "questions": q_data,
         "created_at": datetime.utcnow().isoformat(),
-        "settings": {
-            "difficulty": req.difficulty,
-            "question_count": len(questions),
-        }
     }
     redis = await _get_redis()
     await redis.setex(f"solo:{session_id}", 3600, json.dumps(session_data, ensure_ascii=False))
 
-    # Solo modda correct_answer frontend'e gönderilir (anlık geri bildirim için)
-    safe_questions = q_data
-
     return {
         "session_id": session_id,
-        "questions": safe_questions,
-        "settings": session_data["settings"],
+        "level": level,
+        "questions": q_data,  # solo modda doğru cevap anlık geri bildirim için gönderilir
     }
+
 
 @router.post("/submit")
 async def submit_solo(
@@ -125,7 +179,7 @@ async def submit_solo(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    """Solo pratik sonuçlarını kaydet."""
+    """Level sonucu — yıldız hesapla, yeni yıldız başına XP ver, ilerlemeyi kaydet."""
     redis = await _get_redis()
     session_raw = await redis.get(f"solo:{req.session_id}")
     session = json.loads(session_raw) if session_raw else None
@@ -134,6 +188,7 @@ async def submit_solo(
     if session["user_id"] != str(current_user.id):
         raise HTTPException(status_code=403, detail="Yetkisiz erişim.")
 
+    level = int(session.get("level", 1))
     questions = {q["id"]: q for q in session["questions"]}
     results = []
     correct_count = 0
@@ -166,8 +221,6 @@ async def submit_solo(
             "option_d": q.get("option_d", ""),
         })
 
-        # MatchAnswer tablosuna kaydet (kategori istatistikleri için)
-        # Solo maçlar için dummy match oluştur veya match_id nullable yap
         db.add(MatchAnswer(
             match_id=None,
             question_id=qid,
@@ -178,32 +231,63 @@ async def submit_solo(
             response_time_ms=time_ms,
         ))
 
-    await db.commit()
-
-    # XP ver (lig kaydı yok)
     total = len(results)
     accuracy = round(correct_count / total * 100, 1) if total > 0 else 0
+    stars = _stars_for(correct_count)
 
-    xp_gained = correct_count * 2  # Doğru başına 2 XP
+    # Önceki en iyi yıldız
+    r = await db.execute(
+        select(SoloProgress).where(
+            SoloProgress.user_id == current_user.id, SoloProgress.level == level
+        )
+    )
+    row = r.scalar_one_or_none()
+    prev_stars = row.stars if row else 0
+    is_replay = row is not None
+    new_best = max(prev_stars, stars)
+    delta_stars = max(0, stars - prev_stars)
+
+    # Sadece yeni kazanılan yıldızlar için XP
+    xp_per_star = await _xp_per_star(db)
+    xp_gained = delta_stars * xp_per_star
     if xp_gained > 0:
         current_user.xp += xp_gained
-        await db.commit()
 
-    # Session'ı temizle
+    # İlerlemeyi kaydet (en iyi yıldız)
+    if row:
+        if new_best != row.stars:
+            row.stars = new_best
+    else:
+        db.add(SoloProgress(user_id=current_user.id, level=level, stars=new_best))
+
+    await db.commit()
     await redis.delete(f"solo:{req.session_id}")
 
+    pmap = await _progress_map(db, current_user.id)
+
     return {
+        "level": level,
         "correct": correct_count,
         "total": total,
         "accuracy": accuracy,
+        "stars": stars,
+        "prev_stars": prev_stars,
+        "new_stars": delta_stars,       # bu oynanışta kazanılan yeni yıldız
+        "xp_per_star": xp_per_star,
         "xp_gained": xp_gained,
+        "is_replay": is_replay,
+        "improved": delta_stars > 0,
+        "unlocked_next": stars >= 1,     # sonraki level açıldı mı
+        "next_level": level + 1,
+        "total_stars": sum(pmap.values()),
         "total_time_seconds": req.total_time_seconds,
         "results": results,
     }
 
+
 @router.get("/categories")
 async def get_categories(db: AsyncSession = Depends(get_db)):
-    """Aktif kategorileri döndür."""
+    """Aktif kategorileri döndür (geriye dönük uyumluluk)."""
     r = await db.execute(select(Category).where(Category.is_active == True).order_by(Category.name))
     cats = r.scalars().all()
     return {"categories": [{"id": str(c.id), "name": c.name, "icon": c.icon} for c in cats]}

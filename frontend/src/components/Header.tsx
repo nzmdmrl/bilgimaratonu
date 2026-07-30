@@ -77,6 +77,7 @@ export default function Header() {
             {user ? (
               <>
                 <span className="hidden sm:block text-sm" style={{ color: '#FFD700' }}>⭐ {user.xp}</span>
+                <Link href="/solo" className="hidden sm:block text-sm" style={{ color: '#FFD700', textDecoration: 'none' }} title="Solo yıldızların">🌟 {user.solo_stars ?? 0}</Link>
                 <SoundToggle />
                 <NotificationBell />
                 <Link href={`/p/${user.username}`}
@@ -139,7 +140,7 @@ export default function Header() {
                   }}>{user.username?.[0]?.toUpperCase()}</div>
                   <div>
                     <div style={{ fontWeight: 700, fontSize: 14 }}>{user.username}</div>
-                    <div style={{ color: '#FFD700', fontSize: 12 }}>⭐ {user.xp} XP</div>
+                    <div style={{ color: '#FFD700', fontSize: 12 }}>⭐ {user.xp} XP · 🌟 {user.solo_stars ?? 0}</div>
                   </div>
                 </Link>
               </div>

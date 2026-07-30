@@ -13,6 +13,7 @@ interface User {
   total_matches: number
   total_wins: number
   total_losses: number
+  solo_stars?: number
 }
 
 interface AuthStore {

@@ -70,6 +70,11 @@ DEFAULT_SETTINGS = {
         "daily_score_rule": True,  # Günlük en yüksek skor kuralı
     },
 
+    # ─ Solo Level Ayarları
+    "solo": {
+        "xp_per_star": 20,  # Kazanılan her yeni yıldız için verilecek XP
+    },
+
     # ─ API Ayarları
     "api_keys": {
         "openai": "",  # OpenAI API key

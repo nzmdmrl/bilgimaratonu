@@ -1799,6 +1799,28 @@ export default function AdminPage() {
             </button>
           </div>
 
+          {/* Solo Level Ayarları */}
+          <div className="glass p-5">
+            <h3 className="font-bold mb-1" style={{ color: '#FFD700' }}>🌟 Solo Level Ayarları</h3>
+            <p className="text-xs mb-4" style={{ color: '#B0BEC5' }}>
+              Kullanıcı bir levelde yeni yıldız kazandığında yıldız başına verilecek XP. (Sadece yeni yıldızlar için; tekrar oynayıp aynı yıldızdan XP kazanılamaz.)
+            </p>
+            <div style={{ maxWidth: 240 }}>
+              <label className="text-sm mb-1 block" style={{ color: '#B0BEC5' }}>Yıldız başına XP</label>
+              <input type="number" className="input-field w-full"
+                value={siteSettings.solo?.xp_per_star ?? 20}
+                onChange={e => setSiteSettings((prev: any) => ({
+                  ...prev, solo: { ...prev.solo, xp_per_star: parseInt(e.target.value) || 0 }
+                }))}
+              />
+            </div>
+            <button onClick={() => saveSettings('solo', siteSettings.solo)}
+              disabled={settingsSaving}
+              className="btn-gold mt-4">
+              {settingsSaving ? 'Kaydediliyor...' : '💾 Kaydet'}
+            </button>
+          </div>
+
           {/* Maraton Ayarları */}
           <div className="glass p-5">
             <h3 className="font-bold mb-4" style={{ color: '#FFD700' }}>🏅 Maraton Ayarları</h3>

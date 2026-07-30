@@ -61,6 +61,18 @@ async def startup():
         # Yarim kalmis maratonlari temizle (redeploy sonrasi takilmayi onler)
         from sqlalchemy import text as _sqltext
         await db.execute(_sqltext("UPDATE marathons SET status='finished', finished_at=NOW() WHERE status IN ('waiting','in_progress')"))
+        # Solo level ilerleme tablosu (migration olmadan idempotent olustur)
+        await db.execute(_sqltext("""
+            CREATE TABLE IF NOT EXISTS solo_progress (
+                id UUID PRIMARY KEY,
+                user_id UUID NOT NULL REFERENCES users(id),
+                level INTEGER NOT NULL,
+                stars INTEGER NOT NULL DEFAULT 0,
+                updated_at TIMESTAMPTZ DEFAULT NOW(),
+                CONSTRAINT uq_solo_user_level UNIQUE (user_id, level)
+            )
+        """))
+        await db.execute(_sqltext("CREATE INDEX IF NOT EXISTS ix_solo_progress_user_id ON solo_progress(user_id)"))
         await db.commit()
     await seed_badges(db)
     await seed_settings(db)

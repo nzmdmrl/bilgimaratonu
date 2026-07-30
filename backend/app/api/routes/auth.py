@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, func
 from pydantic import BaseModel, EmailStr
 from typing import Optional
 import uuid
@@ -38,6 +38,7 @@ class UserResponse(BaseModel):
     total_wins: int
     total_losses: int
     avatar_url: str = ""
+    solo_stars: int = 0
 
     class Config:
         from_attributes = True
@@ -108,7 +109,12 @@ async def refresh_token(data: RefreshRequest, db: AsyncSession = Depends(get_db)
     return {"access_token": create_access_token(token_data)}
 
 @router.get("/me", response_model=UserResponse)
-async def me(current_user: User = Depends(get_current_user)):
+async def me(current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    from app.models.solo import SoloProgress
+    stars_res = await db.execute(
+        select(func.coalesce(func.sum(SoloProgress.stars), 0)).where(SoloProgress.user_id == current_user.id)
+    )
+    solo_stars = int(stars_res.scalar() or 0)
     return UserResponse(
         id=str(current_user.id),
         username=current_user.username,
@@ -121,6 +127,7 @@ async def me(current_user: User = Depends(get_current_user)):
         total_wins=current_user.total_wins,
         total_losses=current_user.total_losses,
         avatar_url=current_user.avatar_url or "",
+        solo_stars=solo_stars,
     )
 
 

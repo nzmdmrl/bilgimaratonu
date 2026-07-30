@@ -14,6 +14,7 @@ interface Profile {
   total_wins: number
   total_losses: number
   win_rate: number
+  solo_stars?: number
   role: string
   created_at: string
 }
@@ -256,12 +257,13 @@ export default function ProfilePage() {
       </div>
 
       {/* Hızlı İstatistik Kartları */}
-      <div className="grid grid-cols-2 gap-3 mb-4 md:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 mb-4 md:grid-cols-5">
         {[
           { label: 'Toplam Maç', value: profile.total_matches, icon: '🎮', color: '#4FC3F7' },
           { label: 'Galibiyet %', value: `${profile.win_rate}%`, icon: '🏆', color: '#FFD700' },
           { label: 'ELO Puanı', value: profile.elo_rating, icon: '📊', color: '#81C784' },
           { label: 'Toplam XP', value: profile.xp.toLocaleString(), icon: '⭐', color: '#E91E63' },
+          { label: 'Solo Yıldızı', value: profile.solo_stars ?? 0, icon: '🌟', color: '#FFD700' },
         ].map(stat => (
           <div key={stat.label} className="glass p-4 text-center">
             <div className="text-2xl mb-1">{stat.icon}</div>
