@@ -4,6 +4,8 @@ import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/lib/store'
 import api from '@/lib/api'
 import Link from 'next/link'
+import AvatarPicker from '@/components/AvatarPicker'
+import { avatarSrc } from '@/lib/avatar'
 
 export default function ProfileEdit() {
   const { user, fetchMe } = useAuthStore()
@@ -68,6 +70,18 @@ export default function ProfileEdit() {
     } finally { setUploadingAvatar(false) }
   }
 
+  const pickAvatar = async (url: string) => {
+    setUploadingAvatar(true)
+    try {
+      await api.put('/api/profile/avatar-url', { avatar_url: url })
+      setAvatarUrl(url)
+      await fetchMe()
+      showMsg('Avatar güncellendi!', true)
+    } catch (e: any) {
+      showMsg(e.response?.data?.detail || 'Avatar ayarlanamadı', false)
+    } finally { setUploadingAvatar(false) }
+  }
+
   const saveUsername = async () => {
     if (!username.trim()) return
     setSaving(true)
@@ -127,25 +141,27 @@ export default function ProfileEdit() {
       <div className="glass p-6 mb-4">
         <h3 className="font-bold mb-4" style={{ color: '#B0BEC5' }}>📸 Profil Fotoğrafı</h3>
         <div className="flex items-center gap-6">
-          <div className="w-20 h-20 rounded-full flex items-center justify-center text-4xl flex-shrink-0"
+          <div className="w-20 h-20 rounded-full overflow-hidden flex items-center justify-center flex-shrink-0"
             style={{ background: 'rgba(255,255,255,0.08)', border: '2px solid rgba(255,255,255,0.15)' }}>
-            {avatarUrl ? (
-              <img src={`https://api.bilgimaratonu.com${avatarUrl}`} alt="avatar"
-                className="w-full h-full rounded-full object-cover" />
-            ) : (
-              <span>👤</span>
-            )}
+            <img src={avatarSrc(avatarUrl, user?.username)} alt="avatar"
+              className="w-full h-full rounded-full object-cover" />
           </div>
           <div className="flex-1">
             <p className="text-sm mb-3" style={{ color: '#B0BEC5' }}>
-              JPG, PNG veya WebP. Maksimum 2MB.
+              Fotoğraf yükle (JPG/PNG/WebP, max 2MB — otomatik sıkıştırılır) ya da aşağıdan hazır bir avatar seç.
             </p>
             <label className="btn-gold cursor-pointer inline-block text-sm px-4 py-2">
-              {uploadingAvatar ? 'Yükleniyor...' : '📸 Fotoğraf Seç'}
+              {uploadingAvatar ? 'İşleniyor...' : '📸 Fotoğraf Seç'}
               <input type="file" accept="image/*" onChange={handleAvatarUpload}
                 disabled={uploadingAvatar} className="hidden" />
             </label>
           </div>
+        </div>
+
+        {/* Hazır avatarlar (DiceBear) */}
+        <div className="mt-5">
+          <div className="text-sm font-bold mb-2" style={{ color: '#B0BEC5' }}>🎨 Hazır Avatarlar</div>
+          <AvatarPicker currentUrl={avatarUrl} onSelect={pickAvatar} saving={uploadingAvatar} />
         </div>
       </div>
 

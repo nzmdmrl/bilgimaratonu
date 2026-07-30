@@ -73,6 +73,11 @@ async def startup():
             )
         """))
         await db.execute(_sqltext("CREATE INDEX IF NOT EXISTS ix_solo_progress_user_id ON solo_progress(user_id)"))
+        # Avatarsiz botlara DiceBear thumbs avatari ata (idempotent)
+        await db.execute(_sqltext(
+            "UPDATE users SET avatar_url = 'https://api.dicebear.com/9.x/thumbs/svg?seed=' || username "
+            "WHERE is_bot = true AND (avatar_url IS NULL OR avatar_url = '')"
+        ))
         await db.commit()
     await seed_badges(db)
     await seed_settings(db)

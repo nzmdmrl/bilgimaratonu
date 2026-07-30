@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 import NotificationBell from './NotificationBell'
 import SoundToggle from './SoundToggle'
 import { initSounds } from '@/lib/sound'
+import { avatarSrc } from '@/lib/avatar'
 
 export default function Header() {
   const { user, fetchMe, logout } = useAuthStore()
@@ -132,12 +133,10 @@ export default function Header() {
               <div style={{ padding: '16px 20px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
                 <Link href={`/p/${user.username}`} onClick={() => setMenuOpen(false)}
                   style={{ display: 'flex', alignItems: 'center', gap: 10, color: '#fff', textDecoration: 'none' }}>
-                  <div style={{
-                    width: 36, height: 36, borderRadius: '50%',
-                    background: 'linear-gradient(135deg, #4FC3F7, #1565C0)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontWeight: 700,
-                  }}>{user.username?.[0]?.toUpperCase()}</div>
+                  <div style={{ width: 36, height: 36, borderRadius: '50%', overflow: 'hidden', flexShrink: 0 }}>
+                    <img src={avatarSrc((user as any).avatar_url, user.username)} alt=""
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
                   <div>
                     <div style={{ fontWeight: 700, fontSize: 14 }}>{user.username}</div>
                     <div style={{ color: '#FFD700', fontSize: 12 }}>⭐ {user.xp} XP · 🌟 {user.solo_stars ?? 0}</div>

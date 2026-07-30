@@ -401,11 +401,12 @@ async def create_bots(req: BotCreateRequest, db: AsyncSession = Depends(get_db),
         
         try:
             await db.execute(text("""
-                INSERT INTO users (id, username, email, hashed_password, is_bot, elo_rating, xp, role, is_active, is_verified, trust_level, total_matches, total_wins, total_losses)
-                VALUES (:id, :username, :email, :pwd, true, :elo, 0, 'user', true, true, 0, 0, 0, 0)
+                INSERT INTO users (id, username, email, hashed_password, is_bot, elo_rating, xp, role, is_active, is_verified, trust_level, total_matches, total_wins, total_losses, avatar_url)
+                VALUES (:id, :username, :email, :pwd, true, :elo, 0, 'user', true, true, 0, 0, 0, 0, :avatar)
             """), {
                 "id": str(uuid.uuid4()), "username": username, "email": email,
-                "pwd": hashed, "elo": float(elo)
+                "pwd": hashed, "elo": float(elo),
+                "avatar": f"https://api.dicebear.com/9.x/thumbs/svg?seed={username}",
             })
             added += 1
         except Exception as e:

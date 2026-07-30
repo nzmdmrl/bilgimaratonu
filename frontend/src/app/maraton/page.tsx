@@ -4,6 +4,7 @@ import api from '@/lib/api'
 import { useAuthStore } from '@/lib/store'
 import Link from 'next/link'
 import { playSound, playCountdownTick } from '@/lib/sound'
+import { avatarSrc } from '@/lib/avatar'
 
 interface Marathon {
   id: string
@@ -442,9 +443,7 @@ export default function MaratonPage() {
           <div className="text-center flex-1 rounded-xl py-2">
             <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center text-sm font-black mx-auto mb-1"
               style={{ background: 'linear-gradient(135deg, #4FC3F7, #1565C0)' }}>
-              {myAvatar
-                ? <img src={`https://api.bilgimaratonu.com${myAvatar}`} className="w-full h-full object-cover" alt="" />
-                : user?.username?.[0]?.toUpperCase()}
+              <img src={avatarSrc(myAvatar, user?.username)} alt="" className="w-full h-full object-cover" />
             </div>
             <div className="text-sm font-bold" style={{ color: '#4FC3F7' }}>{user?.username}</div>
             {myElo !== null && <div className="text-xs" style={{ color: '#B0BEC5' }}>{myElo} ELO</div>}
@@ -476,9 +475,7 @@ export default function MaratonPage() {
           <div className="text-center flex-1 rounded-xl py-2">
             <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center text-sm font-black mx-auto mb-1"
               style={{ background: 'linear-gradient(135deg, #FF7043, #B71C1C)' }}>
-              {oppAvatar
-                ? <img src={`https://api.bilgimaratonu.com${oppAvatar}`} className="w-full h-full object-cover" alt="" />
-                : opponent?.[0]?.toUpperCase()}
+              <img src={avatarSrc(oppAvatar, opponent)} alt="" className="w-full h-full object-cover" />
             </div>
             <div className="text-sm font-bold" style={{ color: '#FF7043' }}>{opponent}</div>
             {oppElo !== null && <div className="text-xs" style={{ color: '#B0BEC5' }}>{oppElo} ELO</div>}
@@ -703,15 +700,8 @@ export default function MaratonPage() {
                   background: isMe ? 'rgba(79,195,247,0.15)' : 'rgba(255,255,255,0.04)',
                   border: isMe ? '1px solid #4FC3F7' : '1px solid rgba(255,255,255,0.08)',
                 }}>
-                  {p.avatar_url ? (
-                    <img src={p.avatar_url} alt="" className="rounded-full flex-shrink-0"
-                      style={{ width: 32, height: 32, objectFit: 'cover' }} />
-                  ) : (
-                    <div className="rounded-full flex items-center justify-center flex-shrink-0 font-black"
-                      style={{ width: 32, height: 32, background: p.is_bot ? '#37474F' : bgColor, fontSize: 14, color: '#fff' }}>
-                      {p.is_bot ? '🤖' : initial}
-                    </div>
-                  )}
+                  <img src={avatarSrc(p.avatar_url, p.username)} alt="" className="rounded-full flex-shrink-0"
+                    style={{ width: 32, height: 32, objectFit: 'cover' }} />
                   <div className="min-w-0 flex-1">
                     <div className="text-sm font-bold truncate" style={{ color: isMe ? '#4FC3F7' : '#fff' }}>
                       {p.username}

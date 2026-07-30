@@ -4,6 +4,7 @@ import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import api from '@/lib/api'
 import { useAuthStore } from '@/lib/store'
+import { avatarSrc } from '@/lib/avatar'
 
 interface Profile {
   id: string
@@ -178,10 +179,10 @@ export default function ProfilePage() {
                     Onay<br/>Bekliyor
                   </div>
                 </div>
-              ) : (profile as any).avatar_url ? (
-                <img src={`https://api.bilgimaratonu.com${(profile as any).avatar_url}`}
+              ) : (
+                <img src={avatarSrc((profile as any).avatar_url, profile.username)}
                   alt="avatar" className="w-full h-full object-cover" />
-              ) : profile.username[0].toUpperCase()}
+              )}
             </div>
           </div>
 

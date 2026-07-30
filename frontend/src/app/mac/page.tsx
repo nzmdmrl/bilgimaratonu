@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/lib/store'
 import { initSounds, playSound, playCountdownTick, startRadar, stopRadar } from '@/lib/sound'
+import { avatarSrc } from '@/lib/avatar'
 
 type GameState = 'connecting' | 'waiting' | 'countdown' | 'starting' | 'question' | 'result' | 'finished'
 
@@ -513,9 +514,7 @@ export default function MacPage() {
                 <div className="text-center glass p-5 rounded-2xl" style={{ flex: 1 }}>
                   <div className="w-16 h-16 rounded-full overflow-hidden flex items-center justify-center text-2xl font-black mx-auto mb-2"
                     style={{ background: 'linear-gradient(135deg, #4FC3F7, #1565C0)' }}>
-                    {(user as any)?.avatar_url
-                      ? <img src={`https://api.bilgimaratonu.com${(user as any).avatar_url}`} className="w-full h-full object-cover" />
-                      : user?.username?.[0]?.toUpperCase()}
+                    <img src={avatarSrc((user as any)?.avatar_url, user?.username)} alt="" className="w-full h-full object-cover" />
                   </div>
                   <div className="font-bold">{user?.username}</div>
                   <div className="text-sm mt-1" style={{ color: '#4FC3F7' }}>
@@ -526,9 +525,7 @@ export default function MacPage() {
                 <div className="text-center glass p-5 rounded-2xl" style={{ flex: 1 }}>
                   <div className="w-16 h-16 rounded-full overflow-hidden flex items-center justify-center text-2xl font-black mx-auto mb-2"
                     style={{ background: 'linear-gradient(135deg, #FF7043, #B71C1C)' }}>
-                    {opponent.avatar_url
-                      ? <img src={`https://api.bilgimaratonu.com${opponent.avatar_url}`} className="w-full h-full object-cover" />
-                      : opponent.username?.[0]?.toUpperCase()}
+                    <img src={avatarSrc(opponent.avatar_url, opponent.username)} alt="" className="w-full h-full object-cover" />
                   </div>
                   <div className="font-bold">{opponent.username}</div>
                   <div className="text-sm mt-1" style={{ color: '#FF7043' }}>
@@ -561,9 +558,7 @@ export default function MacPage() {
           <div className="flex justify-center mb-1">
             <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center text-sm font-black"
               style={{ background: 'linear-gradient(135deg, #4FC3F7, #1565C0)' }}>
-              {(user as any)?.avatar_url
-                ? <img src={`https://api.bilgimaratonu.com${(user as any).avatar_url}`} className="w-full h-full object-cover" />
-                : user?.username?.[0]?.toUpperCase()}
+              <img src={avatarSrc((user as any)?.avatar_url, user?.username)} alt="" className="w-full h-full object-cover" />
             </div>
           </div>
           <div className="text-sm font-bold" style={{ color: '#4FC3F7' }}>{user?.username}</div>
@@ -621,9 +616,7 @@ export default function MacPage() {
           <div className="flex justify-center mb-1">
             <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center text-sm font-black"
               style={{ background: 'linear-gradient(135deg, #FF7043, #B71C1C)' }}>
-              {opponent?.avatar_url
-                ? <img src={`https://api.bilgimaratonu.com${opponent.avatar_url}`} className="w-full h-full object-cover" />
-                : opponent?.username?.[0]?.toUpperCase()}
+              <img src={avatarSrc(opponent?.avatar_url, opponent?.username)} alt="" className="w-full h-full object-cover" />
             </div>
           </div>
           <div className="text-sm font-bold" style={{ color: '#FF7043' }}>{opponent?.username}</div>

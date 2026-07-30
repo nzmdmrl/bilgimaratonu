@@ -172,6 +172,7 @@ async def handle_category_match_ws(websocket: WebSocket, category_slug: str, tok
             for num, (pid, pws, pname) in enumerate([(user_id, websocket, p1.username if p1 else '?'), (opp_id, opp_ws, p2.username if p2 else '?')], 1):
                 opp_name = p2.username if num == 1 else p1.username
                 opp_elo_val = p2.elo_rating if num == 1 else p1.elo_rating
+                opp_avatar = (p2.avatar_url if num == 1 else p1.avatar_url) or ""
                 await pws.send_json({
                     "type": "match_start",
                     "match_id": match_id,
@@ -179,7 +180,7 @@ async def handle_category_match_ws(websocket: WebSocket, category_slug: str, tok
                     "total_questions": len(questions),
                     "category": category_slug,
                     "extra_jokers": 0,
-                    "opponent": {"username": opp_name, "elo": round(opp_elo_val), "is_bot": False},
+                    "opponent": {"username": opp_name, "elo": round(opp_elo_val), "is_bot": False, "avatar_url": opp_avatar},
                 })
 
             from app.websocket.match_ws import run_match as run_1v1_match

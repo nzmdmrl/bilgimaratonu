@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import api from '@/lib/api'
 import { useAuthStore } from '@/lib/store'
 import Link from 'next/link'
+import { avatarSrc } from '@/lib/avatar'
 
 interface LeagueRow {
   rank: number
@@ -265,7 +266,7 @@ export default function HomePage() {
                     {/* Sol oyuncu */}
                     <div className="flex items-center gap-2" style={{ width: '40%' }}>
                       <div className="rounded-full flex-shrink-0 overflow-hidden" style={{ width: 36, height: 36, border: p1won ? '2px solid #FFD700' : '2px solid rgba(255,255,255,0.1)' }}>
-                        {m.avatar1 ? <img src={`https://api.bilgimaratonu.com${m.avatar1}`} alt={m.player1} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-sm font-black" style={{ background: 'linear-gradient(135deg, #4FC3F7, #1565C0)' }}>{m.player1[0]?.toUpperCase()}</div>}
+                        <img src={avatarSrc(m.avatar1, m.player1)} alt={m.player1} className="w-full h-full object-cover" />
                       </div>
                       <div className="min-w-0">
                         <Link href={`/p/${m.player1}`} className="font-bold text-xs hover:underline block truncate"
@@ -295,9 +296,9 @@ export default function HomePage() {
                         </Link>
                         <div className="text-xs" style={{ color: '#555' }}>{Math.round(m.elo2 ?? 0)} ELO</div>
                       </div>
-                      <div className="w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center text-base"
-                        style={{ background: p2won ? 'rgba(255,215,0,0.2)' : 'rgba(255,255,255,0.08)', border: p2won ? '2px solid #FFD700' : '2px solid rgba(255,255,255,0.1)' }}>
-                        👤
+                      <div className="w-9 h-9 rounded-full flex-shrink-0 overflow-hidden"
+                        style={{ border: p2won ? '2px solid #FFD700' : '2px solid rgba(255,255,255,0.1)' }}>
+                        <img src={avatarSrc(m.avatar2, m.player2)} alt={m.player2} className="w-full h-full object-cover" />
                       </div>
                     </div>
 

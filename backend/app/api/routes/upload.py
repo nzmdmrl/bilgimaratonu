@@ -29,18 +29,35 @@ async def upload_avatar(
 ):
     if file.content_type not in ALLOWED:
         raise HTTPException(status_code=400, detail="Sadece JPG, PNG veya WebP yüklenebilir.")
-    
+
     contents = await file.read()
     if len(contents) > MAX_SIZE:
         raise HTTPException(status_code=400, detail="Dosya 2MB'dan büyük olamaz.")
 
-    ext = file.filename.split(".")[-1].lower()
-    filename = f"{uuid.uuid4().hex}.{ext}"
+    # Orijinali saklama — kucult + JPG olarak dusuk kaliteyle yeniden kodla
+    from PIL import Image
+    import io
+    try:
+        img = Image.open(io.BytesIO(contents))
+        if img.mode in ("RGBA", "LA", "P"):
+            bg = Image.new("RGB", img.size, (255, 255, 255))
+            bg.paste(img, mask=img.convert("RGBA").split()[-1])
+            img = bg
+        else:
+            img = img.convert("RGB")
+        img.thumbnail((400, 400), Image.Resampling.LANCZOS)
+        buf = io.BytesIO()
+        img.save(buf, format="JPEG", quality=70, optimize=True)
+        jpg_bytes = buf.getvalue()
+    except Exception:
+        raise HTTPException(status_code=400, detail="Görsel işlenemedi. Geçerli bir resim yükleyin.")
+
+    filename = f"{uuid.uuid4().hex}.jpg"
     filepath = os.path.join(UPLOAD_DIR, filename)
     os.makedirs(UPLOAD_DIR, exist_ok=True)
-    
+
     with open(filepath, "wb") as f:
-        f.write(contents)
+        f.write(jpg_bytes)
 
     avatar_url = f"/uploads/avatars/{filename}"
     

@@ -654,6 +654,7 @@ async def handle_match_ws(websocket: WebSocket, token: str):
                                 "elo": round(bot.elo_rating),
                                 "is_bot": True,
                                 "extra_jokers": 0,
+                                "avatar_url": bot.avatar_url or "",
                             },
                         })
 

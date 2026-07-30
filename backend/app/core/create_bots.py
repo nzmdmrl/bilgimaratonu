@@ -51,6 +51,7 @@ async def create_bots():
                     elo_rating=elo,
                     xp=int((elo - 800) * 10),
                     trust_level=1,
+                    avatar_url=f"https://api.dicebear.com/9.x/thumbs/svg?seed={name}",
                 )
                 db.add(bot)
                 created += 1

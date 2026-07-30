@@ -276,6 +276,27 @@ async def update_email(
     return {"ok": True}
 
 
+class AvatarUrlUpdate(PydanticBaseModel):
+    avatar_url: str
+
+@router.put("/avatar-url")
+async def update_avatar_url(
+    req: AvatarUrlUpdate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """DiceBear avatarı doğrudan ayarla (onay gerektirmez)."""
+    url = (req.avatar_url or "").strip()
+    if url:
+        if not url.startswith("https://api.dicebear.com/"):
+            raise HTTPException(status_code=400, detail="Sadece DiceBear avatarları kabul edilir.")
+        if len(url) > 500:
+            raise HTTPException(status_code=400, detail="Avatar bağlantısı çok uzun.")
+    current_user.avatar_url = url or None
+    await db.commit()
+    return {"ok": True, "avatar_url": current_user.avatar_url or ""}
+
+
 @router.get("/{username}/achievements")
 async def get_profile_achievements(username: str, db: AsyncSession = Depends(get_db)):
     """Kupa / madalya / rozet — kazanılan + kilitli slotlar."""
