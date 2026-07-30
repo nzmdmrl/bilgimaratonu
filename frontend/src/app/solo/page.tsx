@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/lib/store'
 import api from '@/lib/api'
 import Link from 'next/link'
-import { initSounds, playSound, playCountdownTick } from '@/lib/sound'
+import { initSounds, playSound, playCountdownTick, playCountdownBeep } from '@/lib/sound'
 
 interface Question {
   id: string; text: string; difficulty: string; category_name: string
@@ -100,11 +100,13 @@ export default function SoloPage() {
       setShowDetails(false)
       setScreen('countdown')
       setCountdown(3)
+      playCountdownBeep(3)
 
       let c = 3
       const interval = setInterval(() => {
         c--
         setCountdown(c)
+        playCountdownBeep(c)
         if (c <= 0) {
           clearInterval(interval)
           setScreen('quiz')
@@ -190,66 +192,110 @@ export default function SoloPage() {
     return { q: _q, options: _opts }
   }, [currentIdx, questions])
 
-  // ─── LEVEL HARİTASI ───
+  // ─── LEVEL HARİTASI (zigzag + çöl arka planı) ───
   if (screen === 'map') {
     const unlocked = progress?.unlocked_level || 1
     const levels = progress?.levels || {}
     const nodeCount = unlocked + 1  // oynanabilir + bir kilitli önizleme
-    const nodes = Array.from({ length: nodeCount }, (_, i) => nodeCount - i) // yukarıda yüksek level
+
+    const W = 340
+    const GAP = 150
+    const TOP_PAD = 60
+    const BOTTOM_PAD = 90
+    const H = (nodeCount - 1) * GAP + TOP_PAD + BOTTOM_PAD
+    // Level L (1 en altta) -> ekran koordinatı
+    const pos = (L: number) => {
+      const k = L - 1
+      const y = H - BOTTOM_PAD - k * GAP
+      const x = k % 2 === 0 ? W * 0.30 : W * 0.70
+      return { x, y }
+    }
+    const ptStr = (from: number, to: number) =>
+      Array.from({ length: to - from + 1 }, (_, i) => { const p = pos(from + i); return `${p.x},${p.y}` }).join(' ')
 
     return (
       <div className="min-h-screen" style={{
-        background: 'linear-gradient(180deg, #0A0E27 0%, #1A1B4B 100%)',
+        background: 'linear-gradient(180deg,#FBE3C0 0%,#F6C58C 40%,#EBA766 72%,#E08C4E 100%)',
+        position: 'relative', overflowX: 'hidden',
       }}>
-        <div className="flex items-center justify-between px-4 py-3" style={{ maxWidth: 500, margin: '0 auto' }}>
-          <Link href="/" style={{ color: '#B0BEC5', fontSize: 22 }}>←</Link>
-          <div className="font-black" style={{ color: '#4FC3F7' }}>🎯 Solo Yolu</div>
-          <div className="font-bold" style={{ color: '#FFD700' }}>🌟 {progress?.total_stars ?? 0}</div>
+        {/* Grafiksel çöl dekoru (sabit, kaydırılmaz) */}
+        <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMax slice" aria-hidden
+          style={{ position: 'fixed', bottom: 0, left: 0, width: '100%', height: 260, zIndex: 0, pointerEvents: 'none', opacity: 0.9 }}>
+          <circle cx="330" cy="70" r="34" fill="#FFF1CC" opacity="0.8" />
+          <polygon points="40,300 150,150 260,300" fill="#D98E52" opacity="0.55" />
+          <polygon points="200,300 300,120 400,300" fill="#CE7F44" opacity="0.6" />
+          <polygon points="150,150 158,170 142,170" fill="#B96b34" opacity="0.5" />
+          <polygon points="0,300 90,200 180,300" fill="#E6A162" opacity="0.5" />
+          {/* kaktüsler */}
+          <g fill="#7C9A5B" opacity="0.7">
+            <rect x="60" y="255" width="7" height="30" rx="3" />
+            <rect x="52" y="262" width="7" height="12" rx="3" />
+            <rect x="68" y="258" width="7" height="14" rx="3" />
+            <rect x="330" y="258" width="7" height="28" rx="3" />
+            <rect x="338" y="264" width="7" height="12" rx="3" />
+          </g>
+        </svg>
+
+        {/* Üst bar */}
+        <div className="flex items-center justify-between px-4 py-3" style={{ position: 'sticky', top: 0, zIndex: 10, maxWidth: 500, margin: '0 auto' }}>
+          <Link href="/" style={{ color: '#5D4037', fontSize: 24, fontWeight: 900, textDecoration: 'none' }}>←</Link>
+          <div className="font-black" style={{ color: '#5D4037' }}>🎯 Solo Yolu</div>
+          <div className="font-black px-3 py-1 rounded-full" style={{ background: 'rgba(255,255,255,0.55)', color: '#B8860B' }}>
+            🌟 {progress?.total_stars ?? 0}
+          </div>
         </div>
 
-        <div style={{ position: 'relative', maxWidth: 420, margin: '0 auto', padding: '16px 0 48px' }}>
-          {/* orta çizgi */}
-          <div style={{
-            position: 'absolute', top: 20, bottom: 40, left: '50%', width: 0,
-            borderLeft: '3px dashed rgba(255,255,255,0.15)', transform: 'translateX(-50%)', zIndex: 0,
-          }} />
-          {nodes.map(level => {
+        {/* Zigzag yol */}
+        <div style={{ position: 'relative', width: W, height: H, margin: '0 auto', zIndex: 2 }}>
+          <svg width={W} height={H} style={{ position: 'absolute', top: 0, left: 0, zIndex: 1, pointerEvents: 'none' }}>
+            {unlocked >= 1 && (
+              <polyline points={ptStr(1, unlocked)} fill="none" stroke="rgba(255,255,255,0.92)"
+                strokeWidth={7} strokeLinecap="round" strokeLinejoin="round" />
+            )}
+            {nodeCount > unlocked && (
+              <polyline points={ptStr(unlocked, nodeCount)} fill="none" stroke="rgba(255,255,255,0.55)"
+                strokeWidth={6} strokeDasharray="2 14" strokeLinecap="round" />
+            )}
+          </svg>
+
+          {Array.from({ length: nodeCount }, (_, i) => i + 1).map(level => {
+            const { x, y } = pos(level)
             const attempted = levels[String(level)] !== undefined
             const stars = levels[String(level)] ?? 0
             const locked = level > unlocked
             const isCurrent = level === unlocked && !locked
             const passed = attempted && stars >= 1
 
-            let bg = 'linear-gradient(135deg,#455A64,#263238)'  // kilitli
-            let ring = 'rgba(255,255,255,0.15)'
-            let numColor = '#90A4AE'
-            if (passed) { bg = 'linear-gradient(135deg,#42A5F5,#1565C0)'; ring = '#90CAF9'; numColor = '#fff' }
-            else if (!locked) { bg = 'linear-gradient(135deg,#4FC3F7,#0288D1)'; ring = '#B3E5FC'; numColor = '#fff' }
+            let bg = 'linear-gradient(135deg,#B0B7BD,#78848C)'  // kilitli
+            let ring = 'rgba(255,255,255,0.85)'
+            let numColor = '#455A64'
+            if (passed) { bg = 'radial-gradient(circle at 35% 30%,#64B5F6,#1565C0)'; ring = '#fff'; numColor = '#fff' }
+            else if (!locked) { bg = 'radial-gradient(circle at 35% 30%,#4FC3F7,#0277BD)'; ring = '#fff'; numColor = '#fff' }
 
             return (
-              <div key={level} style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 26 }}>
+              <div key={level} style={{
+                position: 'absolute', left: x, top: y, transform: 'translate(-50%,-50%)',
+                zIndex: 3, display: 'flex', flexDirection: 'column', alignItems: 'center',
+              }}>
                 <button
                   onClick={() => onNodeClick(level, locked, attempted)}
                   disabled={locked || loading}
                   style={{
-                    width: 76, height: 76, borderRadius: '50%',
+                    width: 74, height: 74, borderRadius: '50%',
                     background: bg,
-                    border: `4px solid ${ring}`,
-                    boxShadow: isCurrent ? '0 0 22px rgba(79,195,247,0.7)' : '0 4px 10px rgba(0,0,0,0.4)',
+                    border: `5px solid ${ring}`,
+                    boxShadow: isCurrent ? '0 0 0 6px rgba(79,195,247,0.35), 0 6px 14px rgba(0,0,0,0.3)' : '0 5px 12px rgba(0,0,0,0.28)',
                     color: numColor, fontSize: 30, fontWeight: 900,
                     cursor: locked ? 'not-allowed' : 'pointer',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     position: 'relative',
-                    transition: 'transform 0.15s',
                   }}>
                   {level}
-                  {locked && (
-                    <span style={{ position: 'absolute', bottom: -6, fontSize: 16 }}>🔒</span>
-                  )}
+                  {locked && <span style={{ position: 'absolute', bottom: -7, fontSize: 17 }}>🔒</span>}
                 </button>
-                {passed && <div style={{ marginTop: 6 }}><Stars count={stars} size={18} /></div>}
+                {passed && <div style={{ marginTop: 5 }}><Stars count={stars} size={19} /></div>}
                 {isCurrent && !passed && (
-                  <div style={{ marginTop: 6, fontSize: 11, color: '#4FC3F7', fontWeight: 700 }}>Buradan başla</div>
+                  <div style={{ marginTop: 5, fontSize: 11, color: '#fff', fontWeight: 800, background: 'rgba(2,119,189,0.85)', padding: '2px 8px', borderRadius: 999 }}>Buradan başla</div>
                 )}
               </div>
             )
@@ -302,31 +348,22 @@ export default function SoloPage() {
           <div className="text-xs font-black px-2 py-0.5 rounded" style={{ background: 'rgba(79,195,247,0.15)', color: '#4FC3F7' }}>
             LEVEL {currentLevel}
           </div>
-          <div className="text-sm" style={{ color: DIFF_COLORS[q.difficulty] }}>{DIFF_LABELS[q.difficulty]}</div>
+          <div className="text-sm font-bold" style={{ color: DIFF_COLORS[q.difficulty] }}>{DIFF_LABELS[q.difficulty] || q.difficulty}</div>
         </div>
-        <div className="flex items-center justify-between mb-3">
-          <div className="text-sm font-bold" style={{ color: '#B0BEC5' }}>{q.index + 1} / {q.total}</div>
-          <div className="text-3xl font-black" style={{
+        <div className="flex items-center justify-between mb-3 gap-2">
+          <div className="text-sm font-bold min-w-0" style={{ color: '#B0BEC5' }}>
+            {q.index + 1} / {q.total} <span style={{ color: '#4FC3F7' }}>· 📁 {q.category_name}</span>
+          </div>
+          <div className="text-3xl font-black flex-shrink-0" style={{
             color: timeLeft <= 5 ? '#F44336' : timeLeft <= 10 ? '#FF7043' : '#FFD700'
           }}>{timeLeft}</div>
         </div>
 
-        <div className="h-1.5 rounded-full mb-3 overflow-hidden" style={{ background: 'rgba(255,255,255,0.1)' }}>
+        <div className="h-1.5 rounded-full mb-4 overflow-hidden" style={{ background: 'rgba(255,255,255,0.1)' }}>
           <div className="h-full rounded-full" style={{
             width: `${(q.index / q.total) * 100}%`,
             background: 'linear-gradient(90deg,#4FC3F7,#FFD700)',
           }} />
-        </div>
-
-        <div className="flex items-center justify-center gap-2 mb-3 flex-wrap">
-          <span style={{
-            fontSize: 12, fontWeight: 700, padding: '3px 10px', borderRadius: 999,
-            background: 'rgba(79,195,247,0.15)', color: '#4FC3F7',
-          }}>📁 {q.category_name}</span>
-          <span style={{
-            fontSize: 12, fontWeight: 700, padding: '3px 10px', borderRadius: 999,
-            background: (DIFF_COLORS[q.difficulty] || '#888') + '22', color: DIFF_COLORS[q.difficulty] || '#B0BEC5',
-          }}>{DIFF_LABELS[q.difficulty] || q.difficulty}</span>
         </div>
 
         <div className="glass p-5 mb-4 text-center" style={{ minHeight: 80 }}>

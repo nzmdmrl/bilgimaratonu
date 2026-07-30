@@ -5,7 +5,7 @@ import api from '@/lib/api'
 import { useParams, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import DuelRoom from './duel'
-import { initSounds, playSound, playCountdownTick } from '@/lib/sound'
+import { initSounds, playSound, playCountdownTick, playCountdownBeep } from '@/lib/sound'
 
 const DIFF_LABELS: Record<string, string> = { easy: 'Kolay', medium: 'Orta', hard: 'Zor', very_hard: 'Çok Zor' }
 const SCOREBOARD_LABELS: Record<string, string> = { single: 'Tek Sonuç', series: 'Seri Maç', daily: 'Günlük', monthly: 'Aylık', yearly: 'Yıllık', all: 'Tüm Zamanlar' }
@@ -86,9 +86,11 @@ export default function TestPage() {
       setCurrentIdx(0)
       setScreen('countdown')
       setCountdown(3)
+      playCountdownBeep(3)
       let c = 3
       const interval = setInterval(() => {
         c--; setCountdown(c)
+        playCountdownBeep(c)
         if (c <= 0) {
           clearInterval(interval)
           setScreen('quiz')

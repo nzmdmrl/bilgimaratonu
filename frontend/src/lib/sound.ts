@@ -177,11 +177,12 @@ const SYNTH: Record<SoundKey, (arg?: any) => void> = {
     arpeggio([523.25, 659.25, 783.99, 1046.5], 0.09, 0.22, 'triangle', 0.3)
   },
   countdown: (secondsLeft?: number) => {
-    // süre azaldıkça pitch yükselir (10..1 sn arası)
-    const s = typeof secondsLeft === 'number' ? Math.max(1, Math.min(10, secondsLeft)) : 5
-    const freq = 500 + (10 - s) * 90 // 10sn -> 500Hz, 1sn -> ~1310Hz
-    const vol = 0.12 + (10 - s) * 0.02
-    tone(freq, 0.09, { type: 'sine', gain: Math.min(0.3, vol) })
+    // süre azaldıkça pitch ve ses yükselir (15..1 sn arası) — hoş, net bir tik
+    const s = typeof secondsLeft === 'number' ? Math.max(1, Math.min(15, secondsLeft)) : 8
+    const freq = 520 + (15 - s) * 55 // 15sn -> 520Hz, 1sn -> ~1290Hz
+    const vol = Math.min(0.55, 0.28 + (15 - s) * 0.018)
+    tone(freq, 0.1, { type: 'sine', gain: vol })
+    tone(freq * 2, 0.06, { type: 'sine', gain: vol * 0.25 }) // hafif parlaklık
   },
   correct: () => {
     tone(659.25, 0.12, { type: 'sine', gain: 0.3 })
@@ -235,10 +236,27 @@ export function playSound(key: SoundKey, arg?: any) {
   }
 }
 
-// Geri sayım tik'i — süre azaldıkça yükselir. Sadece son 10 saniyede çalar.
+// Geri sayım tik'i — süre azaldıkça yükselir. Son 15 saniyede çalar.
 export function playCountdownTick(secondsLeft: number) {
-  if (secondsLeft <= 0 || secondsLeft > 10) return
+  if (secondsLeft <= 0 || secondsLeft > 15) return
   playSound('countdown', secondsLeft)
+}
+
+// Maç öncesi 3-2-1 geri sayım beep'i (her zaman sentetik, yükselen; 0'da "başla").
+export function playCountdownBeep(n: number) {
+  if (!isBrowser() || isMuted()) return
+  unlockAudio()
+  try {
+    if (n > 0) {
+      const k = Math.max(1, Math.min(3, n))
+      const freq = 440 + (3 - k) * 120 // 3->440, 2->560, 1->680
+      tone(freq, 0.16, { type: 'triangle', gain: 0.42 })
+    } else {
+      // Başla!
+      tone(660, 0.14, { type: 'triangle', gain: 0.42 })
+      tone(990, 0.24, { type: 'sine', gain: 0.4, delay: 0.1 })
+    }
+  } catch { /* yut */ }
 }
 
 // Radar döngüsü (rakip aranırken)
