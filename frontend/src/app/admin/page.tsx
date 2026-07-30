@@ -4,8 +4,11 @@ import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/lib/store'
 import api from '@/lib/api'
 import Link from 'next/link'
+import { SOUND_SLOTS, playSound, type SoundKey } from '@/lib/sound'
 
-type Tab = 'dashboard' | 'sorular' | 'kullanicilar' | 'kategoriler' | 'csv' | 'ayarlar' | 'unvanlar' | 'sayfalar' | 'blog' | 'duyurular' | 'avatarlar' | 'import' | 'generator' | 'sistem' | 'market' | 'moderasyon'
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.bilgimaratonu.com'
+
+type Tab = 'dashboard' | 'sorular' | 'kullanicilar' | 'kategoriler' | 'csv' | 'ayarlar' | 'sesler' | 'unvanlar' | 'sayfalar' | 'blog' | 'duyurular' | 'avatarlar' | 'import' | 'generator' | 'sistem' | 'market' | 'moderasyon'
 
 interface DashboardData { users: number; questions: number; matches: number }
 interface Question {
@@ -97,6 +100,7 @@ export default function AdminPage() {
   useEffect(() => { if (tab === 'kullanicilar') loadUsers() }, [tab, uPage, uSearch])
   useEffect(() => { if (tab === 'kategoriler') loadCategories() }, [tab])
   useEffect(() => { if (tab === 'ayarlar') loadSettings() }, [tab])
+  useEffect(() => { if (tab === 'sesler') loadSettings() }, [tab])
   useEffect(() => { if (tab === 'unvanlar') loadTitles() }, [tab])
   useEffect(() => { if (tab === 'sayfalar') loadPages() }, [tab])
   useEffect(() => { if (tab === 'blog') loadBlogPosts() }, [tab])
@@ -359,6 +363,45 @@ export default function AdminPage() {
     }
   }
 
+  // ─ Ses yönetimi
+  const [soundUploading, setSoundUploading] = useState<string | null>(null)
+
+  const uploadSound = async (key: SoundKey, file: File) => {
+    setSoundUploading(key)
+    try {
+      const form = new FormData()
+      form.append('file', file)
+      await api.post(`/api/upload/sound/${key}`, form, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
+      await loadSettings()
+    } catch (e: any) {
+      alert(e.response?.data?.detail || 'Yükleme hatası.')
+    } finally {
+      setSoundUploading(null)
+    }
+  }
+
+  const deleteSound = async (key: SoundKey) => {
+    setSoundUploading(key)
+    try {
+      await api.delete(`/api/upload/sound/${key}`)
+      await loadSettings()
+    } finally {
+      setSoundUploading(null)
+    }
+  }
+
+  // Önizleme: MP3 yüklüyse onu, değilse sentetiği çal
+  const previewSound = (key: SoundKey) => {
+    const url = siteSettings?.sounds?.[key]
+    if (url) {
+      try { const a = new Audio(url.startsWith('http') ? url : `${API_URL}${url}`); a.volume = 0.7; a.play().catch(() => {}) } catch {}
+    } else {
+      playSound(key, key === 'countdown' ? 3 : undefined)
+    }
+  }
+
   const loadDashboard = async () => {
     const r = await api.get('/api/admin/dashboard')
     setDashboard(r.data)
@@ -440,6 +483,7 @@ export default function AdminPage() {
     { key: 'kategoriler', label: '🏷️ Kategoriler' },
     { key: 'csv', label: '📥 CSV Import' },
     { key: 'ayarlar', label: '⚙️ Ayarlar' },
+    { key: 'sesler', label: '🔊 Sesler' },
     { key: 'unvanlar', label: '🏅 Unvanlar' },
     { key: 'sayfalar', label: '📄 Sayfalar' },
     { key: 'blog', label: '📝 Blog' },
@@ -1459,6 +1503,56 @@ export default function AdminPage() {
                 style={{ background: 'rgba(244,67,54,0.2)', color: '#F44336' }}>
                 {sistemLoading === 'delbots' ? '...' : '🗑 Tüm Botları Sil'}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* SESLER */}
+      {tab === 'sesler' && siteSettings && (
+        <div className="animate-fade-in">
+          <div className="glass p-5">
+            <h3 className="font-bold mb-1" style={{ color: '#FFD700' }}>🔊 Ses Efektleri</h3>
+            <p className="text-xs mb-4" style={{ color: '#B0BEC5' }}>
+              Her ses için varsayılan sentetik ses çalar. Bir yuvaya MP3 yüklersen, o ses yerine yüklediğin dosya çalar.
+              (MP3/WAV/OGG, en fazla 5MB.) 1v1 maç ve kategori maçlarında aynı sesler kullanılır.
+            </p>
+            <div className="space-y-3">
+              {SOUND_SLOTS.map(slot => {
+                const current = siteSettings.sounds?.[slot.key] || ''
+                const busy = soundUploading === slot.key
+                return (
+                  <div key={slot.key} className="glass p-3 flex items-center gap-3 flex-wrap">
+                    <div style={{ flex: 1, minWidth: 180 }}>
+                      <div className="font-bold text-sm">{slot.label}</div>
+                      <div className="text-xs" style={{ color: '#B0BEC5' }}>{slot.desc}</div>
+                      <div className="text-xs mt-1" style={{ color: current ? '#4CAF50' : '#607D8B' }}>
+                        {current ? '🎵 MP3 yüklü (sentetik yerine bu çalar)' : '🎹 Sentetik ses (varsayılan)'}
+                      </div>
+                    </div>
+                    <button onClick={() => previewSound(slot.key as SoundKey)}
+                      className="text-xs px-3 py-1.5 rounded-lg font-bold"
+                      style={{ background: 'rgba(79,195,247,0.2)', color: '#4FC3F7' }}>
+                      ▶ Dinle
+                    </button>
+                    <label className="text-xs px-3 py-1.5 rounded-lg font-bold cursor-pointer"
+                      style={{ background: 'rgba(255,215,0,0.15)', color: '#FFD700' }}>
+                      {busy ? '⏳ Yükleniyor...' : '⬆ MP3 Yükle'}
+                      <input type="file" accept="audio/mpeg,audio/mp3,audio/wav,audio/ogg" hidden
+                        disabled={busy}
+                        onChange={e => { const f = e.target.files?.[0]; if (f) uploadSound(slot.key as SoundKey, f); e.target.value = '' }} />
+                    </label>
+                    {current && (
+                      <button onClick={() => deleteSound(slot.key as SoundKey)}
+                        disabled={busy}
+                        className="text-xs px-3 py-1.5 rounded-lg font-bold"
+                        style={{ background: 'rgba(244,67,54,0.2)', color: '#F44336' }}>
+                        ✗ Kaldır
+                      </button>
+                    )}
+                  </div>
+                )
+              })}
             </div>
           </div>
         </div>

@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useAuthStore } from '@/lib/store'
 import api from '@/lib/api'
+import { initSounds, playSound, playCountdownTick, startRadar, stopRadar } from '@/lib/sound'
 
 type GameState = 'connecting' | 'waiting' | 'starting' | 'question' | 'finished'
 
@@ -53,6 +54,7 @@ export default function CategoryMatchPage() {
   const lastPointsTimer = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
+    initSounds()
     fetchMe()
     api.get('/api/categories').then(r => {
       const cat = r.data.find((c: any) => c.slug === slug)
@@ -62,6 +64,7 @@ export default function CategoryMatchPage() {
     return () => {
       wsRef.current?.close()
       if (timerRef.current) clearInterval(timerRef.current)
+      stopRadar()
     }
   }, [])
 
@@ -81,7 +84,7 @@ export default function CategoryMatchPage() {
     setTimeLeft(secs)
     setMaxTime(secs)
     timerRef.current = setInterval(() => {
-      setTimeLeft(prev => { if (prev <= 1) { stopTimer(); return 0 } return prev - 1 })
+      setTimeLeft(prev => { if (prev <= 1) { stopTimer(); return 0 } playCountdownTick(prev - 1); return prev - 1 })
     }, 1000)
   }
 
@@ -97,10 +100,13 @@ export default function CategoryMatchPage() {
       case 'connected':
         setGameState('waiting')
         setStatusMessage('Rakip aranıyor...')
+        startRadar()
         break
       case 'bot_match':
         break
       case 'match_start':
+        stopRadar()
+        playSound('match_found')
         setMatchId(msg.match_id)
         setPlayerNumber(msg.player_number)
         setOpponent(msg.opponent)
@@ -120,6 +126,7 @@ export default function CategoryMatchPage() {
           if (playerNumber === 1) { setMyScore(msg.scores.p1 || 0); setOppScore(msg.scores.p2 || 0) }
           else { setMyScore(msg.scores.p2 || 0); setOppScore(msg.scores.p1 || 0) }
         }
+        playSound('new_question')
         startTimer(msg.question.time_limit || 30)
         break
       case 'answer_result':
@@ -132,6 +139,7 @@ export default function CategoryMatchPage() {
         else { setMyScore(msg.scores?.p2 || 0); setOppScore(msg.scores?.p1 || 0) }
         if (msg.points !== undefined) showPoints(msg.points)
         setStatusMessage(msg.is_correct ? '✓ Doğru!' : '✗ Yanlış')
+        playSound(msg.is_correct ? 'correct' : 'wrong')
         break
       case 'countdown':
         setVsCountdown(msg.count)
@@ -162,6 +170,7 @@ export default function CategoryMatchPage() {
         if (playerNumber === 1) { setMyScore(msg.scores?.p1 || 0); setOppScore(msg.scores?.p2 || 0) }
         else { setMyScore(msg.scores?.p2 || 0); setOppScore(msg.scores?.p1 || 0) }
         setStatusMessage('İkisi de yanlış!')
+        playSound('both_wrong')
         break
       case 'time_up':
         stopTimer()
@@ -179,8 +188,16 @@ export default function CategoryMatchPage() {
         break
       case 'match_end':
         stopTimer()
+        stopRadar()
         setGameState('finished')
         setMatchResult(msg)
+        {
+          const myFinal = playerNumber === 1 ? msg.player1_score : msg.player2_score
+          const oppFinal = playerNumber === 1 ? msg.player2_score : msg.player1_score
+          if (myFinal > oppFinal) playSound('win')
+          else if (myFinal < oppFinal) playSound('lose')
+          if (msg.new_badges?.length > 0) setTimeout(() => playSound('badge'), 900)
+        }
         break
     }
   }

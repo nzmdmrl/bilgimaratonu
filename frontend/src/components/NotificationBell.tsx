@@ -1,18 +1,28 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import api from '@/lib/api'
 import { useAuthStore } from '@/lib/store'
+import { playSound } from '@/lib/sound'
 
 export default function NotificationBell() {
   const { user } = useAuthStore()
   const pathname = usePathname()
   const [count, setCount] = useState(0)
+  const prevCount = useRef<number | null>(null)
 
   const loadCount = () => {
     api.get('/api/notifications/unread-count')
-      .then(r => setCount(r.data.count || 0))
+      .then(r => {
+        const c = r.data.count || 0
+        // Sayı arttıysa (yeni bildirim) ses çal — ilk yüklemede çalma
+        if (prevCount.current !== null && c > prevCount.current) {
+          playSound('notification')
+        }
+        prevCount.current = c
+        setCount(c)
+      })
       .catch(() => {})
   }
 

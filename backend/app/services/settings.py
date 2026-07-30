@@ -84,6 +84,21 @@ DEFAULT_SETTINGS = {
         {"min_xp": 15000, "title": "Sanal Efsane",    "color": "#E91E63", "icon": "👑"},
     ],
 
+    # ─ Ses Ayarları (boş = sentetik ses, dolu = yüklenen MP3 url'i)
+    "sounds": {
+        "radar": "",
+        "match_found": "",
+        "countdown": "",
+        "correct": "",
+        "wrong": "",
+        "both_wrong": "",
+        "new_question": "",
+        "win": "",
+        "lose": "",
+        "badge": "",
+        "notification": "",
+    },
+
     # ─ Bot Ayarları
     "bots": {
         "total_count": 500,

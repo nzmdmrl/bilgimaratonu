@@ -4,6 +4,8 @@ import { usePathname } from 'next/navigation'
 import { useAuthStore } from '@/lib/store'
 import { useEffect, useState } from 'react'
 import NotificationBell from './NotificationBell'
+import SoundToggle from './SoundToggle'
+import { initSounds } from '@/lib/sound'
 
 export default function Header() {
   const { user, fetchMe, logout } = useAuthStore()
@@ -14,6 +16,7 @@ export default function Header() {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
+      initSounds()
       fetchMe()
       fetch('https://api.bilgimaratonu.com/api/admin/settings/public')
         .then(r => r.json())
@@ -74,6 +77,7 @@ export default function Header() {
             {user ? (
               <>
                 <span className="hidden sm:block text-sm" style={{ color: '#FFD700' }}>⭐ {user.xp}</span>
+                <SoundToggle />
                 <NotificationBell />
                 <Link href={`/p/${user.username}`}
                   className="text-sm font-bold px-2 py-1.5 rounded-lg"

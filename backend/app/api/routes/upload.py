@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import text
 from app.core.database import get_db
-from app.core.deps import get_current_user
+from app.core.deps import get_current_user, get_current_admin
 from app.models.user import User
 import os, uuid
 
@@ -11,6 +11,14 @@ router = APIRouter(prefix="/api/upload", tags=["upload"])
 UPLOAD_DIR = os.path.join(os.path.dirname(__file__), "../../../uploads/avatars")
 ALLOWED = {"image/jpeg", "image/png", "image/webp"}
 MAX_SIZE = 2 * 1024 * 1024  # 2MB
+
+SOUND_DIR = os.path.join(os.path.dirname(__file__), "../../../uploads/sounds")
+SOUND_ALLOWED = {"audio/mpeg", "audio/mp3", "audio/wav", "audio/ogg"}
+SOUND_MAX_SIZE = 5 * 1024 * 1024  # 5MB
+SOUND_KEYS = {
+    "radar", "match_found", "countdown", "correct", "wrong", "both_wrong",
+    "new_question", "win", "lose", "badge", "notification",
+}
 
 @router.post("/avatar")
 async def upload_avatar(
@@ -101,6 +109,61 @@ async def reject_avatar(
     ), {"id": req_id})
     await db.commit()
     return {"ok": True}
+
+
+@router.post("/sound/{sound_key}")
+async def upload_sound(
+    sound_key: str,
+    file: UploadFile = File(...),
+    db: AsyncSession = Depends(get_db),
+    admin: User = Depends(get_current_admin),
+):
+    """Bir ses yuvasına MP3 yükle — sentetik ses yerine bu çalar. (Admin)"""
+    if sound_key not in SOUND_KEYS:
+        raise HTTPException(status_code=400, detail="Geçersiz ses anahtarı.")
+    if file.content_type not in SOUND_ALLOWED:
+        raise HTTPException(status_code=400, detail="Sadece MP3/WAV/OGG yüklenebilir.")
+
+    contents = await file.read()
+    if len(contents) > SOUND_MAX_SIZE:
+        raise HTTPException(status_code=400, detail="Dosya 5MB'dan büyük olamaz.")
+
+    ext = (file.filename or "ses.mp3").split(".")[-1].lower()
+    filename = f"{sound_key}_{uuid.uuid4().hex[:8]}.{ext}"
+    os.makedirs(SOUND_DIR, exist_ok=True)
+    with open(os.path.join(SOUND_DIR, filename), "wb") as f:
+        f.write(contents)
+
+    url = f"/uploads/sounds/{filename}"
+
+    from app.services.settings import get_settings, set_settings
+    from app.services.settings_cache import invalidate_cache
+    sounds = dict(await get_settings(db, "sounds"))
+    sounds[sound_key] = url
+    await set_settings(db, "sounds", sounds)
+    invalidate_cache("sounds")
+
+    return {"ok": True, "sound_key": sound_key, "url": url}
+
+
+@router.delete("/sound/{sound_key}")
+async def delete_sound(
+    sound_key: str,
+    db: AsyncSession = Depends(get_db),
+    admin: User = Depends(get_current_admin),
+):
+    """Ses yuvasındaki MP3'ü kaldır — sentetik sese geri dön. (Admin)"""
+    if sound_key not in SOUND_KEYS:
+        raise HTTPException(status_code=400, detail="Geçersiz ses anahtarı.")
+
+    from app.services.settings import get_settings, set_settings
+    from app.services.settings_cache import invalidate_cache
+    sounds = dict(await get_settings(db, "sounds"))
+    sounds[sound_key] = ""
+    await set_settings(db, "sounds", sounds)
+    invalidate_cache("sounds")
+
+    return {"ok": True, "sound_key": sound_key}
 
 
 @router.get("/my-pending-avatar")

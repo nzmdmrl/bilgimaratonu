@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/lib/store'
+import { initSounds, playSound, playCountdownTick, startRadar, stopRadar } from '@/lib/sound'
 
 type GameState = 'connecting' | 'waiting' | 'countdown' | 'starting' | 'question' | 'result' | 'finished'
 
@@ -86,6 +87,7 @@ export default function MacPage() {
   const playerNumberRef = useRef<1 | 2>(1)
 
   useEffect(() => {
+    initSounds()
     fetchMe().then(() => {
       const token = localStorage.getItem('access_token')
       if (!token) { router.push('/giris'); return }
@@ -94,6 +96,7 @@ export default function MacPage() {
     return () => {
       wsRef.current?.close()
       if (timerRef.current) clearInterval(timerRef.current)
+      stopRadar()
     }
   }, [])
 
@@ -113,6 +116,7 @@ export default function MacPage() {
           // NOT: Süre dolunca backend time_up mesajı gönderir
           // Frontend kendiliğinden soru geçişi YAPMAZ
         }
+        playCountdownTick(t - 1)
         return t - 1
       })
     }, 1000)
@@ -139,9 +143,12 @@ export default function MacPage() {
 
       case 'connected':
         setGameState('waiting')
+        startRadar()
         break
 
       case 'match_start':
+        stopRadar()
+        playSound('match_found')
         setOpponent(msg.opponent)
         setPlayerNumber(msg.player_number)
         playerNumberRef.current = msg.player_number
@@ -178,6 +185,7 @@ export default function MacPage() {
         setStatusMessage('')
         updateScores(msg.scores)
         setGameState('question')
+        playSound('new_question')
         startTimer(msg.question.time_limit)
         break
 
@@ -188,11 +196,13 @@ export default function MacPage() {
           stopTimer()
           setCorrectAnswer(msg.correct_answer)
           setStatusMessage('✓ Doğru cevap!')
+          playSound('correct')
         } else {
           // Timer devam etsin — yanlış yapan rakibin kaç saniyesi olduğunu görsün
           setCanAnswer(false)
           setJokerActive(false)
           setStatusMessage('✗ Yanlış cevap! Rakibin sırası...')
+          playSound('wrong')
         }
         break
 
@@ -224,6 +234,7 @@ export default function MacPage() {
         setCorrectAnswer(msg.correct_answer)
         updateScores(msg.scores)
         setStatusMessage('İkiniz de yanlış!')
+        playSound('both_wrong')
         break
 
       case 'time_up':
@@ -269,8 +280,16 @@ export default function MacPage() {
 
       case 'match_end':
         stopTimer()
+        stopRadar()
         setMatchResult(msg)
         setGameState('finished')
+        {
+          const won = msg.winner_id && user && msg.winner_id === user.id
+          playSound(won ? 'win' : 'lose')
+          if (msg.new_badges?.length > 0) {
+            setTimeout(() => playSound('badge'), 900)
+          }
+        }
         // WS'yi kapat — otomatik yeniden maça girişi önle
         setTimeout(() => wsRef.current?.close(), 500)
         // Kullanıcı bilgilerini güncelle — 401 hatası olursa yönlendirme yapma
