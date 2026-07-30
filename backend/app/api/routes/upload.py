@@ -17,6 +17,7 @@ SOUND_ALLOWED = {"audio/mpeg", "audio/mp3", "audio/wav", "audio/ogg"}
 SOUND_MAX_SIZE = 5 * 1024 * 1024  # 5MB
 SOUND_KEYS = {
     "radar", "match_found", "countdown", "correct", "wrong", "both_wrong",
+    "opponent_correct", "opponent_wrong",
     "new_question", "win", "lose", "badge", "notification",
 }
 

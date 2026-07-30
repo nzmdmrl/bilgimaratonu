@@ -5,6 +5,7 @@ import api from '@/lib/api'
 import { useParams, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import DuelRoom from './duel'
+import { initSounds, playSound, playCountdownTick } from '@/lib/sound'
 
 const DIFF_LABELS: Record<string, string> = { easy: 'Kolay', medium: 'Orta', hard: 'Zor', very_hard: 'Çok Zor' }
 const SCOREBOARD_LABELS: Record<string, string> = { single: 'Tek Sonuç', series: 'Seri Maç', daily: 'Günlük', monthly: 'Aylık', yearly: 'Yıllık', all: 'Tüm Zamanlar' }
@@ -44,8 +45,9 @@ export default function TestPage() {
     return t
   })
 
-  useEffect(() => { 
+  useEffect(() => {
     loadEvent()
+    initSounds()
   }, [slug])
 
   useEffect(() => {
@@ -106,6 +108,7 @@ export default function TestPage() {
     timerRef.current = setInterval(() => {
       setTimeLeft(t => {
         if (t <= 1) { clearInterval(timerRef.current!); handleAnswer(null); return 0 }
+        playCountdownTick(t - 1)
         return t - 1
       })
     }, 1000)
@@ -117,6 +120,7 @@ export default function TestPage() {
     setMyAnswer(selected)
     const correct = questions[currentIdx]?.correct_answer
     setCorrectAnswer(correct)
+    playSound(selected && selected === correct ? 'correct' : 'wrong')
     const newAnswers = [...answers, { question_id: questions[currentIdx].id, selected, time_ms: timeTaken }]
     setAnswers(newAnswers)
     setTimeout(() => {
@@ -128,6 +132,7 @@ export default function TestPage() {
         setCurrentIdx(nextIdx)
         setMyAnswer(null)
         setQStartTime(Date.now())
+        playSound('new_question')
         startTimer(questions[nextIdx].time_limit || 30)
       }
     }, 1500)
@@ -143,6 +148,11 @@ export default function TestPage() {
         total_time_seconds: totalTime,
       })
       setResult(r.data)
+      if (r.data && !r.data.error) {
+        const acc = r.data.accuracy ?? 0
+        playSound(acc >= 50 ? 'win' : 'lose')
+        if (r.data.new_badges?.length > 0) setTimeout(() => playSound('badge'), 900)
+      }
     } catch {
       setResult({ error: 'Sonuç kaydedilemedi.' })
     }

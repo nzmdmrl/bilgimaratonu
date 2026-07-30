@@ -92,6 +92,8 @@ DEFAULT_SETTINGS = {
         "correct": "",
         "wrong": "",
         "both_wrong": "",
+        "opponent_correct": "",
+        "opponent_wrong": "",
         "new_question": "",
         "win": "",
         "lose": "",

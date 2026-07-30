@@ -154,6 +154,7 @@ export default function CategoryMatchPage() {
         setStatusMessage('Rakip doğru yaptı!')
         if (playerNumber === 1) { setMyScore(msg.scores?.p1 || 0); setOppScore(msg.scores?.p2 || 0) }
         else { setMyScore(msg.scores?.p2 || 0); setOppScore(msg.scores?.p1 || 0) }
+        playSound('opponent_correct')
         break
       case 'opponent_wrong':
         setOpponentWrongAnswer(msg.wrong_answer)
@@ -161,6 +162,7 @@ export default function CategoryMatchPage() {
         setMyAnswer(null)
         setStatusMessage('🎯 Rakip yanlış yaptı! Sıra sende')
         if (msg.remaining_time) startTimer(msg.remaining_time)
+        playSound('opponent_wrong')
         break
       case 'both_wrong':
         stopTimer()

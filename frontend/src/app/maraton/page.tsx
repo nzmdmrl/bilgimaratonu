@@ -3,6 +3,7 @@ import { useEffect, useState, useRef } from 'react'
 import api from '@/lib/api'
 import { useAuthStore } from '@/lib/store'
 import Link from 'next/link'
+import { playSound, playCountdownTick } from '@/lib/sound'
 
 interface Marathon {
   id: string
@@ -230,6 +231,7 @@ export default function MaratonPage() {
         if (matchTimeoutRef.current) clearTimeout(matchTimeoutRef.current)
         matchTimeoutRef.current = setTimeout(() => setShowMatch(true), 2000)
         setStatusMsg(`🎯 Rakip: ${msg.opponent}`)
+        playSound('match_found')
         if (pollRef.current) clearInterval(pollRef.current)
         break
       case 'bye':
@@ -258,10 +260,12 @@ export default function MaratonPage() {
         setCorrectAnswer(null)
         setMatchStatus('')
         setTimeLeft(msg.time_limit)
+        playSound('new_question')
         if (timerRef.current) clearInterval(timerRef.current)
         timerRef.current = setInterval(() => {
           setTimeLeft(prev => {
             if (prev <= 1) { if (timerRef.current) clearInterval(timerRef.current); return 0 }
+            playCountdownTick(prev - 1)
             return prev - 1
           })
         }, 1000)
@@ -271,14 +275,17 @@ export default function MaratonPage() {
         setMyScore(msg.my_score ?? myScore)
         setOppScore(msg.opp_score ?? oppScore)
         if (timerRef.current) clearInterval(timerRef.current)
+        playSound('opponent_correct')
         break
       case 'both_wrong':
         setCorrectAnswer(msg.correct_answer)
         if (timerRef.current) clearInterval(timerRef.current)
+        playSound('both_wrong')
         break
       case 'opponent_wrong':
         setOpponentWrongAnswer(msg.wrong_answer)
         setMatchStatus('🎯 Rakip yanlış yaptı! Sıra sende')
+        playSound('opponent_wrong')
         break
       case 'question_result':
         setCorrectAnswer(msg.correct_answer)
@@ -296,10 +303,10 @@ export default function MaratonPage() {
           setOpponentCorrectAnswer(msg.correct_answer)
         }
         // Bildirim metni
-        if (msg.won_q && msg.correct) setMatchStatus('✓ Doğru cevap!')
-        else if (msg.opponent_correct) setMatchStatus('Rakip doğru cevap verdi')
-        else if (msg.both_wrong) setMatchStatus('İkiniz de yanlış yaptınız')
-        else if (msg.my_answer && msg.my_answer !== msg.correct_answer) setMatchStatus('✗ Yanlış cevap, sıra rakipte')
+        if (msg.won_q && msg.correct) { setMatchStatus('✓ Doğru cevap!'); playSound('correct') }
+        else if (msg.opponent_correct) setMatchStatus('Rakip doğru cevap verdi')  // ses opponent_correct olayında
+        else if (msg.both_wrong) setMatchStatus('İkiniz de yanlış yaptınız')      // ses both_wrong olayında
+        else if (msg.my_answer && msg.my_answer !== msg.correct_answer) { setMatchStatus('✗ Yanlış cevap, sıra rakipte'); playSound('wrong') }
         if (timerRef.current) clearInterval(timerRef.current)
         break
       case 'match_end': {
@@ -319,6 +326,9 @@ export default function MaratonPage() {
             color: wasFinal ? '#B0BEC5' : '#F44336',
           })
         }
+        playSound(msg.won ? 'win' : 'lose')
+        // Finalde kupa/madalya kazanılır — rozet sesi
+        if (wasFinal) setTimeout(() => playSound('badge'), 900)
         setTimeout(() => setMatchPopup(null), 4000)
       }
         if (matchTimeoutRef.current) clearTimeout(matchTimeoutRef.current)

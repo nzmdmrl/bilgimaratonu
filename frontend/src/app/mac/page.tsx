@@ -217,6 +217,7 @@ export default function MacPage() {
         setCanAnswer(true)
         stopTimer()
         startTimer(msg.remaining_time || 10)
+        playSound('opponent_wrong')
         break
 
       case 'opponent_correct':
@@ -227,6 +228,7 @@ export default function MacPage() {
         updateScores(msg.scores)
         setStatusMessage('❌ Rakip doğru cevapladı!')
         setCanAnswer(false)
+        playSound('opponent_correct')
         break
 
       case 'both_wrong':

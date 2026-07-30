@@ -12,6 +12,8 @@ export type SoundKey =
   | 'correct'
   | 'wrong'
   | 'both_wrong'
+  | 'opponent_correct'
+  | 'opponent_wrong'
   | 'new_question'
   | 'win'
   | 'lose'
@@ -26,6 +28,8 @@ export const SOUND_SLOTS: { key: SoundKey; label: string; desc: string }[] = [
   { key: 'correct', label: '✅ Doğru Cevap', desc: 'Doğru cevap verildiğinde' },
   { key: 'wrong', label: '❌ Yanlış Cevap', desc: 'Yanlış cevap verildiğinde' },
   { key: 'both_wrong', label: '😬 İkiniz de Yanlış', desc: 'Her iki oyuncu da yanlış yaptığında' },
+  { key: 'opponent_correct', label: '🔵 Rakip Doğru Yaptı', desc: 'Rakip doğru cevapladığında' },
+  { key: 'opponent_wrong', label: '🟢 Rakip Yanlış Yaptı', desc: 'Rakip yanlış yaptığında (sıra sende)' },
   { key: 'new_question', label: '📋 Yeni Soru', desc: 'Yeni soru geldiğinde' },
   { key: 'win', label: '🏆 Kazandın', desc: 'Maç kazanıldığında' },
   { key: 'lose', label: '💔 Kaybettin', desc: 'Maç kaybedildiğinde' },
@@ -189,6 +193,16 @@ const SYNTH: Record<SoundKey, (arg?: any) => void> = {
   both_wrong: () => {
     tone(160, 0.22, { type: 'sawtooth', gain: 0.22 })
     tone(120, 0.3, { type: 'sawtooth', gain: 0.22, delay: 0.14 })
+  },
+  opponent_correct: () => {
+    // rakip doğru yaptı — yumuşak, hafif olumsuz iki nota (in-in)
+    tone(392, 0.14, { type: 'sine', gain: 0.2 })
+    tone(311.13, 0.2, { type: 'sine', gain: 0.2, delay: 0.13 })
+  },
+  opponent_wrong: () => {
+    // rakip yanlış yaptı, sıra sende — hafif olumlu blip
+    tone(587.33, 0.1, { type: 'triangle', gain: 0.2 })
+    tone(880, 0.14, { type: 'triangle', gain: 0.2, delay: 0.09 })
   },
   new_question: () => {
     tone(440, 0.12, { type: 'triangle', gain: 0.22, sweepTo: 880 })
