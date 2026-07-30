@@ -215,34 +215,14 @@ export default function SoloPage() {
 
     return (
       <div className="min-h-screen" style={{
-        background: 'linear-gradient(180deg,#FBE3C0 0%,#F6C58C 40%,#EBA766 72%,#E08C4E 100%)',
+        background: 'linear-gradient(180deg, #0A0E27 0%, #1A1B4B 100%)',
         position: 'relative', overflowX: 'hidden',
       }}>
-        {/* Grafiksel çöl dekoru (sabit, kaydırılmaz) */}
-        <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMax slice" aria-hidden
-          style={{ position: 'fixed', bottom: 0, left: 0, width: '100%', height: 260, zIndex: 0, pointerEvents: 'none', opacity: 0.9 }}>
-          <circle cx="330" cy="70" r="34" fill="#FFF1CC" opacity="0.8" />
-          <polygon points="40,300 150,150 260,300" fill="#D98E52" opacity="0.55" />
-          <polygon points="200,300 300,120 400,300" fill="#CE7F44" opacity="0.6" />
-          <polygon points="150,150 158,170 142,170" fill="#B96b34" opacity="0.5" />
-          <polygon points="0,300 90,200 180,300" fill="#E6A162" opacity="0.5" />
-          {/* kaktüsler */}
-          <g fill="#7C9A5B" opacity="0.7">
-            <rect x="60" y="255" width="7" height="30" rx="3" />
-            <rect x="52" y="262" width="7" height="12" rx="3" />
-            <rect x="68" y="258" width="7" height="14" rx="3" />
-            <rect x="330" y="258" width="7" height="28" rx="3" />
-            <rect x="338" y="264" width="7" height="12" rx="3" />
-          </g>
-        </svg>
-
         {/* Üst bar */}
         <div className="flex items-center justify-between px-4 py-3" style={{ position: 'sticky', top: 0, zIndex: 10, maxWidth: 500, margin: '0 auto' }}>
-          <Link href="/" style={{ color: '#5D4037', fontSize: 24, fontWeight: 900, textDecoration: 'none' }}>←</Link>
-          <div className="font-black" style={{ color: '#5D4037' }}>🎯 Solo Yolu</div>
-          <div className="font-black px-3 py-1 rounded-full" style={{ background: 'rgba(255,255,255,0.55)', color: '#B8860B' }}>
-            🌟 {progress?.total_stars ?? 0}
-          </div>
+          <Link href="/" style={{ color: '#B0BEC5', fontSize: 22, fontWeight: 900, textDecoration: 'none' }}>←</Link>
+          <div className="font-black" style={{ color: '#4FC3F7' }}>🎯 Solo Yolu</div>
+          <div className="font-bold" style={{ color: '#FFD700' }}>🌟 {progress?.total_stars ?? 0}</div>
         </div>
 
         {/* Zigzag yol */}
