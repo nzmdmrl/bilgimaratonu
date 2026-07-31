@@ -78,6 +78,13 @@ async def startup():
             "UPDATE users SET avatar_url = 'https://api.dicebear.com/9.x/thumbs/svg?seed=' || username "
             "WHERE is_bot = true AND (avatar_url IS NULL OR avatar_url = '')"
         ))
+        # Turnuva rozet adlarini guncelle (maraton -> turnuva yeniden adlandirma)
+        await db.execute(_sqltext(
+            "UPDATE badges SET name='Turnuvacı', description='İlk turnuvaya katıl' WHERE code='marathon_join'"
+        ))
+        await db.execute(_sqltext(
+            "UPDATE badges SET description='Turnuvayı kazan' WHERE code='marathon_champ'"
+        ))
         await db.commit()
     await seed_badges(db)
     await seed_settings(db)

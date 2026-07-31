@@ -16,10 +16,10 @@ ALL_BADGES = [
     {"code": "win_50",         "name": "50 Galibiyet",   "icon": "🏆", "category": "match",    "description": "Toplam 50 maç kazan",                    "requirement": 50},
     {"code": "perfect_match",  "name": "Mükemmel Maç",   "icon": "🎯", "category": "match",    "description": "Tüm soruları doğru cevapla",              "requirement": 1},
     {"code": "quick_answer",   "name": "Hızlı El",       "icon": "⚡", "category": "match",    "description": "5 saniye içinde doğru cevap ver",         "requirement": 1},
-    # Maraton rozetleri
-    {"code": "marathon_join",  "name": "Maratoncu",      "icon": "🏅", "category": "marathon", "description": "İlk maratona katıl",                     "requirement": 1},
+    # Turnuva rozetleri
+    {"code": "marathon_join",  "name": "Turnuvacı",      "icon": "🏅", "category": "marathon", "description": "İlk turnuvaya katıl",                    "requirement": 1},
     {"code": "marathon_semi",  "name": "Final Yolcusu",  "icon": "🥉", "category": "marathon", "description": "Yarı finale çık (Son 4)",                 "requirement": 1},
-    {"code": "marathon_champ", "name": "Şampiyon",       "icon": "🥇", "category": "marathon", "description": "Maratonu kazan",                         "requirement": 1},
+    {"code": "marathon_champ", "name": "Şampiyon",       "icon": "🥇", "category": "marathon", "description": "Turnuvayı kazan",                        "requirement": 1},
 ]
 
 async def seed_badges(db: AsyncSession):

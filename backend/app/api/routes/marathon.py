@@ -29,7 +29,7 @@ async def get_lobby_status(marathon_id: str, db: AsyncSession = Depends(get_db))
     result = await db.execute(select(Marathon).where(Marathon.id == marathon_id))
     marathon = result.scalar_one_or_none()
     if not marathon:
-        raise HTTPException(status_code=404, detail="Maraton bulunamadı.")
+        raise HTTPException(status_code=404, detail="Turnuva bulunamadı.")
 
     parts_result = await db.execute(
         select(MarathonParticipant)
@@ -117,13 +117,13 @@ async def start_marathon(
     result = await db.execute(select(Marathon).where(Marathon.id == marathon_id))
     marathon = result.scalar_one_or_none()
     if not marathon:
-        raise HTTPException(status_code=404, detail="Maraton bulunamadı.")
+        raise HTTPException(status_code=404, detail="Turnuva bulunamadı.")
     if marathon.status != MarathonStatus.waiting:
-        raise HTTPException(status_code=400, detail="Maraton zaten başlamış.")
+        raise HTTPException(status_code=400, detail="Turnuva zaten başlamış.")
 
     # Maraton motorunu başlat
     asyncio.ensure_future(run_marathon_engine(marathon_id))
-    return {"message": "Maraton başlatıldı!"}
+    return {"message": "Turnuva başlatıldı!"}
 
 @router.get("/{marathon_id}/participants")
 async def get_participants(

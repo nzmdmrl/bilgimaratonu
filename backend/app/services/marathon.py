@@ -107,9 +107,9 @@ async def join_marathon(
     marathon = result.scalar_one_or_none()
 
     if not marathon:
-        return False, "Maraton bulunamadı."
+        return False, "Turnuva bulunamadı."
     if marathon.status != MarathonStatus.waiting:
-        return False, "Maraton başlamış veya dolmuş."
+        return False, "Turnuva başlamış veya dolmuş."
 
     # Zaten katılmış mı?
     existing = await db.execute(
@@ -119,7 +119,7 @@ async def join_marathon(
         )
     )
     if existing.scalar_one_or_none():
-        return False, "Zaten bu maratona katıldınız."
+        return False, "Zaten bu turnuvaya katıldınız."
 
     # Kapasite kontrolü
     count = await db.execute(
@@ -146,7 +146,7 @@ async def join_marathon(
             await db.flush()
             print(f"[JOIN] Lobi doluydu, bot çıkarıldı → insan alındı ({user_id[:8]})")
         else:
-            return False, "Maraton dolu."
+            return False, "Turnuva dolu."
 
     participant = MarathonParticipant(
         marathon_id=marathon_id,
@@ -155,7 +155,7 @@ async def join_marathon(
     )
     db.add(participant)
     await db.commit()
-    return True, "Maratona katıldınız!"
+    return True, "Turnuvaya katıldınız!"
 
 async def fill_with_bots(db: AsyncSession, marathon_id: str) -> int:
     """Boş slotları botlarla doldur."""
@@ -330,7 +330,7 @@ async def finalize_marathon(db: AsyncSession, marathon_id: str):
             winner_part.status = MarathonParticipantStatus.champion
             winner_part.xp_earned = PLACE_XP[1]
             await award_trophy_or_medal(db, winner_id, "marathon", str(marathon_id), rank=1)
-            db.add(Notification(user_id=winner_id, type="trophy", title="🏆 Maraton Sampiyonu!", message="Maratonu kazandin, kupa senin!", data={"rank": 1, "marathon_id": str(marathon_id)}))
+            db.add(Notification(user_id=winner_id, type="trophy", title="🏆 Turnuva Şampiyonu!", message="Turnuvayı kazandın, kupa senin!", data={"rank": 1, "marathon_id": str(marathon_id)}))
 
         # 2.
         l_part = await db.execute(
@@ -344,7 +344,7 @@ async def finalize_marathon(db: AsyncSession, marathon_id: str):
             loser_part.status = MarathonParticipantStatus.second
             loser_part.xp_earned = PLACE_XP[2]
             await award_trophy_or_medal(db, loser_id, "marathon", str(marathon_id), rank=2)
-            db.add(Notification(user_id=loser_id, type="medal", title="🥈 Maraton Ikincisi!", message="Maratonda 2. oldun, madalya kazandin!", data={"rank": 2, "marathon_id": str(marathon_id)}))
+            db.add(Notification(user_id=loser_id, type="medal", title="🥈 Turnuva İkincisi!", message="Turnuvada 2. oldun, madalya kazandın!", data={"rank": 2, "marathon_id": str(marathon_id)}))
 
     # 3. — Yarı final kaybedenlerinden
     semi_matches = await db.execute(

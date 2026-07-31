@@ -171,7 +171,7 @@ export default function AdminPage() {
     setSistemLoading('marathon')
     await api.post('/api/admin/reset/marathon')
     setSistemLoading('')
-    alert('Maraton sıfırlandı!')
+    alert('Turnuva sıfırlandı!')
   }
 
   const resetTests = async () => {
@@ -1447,8 +1447,8 @@ export default function AdminPage() {
               </div>
               <div className="glass p-4 flex items-center justify-between">
                 <div>
-                  <div className="font-bold">Maraton Sıfırlama</div>
-                  <div className="text-xs mt-1" style={{ color: '#B0BEC5' }}>Aktif maratonları sıfırlar</div>
+                  <div className="font-bold">Turnuva Sıfırlama</div>
+                  <div className="text-xs mt-1" style={{ color: '#B0BEC5' }}>Aktif turnuvaları sıfırlar</div>
                 </div>
                 <button onClick={resetMarathon} disabled={sistemLoading === 'marathon'}
                   className="text-sm px-4 py-2 rounded-lg font-bold flex-shrink-0"
@@ -1677,7 +1677,7 @@ export default function AdminPage() {
               {[
                 { key: 'match_1v1', label: '1v1 İnsan Maçı' },
                 { key: 'match_bot', label: '1v1 Bot Maçı' },
-                { key: 'marathon', label: 'Maraton' },
+                { key: 'marathon', label: 'Turnuva' },
                 { key: 'league_daily', label: 'Günlük Lig' },
                 { key: 'league_weekly', label: 'Haftalık Lig' },
                 { key: 'league_monthly', label: 'Aylık Lig' },
@@ -1801,7 +1801,7 @@ export default function AdminPage() {
 
           {/* Solo Level Ayarları */}
           <div className="glass p-5">
-            <h3 className="font-bold mb-1" style={{ color: '#FFD700' }}>🌟 Solo Level Ayarları</h3>
+            <h3 className="font-bold mb-1" style={{ color: '#FFD700' }}>🌟 Maraton Level Ayarları</h3>
             <p className="text-xs mb-4" style={{ color: '#B0BEC5' }}>
               Kullanıcı bir levelde yeni yıldız kazandığında yıldız başına verilecek XP. (Sadece yeni yıldızlar için; tekrar oynayıp aynı yıldızdan XP kazanılamaz.)
             </p>
@@ -1823,7 +1823,7 @@ export default function AdminPage() {
 
           {/* Maraton Ayarları */}
           <div className="glass p-5">
-            <h3 className="font-bold mb-4" style={{ color: '#FFD700' }}>🏅 Maraton Ayarları</h3>
+            <h3 className="font-bold mb-4" style={{ color: '#FFD700' }}>🏆 Turnuva Ayarları</h3>
             <div className="grid grid-cols-3 gap-4">
               <div>
                 <label className="text-sm mb-1 block" style={{ color: '#B0BEC5' }}>Katılımcı Sayısı</label>

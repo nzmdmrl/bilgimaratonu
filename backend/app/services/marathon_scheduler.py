@@ -115,7 +115,7 @@ async def fill_lobby(marathon_id: str, max_p: int, lobby_dur: int, marathon_mana
                     await marathon_manager.broadcast(marathon_id, {
                         "type": "countdown",
                         "seconds": i,
-                        "message": f"Maraton {i} saniye içinde başlıyor!"
+                        "message": f"Turnuva {i} saniye içinde başlıyor!"
                     })
                     await asyncio.sleep(1)
                 return
@@ -173,7 +173,7 @@ async def fill_lobby(marathon_id: str, max_p: int, lobby_dur: int, marathon_mana
         await marathon_manager.broadcast(marathon_id, {
             "type": "countdown",
             "seconds": i,
-            "message": f"Maraton {i} saniye içinde başlıyor!"
+            "message": f"Turnuva {i} saniye içinde başlıyor!"
         })
         await asyncio.sleep(1)
 

@@ -34,9 +34,9 @@ export default function Header() {
   const allLinks = [
     { href: '/mac', label: '⚡ Maç', color: '#4FC3F7', moduleKey: 'match_1v1' },
     { href: '/kategoriler', label: '🗂 Kategoriler', color: '#FFD700', moduleKey: 'match_1v1' },
-    { href: '/solo', label: '🎯 Solo', color: '#81C784', moduleKey: 'match_bot' },
+    { href: '/maraton', label: '🏅 Maraton', color: '#81C784', moduleKey: 'match_bot' },
     { href: '/testler', label: '📝 Testler', color: '#E91E63', moduleKey: 'match_1v1' },
-    { href: '/maraton', label: '🏅 Maraton', color: '#FFD700', moduleKey: 'marathon' },
+    { href: '/turnuva', label: '🏆 Turnuva', color: '#FFD700', moduleKey: 'marathon' },
     { href: '/lig', label: '🏆 Lig', color: '#81C784', moduleKey: 'league_daily' },
     { href: '/market', label: '🛒 Market', color: '#FFD700', moduleKey: 'match_1v1' },
   ]
@@ -78,7 +78,7 @@ export default function Header() {
             {user ? (
               <>
                 <span className="hidden sm:block text-sm" style={{ color: '#FFD700' }}>⭐ {user.xp}</span>
-                <Link href="/solo" className="hidden sm:block text-sm" style={{ color: '#FFD700', textDecoration: 'none' }} title="Solo yıldızların">🌟 {user.solo_stars ?? 0}</Link>
+                <Link href="/maraton" className="hidden sm:block text-sm" style={{ color: '#FFD700', textDecoration: 'none' }} title="Maraton yıldızların">🌟 {user.solo_stars ?? 0}</Link>
                 <SoundToggle />
                 <NotificationBell />
                 <Link href={`/p/${user.username}`}

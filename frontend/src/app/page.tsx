@@ -74,7 +74,7 @@ export default function HomePage() {
             Buluştuğu Adres
           </h2>
           <p className="text-lg mb-8" style={{ color: '#B0BEC5' }}>
-            1v1 düellolar · Solo pratik · Testler · Lig
+            1v1 düellolar · Maraton · Testler · Lig
           </p>
           {!user && (
             <div className="flex gap-4 justify-center flex-wrap">
@@ -147,10 +147,10 @@ export default function HomePage() {
               bg: 'rgba(79,195,247,0.08)',
             },
             {
-              href: '/solo',
-              icon: '📚',
-              title: 'Solo Pratik',
-              desc: 'Kendi hızında çalış, zayıf noktalarını keşfet, sonraki maça hazırlan.',
+              href: '/maraton',
+              icon: '🏅',
+              title: 'Maraton',
+              desc: 'Seviye seviye ilerle, yıldız topla, bilgini geliştir.',
               color: '#81C784',
               bg: 'rgba(129,199,132,0.08)',
             },
@@ -172,24 +172,24 @@ export default function HomePage() {
               style={{ background: 'rgba(255,215,0,0.06)', border: '1px solid rgba(255,215,0,0.2)' }}>
               <div className="flex items-center justify-between flex-wrap gap-4">
                 <div className="flex items-center gap-4">
-                  <div className="text-5xl">🏅</div>
+                  <div className="text-5xl">🏆</div>
                   <div>
-                    <h3 className="text-xl font-black" style={{ color: '#FFD700' }}>Bilgi Maratonu</h3>
+                    <h3 className="text-xl font-black" style={{ color: '#FFD700' }}>Turnuva</h3>
                     {marathonInfo?.status === 'waiting' || marathonInfo?.status === 'lobby' ? (
                       <p className="text-sm" style={{ color: '#B0BEC5' }}>
                         Lobi açık — {marathonInfo.current_participants || 0}/{marathonInfo.max_participants || 32} katılımcı
                       </p>
                     ) : marathonInfo?.next_at ? (
                       <p className="text-sm" style={{ color: '#B0BEC5' }}>
-                        Sonraki maraton: ⏰ {new Date(new Date(marathonInfo.next_at).getTime() + 3*60*60*1000).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
+                        Sonraki turnuva: ⏰ {new Date(new Date(marathonInfo.next_at).getTime() + 3*60*60*1000).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
                       </p>
                     ) : (
                       <p className="text-sm" style={{ color: '#B0BEC5' }}>{marathonInfo?.max_participants || 32} kişilik turnuva — en bilgili sen misin?</p>
                     )}
                   </div>
                 </div>
-                <Link href="/maraton" className="btn-gold px-6 py-3 font-black">
-                  {marathonInfo?.status === 'waiting' || marathonInfo?.status === 'lobby' ? '🏅 Katıl' : '🏅 Maratona Git'}
+                <Link href="/turnuva" className="btn-gold px-6 py-3 font-black">
+                  {marathonInfo?.status === 'waiting' || marathonInfo?.status === 'lobby' ? '🏆 Katıl' : '🏆 Turnuvaya Git'}
                 </Link>
               </div>
             </div>
