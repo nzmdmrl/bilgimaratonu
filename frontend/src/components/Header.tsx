@@ -77,7 +77,7 @@ export default function Header() {
           <div className="flex items-center gap-2">
             {user ? (
               <>
-                <span className="hidden sm:block text-sm" style={{ color: '#FFD700' }}>⭐ {user.xp}</span>
+                <span className="hidden sm:block text-sm" style={{ color: '#FFD700' }}>💎 {user.xp}</span>
                 <Link href="/maraton" className="hidden sm:block text-sm" style={{ color: '#FFD700', textDecoration: 'none' }} title="Maraton yıldızların">🌟 {user.solo_stars ?? 0}</Link>
                 <SoundToggle />
                 <NotificationBell />
@@ -139,7 +139,7 @@ export default function Header() {
                   </div>
                   <div>
                     <div style={{ fontWeight: 700, fontSize: 14 }}>{user.username}</div>
-                    <div style={{ color: '#FFD700', fontSize: 12 }}>⭐ {user.xp} XP · 🌟 {user.solo_stars ?? 0}</div>
+                    <div style={{ color: '#FFD700', fontSize: 12 }}>💎 {user.xp} XP · 🌟 {user.solo_stars ?? 0}</div>
                   </div>
                 </Link>
               </div>

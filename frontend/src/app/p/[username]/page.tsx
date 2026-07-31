@@ -208,7 +208,7 @@ export default function ProfilePage() {
             {/* XP Bar */}
             <div className="mt-3">
               <div className="flex justify-between text-xs mb-1" style={{ color: '#B0BEC5' }}>
-                <span>⭐ {profile.xp.toLocaleString()} XP</span>
+                <span>💎 {profile.xp.toLocaleString()} XP</span>
                 {nextUnvan && <span>{nextUnvan.title} için {(nextUnvan.min_xp - profile.xp).toLocaleString()} XP</span>}
               </div>
               <div className="h-2 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.1)' }}>
@@ -263,7 +263,7 @@ export default function ProfilePage() {
           { label: 'Toplam Maç', value: profile.total_matches, icon: '🎮', color: '#4FC3F7' },
           { label: 'Galibiyet %', value: `${profile.win_rate}%`, icon: '🏆', color: '#FFD700' },
           { label: 'ELO Puanı', value: profile.elo_rating, icon: '📊', color: '#81C784' },
-          { label: 'Toplam XP', value: profile.xp.toLocaleString(), icon: '⭐', color: '#E91E63' },
+          { label: 'Toplam XP', value: profile.xp.toLocaleString(), icon: '💎', color: '#E91E63' },
           { label: 'Maraton Yıldızı', value: profile.solo_stars ?? 0, icon: '🌟', color: '#FFD700' },
         ].map(stat => (
           <div key={stat.label} className="glass p-4 text-center">
