@@ -199,7 +199,11 @@ async def process_match_result(
 
 
 async def _award_badge(db: AsyncSession, user_id: str, badge_code: str) -> Optional[dict]:
-    """Rozet ver — zaten varsa None döndür."""
+    """Rozet ver — zaten varsa None döndür. Botlara rozet verilmez."""
+    from sqlalchemy import text as _t
+    _bot = (await db.execute(_t("SELECT is_bot FROM users WHERE id = :uid"), {"uid": str(user_id)})).first()
+    if _bot and _bot[0]:
+        return None
     b_res = await db.execute(select(Badge).where(Badge.code == badge_code))
     badge = b_res.scalar_one_or_none()
     if not badge:
