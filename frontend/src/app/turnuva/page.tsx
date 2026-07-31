@@ -5,6 +5,7 @@ import { useAuthStore } from '@/lib/store'
 import Link from 'next/link'
 import { playSound, playCountdownTick } from '@/lib/sound'
 import { avatarSrc } from '@/lib/avatar'
+import Bracket, { BracketData } from './Bracket'
 
 interface Marathon {
   id: string
@@ -52,6 +53,8 @@ export default function MaratonPage() {
   const [timeLeft, setTimeLeft] = useState(0)
   const [eliminated, setEliminated] = useState(false)
   const [champion, setChampion] = useState('')
+  const [bracket, setBracket] = useState<BracketData | null>(null)
+  const [bracketOpen, setBracketOpen] = useState(false)
   const [lobbyCountdown, setLobbyCountdown] = useState(0)
   const [isP1, setIsP1] = useState(true)
   const [opponentWrongAnswer, setOpponentWrongAnswer] = useState<string | null>(null)
@@ -78,6 +81,19 @@ export default function MaratonPage() {
       if (wsRef.current) wsRef.current.close()
     }
   }, [])
+
+  // Bracket verisini turnuva sürerken periyodik çek
+  const loadBracket = async (id: string) => {
+    try { const r = await api.get(`/api/marathon/${id}/bracket`); setBracket(r.data) } catch { /* ignore */ }
+  }
+  useEffect(() => {
+    if (marathon?.status !== 'in_progress' || !marathon?.id) return
+    loadBracket(marathon.id)
+    const iv = setInterval(() => loadBracket(marathon.id), 5000)
+    return () => clearInterval(iv)
+  }, [marathon?.status, marathon?.id])
+  // Elenince şemayı otomatik aç (izlemeye devam)
+  useEffect(() => { if (eliminated && marathon?.id) { loadBracket(marathon.id); setBracketOpen(true) } }, [eliminated])
 
   const getChampions = async () => {
     try {
@@ -609,6 +625,15 @@ export default function MaratonPage() {
             <div className="text-xs mt-1" style={{ color: '#B0BEC5' }}>{active.length} kişi yarışıyor</div>
           </div>
         )}
+        {marathon?.status === 'in_progress' && (
+          <div className="mt-2 text-center">
+            <button onClick={() => { if (marathon?.id) loadBracket(marathon.id); setBracketOpen(true) }}
+              className="text-sm font-bold px-4 py-1.5 rounded-lg"
+              style={{ background: 'rgba(79,195,247,0.15)', color: '#4FC3F7' }}>
+              🗺 Şemayı Gör
+            </button>
+          </div>
+        )}
       </div>
 
       {!marathon && (
@@ -730,6 +755,26 @@ export default function MaratonPage() {
       )}
 
       <Link href="/" className="text-sm text-gray-500 hover:text-gray-300">← Ana Sayfa</Link>
+
+      {/* Bracket / Şema overlay */}
+      {bracketOpen && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'rgba(5,8,20,0.92)', display: 'flex', flexDirection: 'column', padding: 12 }}>
+          <div className="flex items-center justify-between mb-2">
+            <div className="font-black" style={{ color: '#FFD700' }}>🏆 Turnuva Şeması</div>
+            <button onClick={() => setBracketOpen(false)}
+              className="text-sm font-bold px-3 py-1.5 rounded-lg"
+              style={{ background: 'rgba(255,255,255,0.1)', color: '#fff' }}>✕ Kapat</button>
+          </div>
+          <div className="text-xs mb-2" style={{ color: '#B0BEC5' }}>
+            Sürükleyerek gez · ＋/－ ile yakınlaştır · Sen <span style={{ color: '#FFD700' }}>sarı</span> çerçeveli · Kazanan <span style={{ color: '#A5D6A7' }}>yeşil</span>, elenen soluk
+          </div>
+          {bracket ? (
+            <Bracket data={bracket} me={user?.username} />
+          ) : (
+            <div className="glass p-8 text-center" style={{ color: '#B0BEC5', borderRadius: 12 }}>Şema yükleniyor...</div>
+          )}
+        </div>
+      )}
     </div>
   )
 }

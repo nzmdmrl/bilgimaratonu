@@ -411,6 +411,21 @@ async def run_marathon_engine(marathon_id: str):
         questions_per_round = marathon.questions_per_round or 3
         await db.commit()
 
+    # Sabit bracket için seed ata (henüz atanmadıysa) — rastgele sıralama
+    async with AsyncSessionLocal() as db:
+        _parts = (await db.execute(
+            select(MarathonParticipant).where(
+                MarathonParticipant.marathon_id == marathon_id,
+                MarathonParticipant.status == MarathonParticipantStatus.active,
+            )
+        )).scalars().all()
+        if _parts and all(p.seed is None for p in _parts):
+            random.shuffle(_parts)
+            for i, p in enumerate(_parts):
+                p.seed = i
+            await db.commit()
+            print(f"[Engine] {len(_parts)} katılımcıya seed atandı")
+
     from app.services.settings_cache import get_cached_setting
     s = await get_cached_setting("marathon")
     time_limit = int(s.get("time_per_question") or 20)
@@ -461,10 +476,8 @@ async def run_marathon_engine(marathon_id: str):
         async with AsyncSessionLocal() as db:
             questions = await get_round_questions(db, marathon_id, round_num, questions_per_round)
 
-        humans = [p for p in active if not p.user.is_bot]
-        bots = [p for p in active if p.user.is_bot]
-        random.shuffle(bots)
-        ordered = humans + bots
+        # Sabit bracket: seed sırasına göre eşleştir (dalların tutarlı olması için)
+        ordered = sorted(active, key=lambda p: (p.seed if p.seed is not None else 10**9))
 
         match_infos = []
         bye_id = None
@@ -477,6 +490,7 @@ async def run_marathon_engine(marathon_id: str):
                     round_number=round_num,
                     player1_id=str(p1.user_id),
                     player2_id=str(p2.user_id),
+                    bracket_index=i // 2,
                     status="in_progress",
                     started_at=datetime.utcnow(),
                 )
@@ -505,6 +519,7 @@ async def run_marathon_engine(marathon_id: str):
                     player1_id=bye_id,
                     player2_id=None,
                     winner_id=bye_id,
+                    bracket_index=len(ordered) // 2,
                     status="finished",
                     started_at=datetime.utcnow(),
                     finished_at=datetime.utcnow(),

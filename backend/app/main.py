@@ -85,6 +85,9 @@ async def startup():
         await db.execute(_sqltext(
             "UPDATE badges SET description='Turnuvayı kazan' WHERE code='marathon_champ'"
         ))
+        # Bracket kolonlari (idempotent)
+        await db.execute(_sqltext("ALTER TABLE marathon_participants ADD COLUMN IF NOT EXISTS seed INTEGER"))
+        await db.execute(_sqltext("ALTER TABLE marathon_matches ADD COLUMN IF NOT EXISTS bracket_index INTEGER"))
         # Botlarin kupa/madalya/rozet kazanimlarini temizle (profillerine yansimasin)
         await db.execute(_sqltext(
             "DELETE FROM achievements WHERE user_id IN (SELECT id FROM users WHERE is_bot = true)"

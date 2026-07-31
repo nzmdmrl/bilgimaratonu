@@ -151,6 +151,78 @@ async def get_participants(
         } for p in participants]
     }
 
+@router.get("/{marathon_id}/bracket")
+async def get_bracket(marathon_id: str, db: AsyncSession = Depends(get_db)):
+    """Sabit eleme şeması — tüm turların maçları (bilinenler + boş slotlar frontend'de)."""
+    import math
+    from app.models.marathon import MarathonMatch
+
+    m = await db.get(Marathon, marathon_id)
+    if not m:
+        raise HTTPException(status_code=404, detail="Turnuva bulunamadı.")
+
+    # Katılımcı bilgisi (user_id -> bilgi)
+    prs = (await db.execute(
+        select(MarathonParticipant).options(selectinload(MarathonParticipant.user))
+        .where(MarathonParticipant.marathon_id == marathon_id)
+    )).scalars().all()
+    pinfo = {}
+    for p in prs:
+        pinfo[str(p.user_id)] = {
+            "username": p.user.username if p.user else "?",
+            "avatar_url": (p.user.avatar_url or "") if p.user else "",
+            "is_bot": p.user.is_bot if p.user else False,
+            "seed": p.seed,
+            "status": p.status.value,
+            "eliminated_at_round": p.eliminated_at_round,
+        }
+
+    matches = (await db.execute(
+        select(MarathonMatch).where(MarathonMatch.marathon_id == marathon_id)
+        .order_by(MarathonMatch.round_number, MarathonMatch.bracket_index)
+    )).scalars().all()
+
+    # Bracket boyutu: 1. tur maç sayısı*2, yoksa max_participants
+    r1 = [mm for mm in matches if mm.round_number == 1]
+    size = (len(r1) * 2) if r1 else (m.max_participants or 32)
+    rounds_total = max(1, int(math.log2(size))) if size >= 2 else 1
+
+    def _player(uid):
+        if not uid:
+            return None
+        info = pinfo.get(str(uid))
+        if not info:
+            return {"username": "?", "avatar_url": "", "is_bot": False, "seed": None}
+        return {"username": info["username"], "avatar_url": info["avatar_url"], "is_bot": info["is_bot"], "seed": info["seed"]}
+
+    out = []
+    for mm in matches:
+        winner_username = pinfo.get(str(mm.winner_id), {}).get("username") if mm.winner_id else None
+        out.append({
+            "round": mm.round_number,
+            "index": mm.bracket_index if mm.bracket_index is not None else 0,
+            "p1": _player(mm.player1_id),
+            "p2": _player(mm.player2_id),
+            "winner_username": winner_username,
+            "status": mm.status,
+        })
+
+    champion = None
+    if m.status == MarathonStatus.finished:
+        champ = next((p for p in prs if p.status == MarathonParticipantStatus.champion), None)
+        if champ and champ.user:
+            champion = champ.user.username
+
+    return {
+        "size": size,
+        "rounds_total": rounds_total,
+        "status": m.status.value,
+        "current_round": m.current_round,
+        "champion": champion,
+        "matches": out,
+    }
+
+
 @router.websocket("/{marathon_id}/ws")
 async def marathon_websocket(
     websocket: WebSocket,

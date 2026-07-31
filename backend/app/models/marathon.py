@@ -53,6 +53,7 @@ class MarathonParticipant(Base):
     current_round = Column(Integer, default=0)
     total_score = Column(Integer, default=0)
     eliminated_at_round = Column(Integer, nullable=True)
+    seed = Column(Integer, nullable=True)  # sabit bracket pozisyonu (0..N-1)
 
     # XP ödülü
     xp_earned = Column(Integer, default=0)
@@ -77,6 +78,7 @@ class MarathonMatch(Base):
 
     player1_score = Column(Integer, default=0)
     player2_score = Column(Integer, default=0)
+    bracket_index = Column(Integer, nullable=True)  # tur içindeki bracket sırası (0-based)
 
     status = Column(String(20), default="waiting")
     started_at = Column(DateTime(timezone=True), nullable=True)
