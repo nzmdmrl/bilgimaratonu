@@ -95,6 +95,17 @@ async def startup():
         await db.execute(_sqltext(
             "DELETE FROM user_badges WHERE user_id IN (SELECT id FROM users WHERE is_bot = true)"
         ))
+        # Normal kullanicinin cozemeyecegi uzmanlik sorularini pasiflestir (idempotent, geri alinabilir)
+        import os as _os, json as _json
+        _dq_path = _os.path.join(_os.path.dirname(__file__), "data", "disabled_questions.json")
+        try:
+            if _os.path.exists(_dq_path):
+                _dq = _json.load(open(_dq_path, encoding="utf-8"))
+                if _dq:
+                    r = await db.execute(_sqltext("UPDATE questions SET is_active=false WHERE text = ANY(:texts) AND is_active=true"), {"texts": _dq})
+                    print(f"[Startup] {getattr(r, 'rowcount', '?')} uzmanlik sorusu pasiflestirildi")
+        except Exception as _e:
+            print(f"[Startup] disabled_questions hata: {_e}")
         await db.commit()
     await seed_badges(db)
     await seed_settings(db)
