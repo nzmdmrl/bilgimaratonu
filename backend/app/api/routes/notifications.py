@@ -30,6 +30,13 @@ async def get_notifications(db: AsyncSession = Depends(get_db), current_user = D
 
 @router.get("/unread-count")
 async def unread_count(db: AsyncSession = Depends(get_db), current_user = Depends(get_current_user)):
+    # Hafif presence heartbeat — admin "online" istatistigi icin (60sn'de bir cagrilir)
+    from sqlalchemy import text as _t
+    try:
+        await db.execute(_t("UPDATE users SET last_seen_at = NOW() WHERE id = :uid"), {"uid": str(current_user.id)})
+        await db.commit()
+    except Exception:
+        pass
     result = await db.execute(
         select(func.count())
         .select_from(Notification)

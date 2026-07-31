@@ -32,6 +32,8 @@ export default function AdminPage() {
   const router = useRouter()
   const [tab, setTab] = useState<Tab>('dashboard')
   const [dashboard, setDashboard] = useState<DashboardData | null>(null)
+  const [stats, setStats] = useState<any>(null)
+  const [statsPeriod, setStatsPeriod] = useState<'anlik' | 'today' | 'yesterday' | 'week' | 'month'>('anlik')
   const [questions, setQuestions] = useState<Question[]>([])
   const [qPage, setQPage] = useState(1)
   const [qTotal, setQTotal] = useState(0)
@@ -407,6 +409,24 @@ export default function AdminPage() {
     setDashboard(r.data)
   }
 
+  const loadStats = async (period: string) => {
+    try {
+      const r = await api.get(`/api/admin/stats?period=${period}`)
+      setStats(r.data)
+    } catch { setStats(null) }
+  }
+
+  useEffect(() => {
+    if (tab !== 'dashboard') return
+    loadStats(statsPeriod)
+    // Anlık modda 20sn'de bir tazele
+    if (statsPeriod === 'anlik') {
+      const id = setInterval(() => loadStats('anlik'), 20000)
+      return () => clearInterval(id)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab, statsPeriod])
+
   const loadQuestions = async () => {
     const r = await api.get(`/api/admin/questions?page=${qPage}&limit=15&search=${qSearch}`)
     setQuestions(r.data.questions)
@@ -524,19 +544,97 @@ export default function AdminPage() {
       </div>
 
       {/* DASHBOARD */}
-      {tab === 'dashboard' && dashboard && (
-        <div className="grid grid-cols-3 gap-4 animate-fade-in">
-          {[
-            { label: 'Toplam Kullanıcı', value: dashboard.users, icon: '👤', color: '#4FC3F7' },
-            { label: 'Aktif Soru', value: dashboard.questions, icon: '❓', color: '#FFD700' },
-            { label: 'Toplam Maç', value: dashboard.matches, icon: '🎮', color: '#81C784' },
-          ].map(stat => (
-            <div key={stat.label} className="glass p-6 text-center">
-              <div className="text-4xl mb-2">{stat.icon}</div>
-              <div className="text-3xl font-black" style={{ color: stat.color }}>{stat.value}</div>
-              <div className="text-sm mt-1" style={{ color: '#B0BEC5' }}>{stat.label}</div>
+      {tab === 'dashboard' && (
+        <div className="animate-fade-in space-y-4">
+          {/* Genel toplamlar */}
+          {dashboard && (
+            <div className="grid grid-cols-3 gap-4">
+              {[
+                { label: 'Toplam Kullanıcı', value: dashboard.users, icon: '👤', color: '#4FC3F7' },
+                { label: 'Aktif Soru', value: dashboard.questions, icon: '❓', color: '#FFD700' },
+                { label: 'Toplam Maç', value: dashboard.matches, icon: '🎮', color: '#81C784' },
+              ].map(stat => (
+                <div key={stat.label} className="glass p-6 text-center">
+                  <div className="text-4xl mb-2">{stat.icon}</div>
+                  <div className="text-3xl font-black" style={{ color: stat.color }}>{stat.value}</div>
+                  <div className="text-sm mt-1" style={{ color: '#B0BEC5' }}>{stat.label}</div>
+                </div>
+              ))}
             </div>
-          ))}
+          )}
+
+          {/* Dönem seçici */}
+          <div className="flex gap-2 flex-wrap">
+            {([['anlik', '🔴 Anlık'], ['today', 'Bugün'], ['yesterday', 'Dün'], ['week', 'Bu Hafta'], ['month', 'Bu Ay']] as const).map(([k, label]) => (
+              <button key={k} onClick={() => setStatsPeriod(k)}
+                className="px-4 py-2 rounded-xl text-sm font-bold transition-all"
+                style={{
+                  background: statsPeriod === k ? 'rgba(79,195,247,0.2)' : 'rgba(255,255,255,0.05)',
+                  border: statsPeriod === k ? '1px solid #4FC3F7' : '1px solid rgba(255,255,255,0.1)',
+                  color: statsPeriod === k ? '#4FC3F7' : '#B0BEC5',
+                }}>
+                {label}
+              </button>
+            ))}
+          </div>
+
+          {!stats ? (
+            <div className="glass p-8 text-center" style={{ color: '#B0BEC5' }}>Yükleniyor...</div>
+          ) : statsPeriod === 'anlik' ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <div className="glass p-6 text-center">
+                <div className="text-4xl mb-2">🟢</div>
+                <div className="text-3xl font-black" style={{ color: '#4CAF50' }}>{stats.realtime.online}</div>
+                <div className="text-sm mt-1" style={{ color: '#B0BEC5' }}>Online (son 2 dk)</div>
+              </div>
+              <div className="glass p-6 text-center">
+                <div className="text-4xl mb-2">⚔️</div>
+                <div className="text-3xl font-black" style={{ color: '#FFD700' }}>{stats.realtime.active_matches.total}</div>
+                <div className="text-sm mt-1" style={{ color: '#B0BEC5' }}>Aktif Maç</div>
+                <div className="text-xs mt-2" style={{ color: '#607D8B' }}>
+                  👥 İ-İ {stats.realtime.active_matches.hh} · 🤖 İ-Bot {stats.realtime.active_matches.hb} · 🤖🤖 {stats.realtime.active_matches.bb}
+                </div>
+              </div>
+              <div className="glass p-6 text-center">
+                <div className="text-4xl mb-2">🎯</div>
+                <div className="text-3xl font-black" style={{ color: '#4FC3F7' }}>{stats.realtime.active_players}</div>
+                <div className="text-sm mt-1" style={{ color: '#B0BEC5' }}>Maçtaki Kişi</div>
+              </div>
+            </div>
+          ) : stats.aggregate && (
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <div className="glass p-6 text-center">
+                <div className="text-4xl mb-2">🎮</div>
+                <div className="text-3xl font-black" style={{ color: '#81C784' }}>{stats.aggregate.matches.total}</div>
+                <div className="text-sm mt-1" style={{ color: '#B0BEC5' }}>Yapılan Maç</div>
+                <div className="text-xs mt-2" style={{ color: '#607D8B' }}>
+                  👥 İ-İ {stats.aggregate.matches.hh} · 🤖 İ-Bot {stats.aggregate.matches.hb} · 🤖🤖 {stats.aggregate.matches.bb}
+                </div>
+              </div>
+              <div className="glass p-6 text-center">
+                <div className="text-4xl mb-2">🏅</div>
+                <div className="text-3xl font-black" style={{ color: '#FFD700' }}>{stats.aggregate.maraton.users}</div>
+                <div className="text-sm mt-1" style={{ color: '#B0BEC5' }}>Maraton — İlerleyen Kişi</div>
+                <div className="text-xs mt-2" style={{ color: '#607D8B' }}>{stats.aggregate.maraton.levels} level ilerlendi</div>
+              </div>
+              <div className="glass p-6 text-center">
+                <div className="text-4xl mb-2">🏆</div>
+                <div className="text-3xl font-black" style={{ color: '#E91E63' }}>{stats.aggregate.turnuva.human_participants}</div>
+                <div className="text-sm mt-1" style={{ color: '#B0BEC5' }}>Turnuvaya Katılan (insan)</div>
+              </div>
+              <div className="glass p-6 text-center">
+                <div className="text-4xl mb-2">📝</div>
+                <div className="text-3xl font-black" style={{ color: '#4FC3F7' }}>{stats.aggregate.tests.solves}</div>
+                <div className="text-sm mt-1" style={{ color: '#B0BEC5' }}>Test Çözümü</div>
+                <div className="text-xs mt-2" style={{ color: '#607D8B' }}>{stats.aggregate.tests.solvers} farklı kişi</div>
+              </div>
+              <div className="glass p-6 text-center">
+                <div className="text-4xl mb-2">✨</div>
+                <div className="text-3xl font-black" style={{ color: '#4CAF50' }}>{stats.aggregate.new_users}</div>
+                <div className="text-sm mt-1" style={{ color: '#B0BEC5' }}>Yeni Kullanıcı</div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 

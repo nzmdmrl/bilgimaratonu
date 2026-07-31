@@ -41,6 +41,133 @@ async def dashboard(
         "matches": match_count.scalar(),
     }
 
+
+def _period_bounds(period: str):
+    """(start_utc, end_utc) aware — TR (UTC+3) gün sınırlarına göre."""
+    from datetime import datetime, timedelta, timezone
+    now_utc = datetime.now(timezone.utc)
+    tr_now = now_utc + timedelta(hours=3)
+    tr_today = tr_now.date()
+
+    def tr_midnight_utc(d):
+        return datetime(d.year, d.month, d.day, tzinfo=timezone.utc) - timedelta(hours=3)
+
+    if period == "today":
+        return tr_midnight_utc(tr_today), now_utc
+    if period == "yesterday":
+        y = tr_today - timedelta(days=1)
+        return tr_midnight_utc(y), tr_midnight_utc(tr_today)
+    if period == "week":
+        monday = tr_today - timedelta(days=tr_today.weekday())
+        return tr_midnight_utc(monday), now_utc
+    if period == "month":
+        first = tr_today.replace(day=1)
+        return tr_midnight_utc(first), now_utc
+    # default today
+    return tr_midnight_utc(tr_today), now_utc
+
+
+@router.get("/stats")
+async def admin_stats(
+    period: str = Query("anlik"),  # anlik | today | yesterday | week | month
+    db: AsyncSession = Depends(get_db),
+    admin: User = Depends(get_current_admin),
+):
+    from sqlalchemy import text as _t
+    from datetime import datetime, timedelta, timezone
+
+    # ── Anlık ──
+    now_utc = datetime.now(timezone.utc)
+    online_cutoff = now_utc - timedelta(minutes=2)
+    online = (await db.execute(_t(
+        "SELECT COUNT(*) FROM users WHERE is_bot=false AND deleted_at IS NULL AND last_seen_at >= :c"
+    ), {"c": online_cutoff})).scalar() or 0
+
+    active = (await db.execute(_t("""
+        SELECT
+          COUNT(*) AS total,
+          COUNT(*) FILTER (WHERE u1.is_bot=false AND u2.is_bot=false) AS hh,
+          COUNT(*) FILTER (WHERE (u1.is_bot=false AND u2.is_bot=true) OR (u1.is_bot=true AND u2.is_bot=false)) AS hb,
+          COUNT(*) FILTER (WHERE u1.is_bot=true AND u2.is_bot=true) AS bb
+        FROM matches m
+        JOIN users u1 ON u1.id = m.player1_id
+        JOIN users u2 ON u2.id = m.player2_id
+        WHERE m.status='in_progress'
+    """))).mappings().first()
+
+    active_players = (await db.execute(_t("""
+        SELECT COUNT(DISTINCT t.uid) FROM (
+          SELECT player1_id AS uid FROM matches WHERE status='in_progress'
+          UNION SELECT player2_id FROM matches WHERE status='in_progress'
+        ) t JOIN users u ON u.id = t.uid WHERE u.is_bot=false
+    """))).scalar() or 0
+
+    realtime = {
+        "online": int(online),
+        "active_matches": {
+            "total": int(active["total"] or 0),
+            "hh": int(active["hh"] or 0),
+            "hb": int(active["hb"] or 0),
+            "bb": int(active["bb"] or 0),
+        },
+        "active_players": int(active_players),
+    }
+
+    if period == "anlik":
+        return {"period": period, "realtime": realtime, "aggregate": None}
+
+    # ── Dönem (bugün/dün/hafta/ay) ──
+    start, end = _period_bounds(period)
+    p = {"s": start, "e": end}
+
+    matches = (await db.execute(_t("""
+        SELECT
+          COUNT(*) AS total,
+          COUNT(*) FILTER (WHERE u1.is_bot=false AND u2.is_bot=false) AS hh,
+          COUNT(*) FILTER (WHERE (u1.is_bot=false AND u2.is_bot=true) OR (u1.is_bot=true AND u2.is_bot=false)) AS hb,
+          COUNT(*) FILTER (WHERE u1.is_bot=true AND u2.is_bot=true) AS bb
+        FROM matches m
+        JOIN users u1 ON u1.id = m.player1_id
+        JOIN users u2 ON u2.id = m.player2_id
+        WHERE m.status='finished' AND m.finished_at >= :s AND m.finished_at < :e
+    """), p)).mappings().first()
+
+    maraton = (await db.execute(_t("""
+        SELECT COUNT(DISTINCT user_id) AS users, COUNT(*) AS levels
+        FROM solo_progress WHERE updated_at >= :s AND updated_at < :e
+    """), p)).mappings().first()
+
+    turnuva_humans = (await db.execute(_t("""
+        SELECT COUNT(DISTINCT mp.user_id)
+        FROM marathon_participants mp JOIN users u ON u.id = mp.user_id
+        WHERE u.is_bot=false AND mp.joined_at >= :s AND mp.joined_at < :e
+    """), p)).scalar() or 0
+
+    tests = (await db.execute(_t("""
+        SELECT
+          COUNT(*) FILTER (WHERE finished_at IS NOT NULL) AS solves,
+          COUNT(DISTINCT user_id) FILTER (WHERE user_id IS NOT NULL AND finished_at IS NOT NULL) AS solvers
+        FROM event_participants WHERE finished_at >= :s AND finished_at < :e
+    """), p)).mappings().first()
+
+    new_users = (await db.execute(_t(
+        "SELECT COUNT(*) FROM users WHERE is_bot=false AND deleted_at IS NULL AND created_at >= :s AND created_at < :e"
+    ), p)).scalar() or 0
+
+    aggregate = {
+        "matches": {
+            "total": int(matches["total"] or 0),
+            "hh": int(matches["hh"] or 0),
+            "hb": int(matches["hb"] or 0),
+            "bb": int(matches["bb"] or 0),
+        },
+        "maraton": {"users": int(maraton["users"] or 0), "levels": int(maraton["levels"] or 0)},
+        "turnuva": {"human_participants": int(turnuva_humans)},
+        "tests": {"solves": int(tests["solves"] or 0), "solvers": int(tests["solvers"] or 0)},
+        "new_users": int(new_users),
+    }
+    return {"period": period, "realtime": realtime, "aggregate": aggregate}
+
 # ===================== KULLANICI YÖNETİMİ =====================
 @router.get("/users")
 async def list_users(
