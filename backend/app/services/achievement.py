@@ -10,6 +10,13 @@ from app.models.achievement import Achievement
 _NULL_CAT = "00000000-0000-0000-0000-000000000000"
 
 
+async def _is_bot(db: AsyncSession, user_id: str) -> bool:
+    """Kullanıcı bot mu? Botlara kupa/madalya/rozet verilmez."""
+    r = await db.execute(_t("SELECT is_bot FROM users WHERE id = :uid"), {"uid": str(user_id)})
+    row = r.first()
+    return bool(row and row[0])
+
+
 async def award_trophy_or_medal(
     db: AsyncSession,
     user_id: str,
@@ -20,6 +27,8 @@ async def award_trophy_or_medal(
 ) -> bool:
     """Dönem sonu kupa (rank=1) / madalya (rank=2,3) yaz.
     Aynı dönem+lig+rank ikinci kez verilmez. Döner: True = yeni verildi."""
+    if await _is_bot(db, user_id):
+        return False
     ach_type = "trophy" if rank == 1 else "medal"
     cat = str(category_id) if category_id else None
 
@@ -53,6 +62,8 @@ async def award_badge_achievement(
 ) -> bool:
     """Rozet kazanımını achievements'a yaz (ach_type='badge').
     Aynı rozet ikinci kez verilmez. Döner: True = yeni verildi."""
+    if await _is_bot(db, user_id):
+        return False
     q = select(Achievement).where(
         Achievement.user_id == user_id,
         Achievement.ach_type == "badge",

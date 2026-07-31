@@ -50,7 +50,11 @@ async def get_user_badges(db: AsyncSession, user_id: str) -> List[dict]:
     } for ub, b in rows]
 
 async def award_badge(db: AsyncSession, user_id: str, badge_code: str) -> Optional[dict]:
-    """Rozet ver — zaten varsa atla."""
+    """Rozet ver — zaten varsa atla. Botlara rozet verilmez."""
+    from sqlalchemy import text as _t
+    _bot = (await db.execute(_t("SELECT is_bot FROM users WHERE id = :uid"), {"uid": str(user_id)})).first()
+    if _bot and _bot[0]:
+        return None
     # Rozeti bul
     b_result = await db.execute(select(Badge).where(Badge.code == badge_code))
     badge = b_result.scalar_one_or_none()

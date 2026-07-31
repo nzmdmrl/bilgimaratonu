@@ -85,6 +85,13 @@ async def startup():
         await db.execute(_sqltext(
             "UPDATE badges SET description='Turnuvayı kazan' WHERE code='marathon_champ'"
         ))
+        # Botlarin kupa/madalya/rozet kazanimlarini temizle (profillerine yansimasin)
+        await db.execute(_sqltext(
+            "DELETE FROM achievements WHERE user_id IN (SELECT id FROM users WHERE is_bot = true)"
+        ))
+        await db.execute(_sqltext(
+            "DELETE FROM user_badges WHERE user_id IN (SELECT id FROM users WHERE is_bot = true)"
+        ))
         await db.commit()
     await seed_badges(db)
     await seed_settings(db)
