@@ -96,6 +96,8 @@ export default function SoloPage() {
       setQuestions(r.data.questions)
       setAnswers([])
       setCurrentIdx(0)
+      setMyAnswer(null)
+      setCorrectAnswer(null)
       setResult(null)
       setShowDetails(false)
       setScreen('countdown')
