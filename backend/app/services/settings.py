@@ -75,6 +75,14 @@ DEFAULT_SETTINGS = {
         "xp_per_star": 20,  # Kazanılan her yeni yıldız için verilecek XP
     },
 
+    # ─ Kalabalık (bot maçlarıyla ligleri doldurma)
+    "kalabalik": {
+        "enabled": False,          # Sistem açık mı
+        "start_hour": 0,           # TR saati — başlangıç
+        "end_hour": 8,             # TR saati — bitiş
+        "matches_per_league": 10,  # Genel ve her kategori için toplam maç
+    },
+
     # ─ API Ayarları
     "api_keys": {
         "openai": "",  # OpenAI API key

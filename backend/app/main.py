@@ -110,6 +110,8 @@ async def startup():
     asyncio.ensure_future(marathon_scheduler())  # Maraton scheduler aktif
     from app.services.league_scheduler import league_reward_scheduler
     asyncio.ensure_future(league_reward_scheduler())
+    from app.services.kalabalik import kalabalik_scheduler
+    asyncio.ensure_future(kalabalik_scheduler())
 
     # Restart'ta in_progress maratonları kurtar
     from app.websocket.marathon_ws import run_marathon_engine

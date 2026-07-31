@@ -1821,6 +1821,60 @@ export default function AdminPage() {
             </button>
           </div>
 
+          {/* Kalabalık */}
+          <div className="glass p-5">
+            <div className="flex items-center justify-between mb-1">
+              <h3 className="font-bold" style={{ color: '#FFD700' }}>👥 Kalabalık</h3>
+              <button
+                onClick={() => saveSettings('kalabalik', { ...siteSettings.kalabalik, enabled: !siteSettings.kalabalik?.enabled })}
+                className="px-3 py-1 rounded-lg text-sm font-bold"
+                style={{
+                  background: siteSettings.kalabalik?.enabled ? 'rgba(76,175,80,0.2)' : 'rgba(244,67,54,0.2)',
+                  color: siteSettings.kalabalik?.enabled ? '#4CAF50' : '#F44336',
+                }}>
+                {siteSettings.kalabalik?.enabled ? '✓ Açık' : '✗ Kapalı'}
+              </button>
+            </div>
+            <p className="text-xs mb-4" style={{ color: '#B0BEC5' }}>
+              Açıkken, TR saatiyle aşağıdaki aralıkta botlar kendi aralarında maç yapar ve genel + her kategori ligini doldurur. Maçlar aralığa yayılır.
+            </p>
+            <div className="grid grid-cols-3 gap-3 mb-3">
+              <div>
+                <label className="text-xs mb-1 block" style={{ color: '#B0BEC5' }}>Başlangıç (TR saat)</label>
+                <input type="number" min={0} max={23} className="input-field w-full"
+                  value={siteSettings.kalabalik?.start_hour ?? 0}
+                  onChange={e => setSiteSettings((p: any) => ({ ...p, kalabalik: { ...p.kalabalik, start_hour: parseInt(e.target.value) || 0 } }))} />
+              </div>
+              <div>
+                <label className="text-xs mb-1 block" style={{ color: '#B0BEC5' }}>Bitiş (TR saat)</label>
+                <input type="number" min={0} max={23} className="input-field w-full"
+                  value={siteSettings.kalabalik?.end_hour ?? 8}
+                  onChange={e => setSiteSettings((p: any) => ({ ...p, kalabalik: { ...p.kalabalik, end_hour: parseInt(e.target.value) || 0 } }))} />
+              </div>
+              <div>
+                <label className="text-xs mb-1 block" style={{ color: '#B0BEC5' }}>Lig başına maç</label>
+                <input type="number" min={0} max={500} className="input-field w-full"
+                  value={siteSettings.kalabalik?.matches_per_league ?? 10}
+                  onChange={e => setSiteSettings((p: any) => ({ ...p, kalabalik: { ...p.kalabalik, matches_per_league: parseInt(e.target.value) || 0 } }))} />
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <button onClick={() => saveSettings('kalabalik', siteSettings.kalabalik)}
+                disabled={settingsSaving} className="btn-gold">
+                {settingsSaving ? 'Kaydediliyor...' : '💾 Kaydet'}
+              </button>
+              <button onClick={async () => {
+                if (!confirm('Liglerdeki tüm bot sıralamaları silinecek. Emin misiniz?')) return
+                try { await api.post('/api/admin/kalabalik/reset-bot-leagues'); alert('Bot lig sıralamaları sıfırlandı.') }
+                catch (e: any) { alert(e.response?.data?.detail || 'Hata') }
+              }}
+                className="text-sm px-4 py-2 rounded-lg font-bold"
+                style={{ background: 'rgba(244,67,54,0.2)', color: '#F44336' }}>
+                🗑 Bot Lig Sıralamalarını Sıfırla
+              </button>
+            </div>
+          </div>
+
           {/* Maraton Ayarları */}
           <div className="glass p-5">
             <h3 className="font-bold mb-4" style={{ color: '#FFD700' }}>🏆 Turnuva Ayarları</h3>

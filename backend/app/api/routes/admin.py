@@ -427,6 +427,13 @@ async def delete_all_bots(db: AsyncSession = Depends(get_db), current_user = Dep
     await db.commit()
     return {"ok": True, "deleted": r.rowcount}
 
+@router.post("/kalabalik/reset-bot-leagues")
+async def kalabalik_reset_bot_leagues(db: AsyncSession = Depends(get_db), current_user = Depends(get_current_admin)):
+    """Kalabalık: liglerdeki bot sıralamalarını sıfırla."""
+    from app.services.kalabalik import reset_bot_leagues
+    await reset_bot_leagues(db)
+    return {"ok": True}
+
 @router.get("/bots/count")
 async def bot_count(db: AsyncSession = Depends(get_db), current_user = Depends(get_current_admin)):
     if current_user.role != "admin":
