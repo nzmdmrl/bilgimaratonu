@@ -356,6 +356,22 @@ export default function HomePage() {
               color: '#FFD700',
               bg: 'rgba(255,215,0,0.08)',
             },
+            {
+              href: '/mini-oyunlar',
+              icon: '🧩',
+              title: 'Mini Oyunlar',
+              desc: 'Bellek oyunları, hızlı sorular ve daha fazlası — yakında!',
+              color: '#00BCD4',
+              bg: 'rgba(0,188,212,0.08)',
+            },
+            {
+              href: '/market',
+              icon: '🛒',
+              title: 'Market',
+              desc: 'Jokerler, avatarlar ve özel eşyalarla oyununu güçlendir.',
+              color: '#9C27B0',
+              bg: 'rgba(156,39,176,0.08)',
+            },
           ].map(card => (
             <Link key={card.href} href={card.href}
               className="glass p-7 flex gap-5 items-start hover:scale-105 transition-transform"

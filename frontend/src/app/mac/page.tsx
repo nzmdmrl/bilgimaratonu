@@ -747,9 +747,9 @@ export default function MacPage() {
             }} title={emojiSent >= 2 ? 'Emoji hakkın bitti' : 'Emoji gönder'}>😊</button>
           {showEmojiPicker && emojiSent < 2 && (
             <div style={{
-              position: 'absolute', bottom: '115%', left: '50%', transform: 'translateX(-50%)',
+              position: 'absolute', bottom: '115%', right: 0,
               display: 'flex', gap: 2, background: 'rgba(15,20,40,0.98)',
-              border: '1px solid rgba(255,255,255,0.12)', borderRadius: 12, padding: '6px 8px',
+              border: '1px solid rgba(255,255,255,0.12)', borderRadius: 12, padding: '6px 6px',
               zIndex: 50, boxShadow: '0 4px 16px rgba(0,0,0,0.5)',
             }}>
               {MATCH_EMOJIS.map(e => (

@@ -41,6 +41,8 @@ export default function Header() {
     { href: '/market', label: '🛒 Market', color: '#FFD700', moduleKey: 'match_1v1' },
   ]
   const navLinks = allLinks.filter(l => modules[l.moduleKey] !== false)
+  // Desktop üst menü: sadece Maç, Kategoriler, Lig, Market (gerisi ana sayfada buton)
+  const desktopLinks = navLinks.filter(l => ['/mac', '/kategoriler', '/lig', '/market'].includes(l.href))
 
   return (
     <>
@@ -61,7 +63,7 @@ export default function Header() {
 
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center gap-1">
-            {navLinks.map(link => (
+            {desktopLinks.map(link => (
               <Link key={link.href} href={link.href}
                 className="px-3 py-1.5 rounded-lg text-sm font-bold transition-all"
                 style={{
