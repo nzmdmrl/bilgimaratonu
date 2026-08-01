@@ -120,6 +120,25 @@ export default function HomePage() {
             <div className="grid grid-cols-2 gap-3 mb-3">
               {playCard('/maraton', '🏅', 'Maraton', '#81C784')}
               {playCard('/mac', '⚡', '1v1 Maç', '#4FC3F7')}
+            </div>
+
+            {/* Turnuva — tam genişlik (Maraton + 1v1 altında) */}
+            {marathonEnabled && (
+              <Link href="/turnuva" className="block glass p-4 mb-3" style={{ borderRadius: 14, background: 'rgba(255,215,0,0.08)', border: '1px solid rgba(255,215,0,0.25)', textDecoration: 'none' }}>
+                <div className="flex items-center gap-3">
+                  <div className="text-4xl">🏆</div>
+                  <div className="flex-1 min-w-0">
+                    <div className="font-black" style={{ color: '#FFD700' }}>Turnuva</div>
+                    <div className="text-xs" style={{ color: '#B0BEC5' }}>
+                      {marathonInfo?.status === 'waiting' || marathonInfo?.status === 'lobby' ? 'Lobi açık — hemen katıl!' : 'Eleme usulü büyük yarış'}
+                    </div>
+                  </div>
+                  <div className="text-2xl" style={{ color: '#FFD700' }}>›</div>
+                </div>
+              </Link>
+            )}
+
+            <div className="grid grid-cols-2 gap-3 mb-3">
               {playCard('/kategoriler', '🗂', 'Kategoriler', '#FFD700')}
               {playCard('/testler', '📝', 'Testler', '#E91E63')}
             </div>
@@ -139,22 +158,6 @@ export default function HomePage() {
                 <div className="text-2xl" style={{ color: '#00BCD4' }}>›</div>
               </div>
             </Link>
-
-            {/* Turnuva promo */}
-            {marathonEnabled && (
-              <Link href="/turnuva" className="block glass p-4 mb-3" style={{ borderRadius: 14, background: 'rgba(255,215,0,0.08)', border: '1px solid rgba(255,215,0,0.25)', textDecoration: 'none' }}>
-                <div className="flex items-center gap-3">
-                  <div className="text-4xl">🏆</div>
-                  <div className="flex-1 min-w-0">
-                    <div className="font-black" style={{ color: '#FFD700' }}>Turnuva</div>
-                    <div className="text-xs" style={{ color: '#B0BEC5' }}>
-                      {marathonInfo?.status === 'waiting' || marathonInfo?.status === 'lobby' ? 'Lobi açık — hemen katıl!' : 'Eleme usulü büyük yarış'}
-                    </div>
-                  </div>
-                  <div className="text-2xl" style={{ color: '#FFD700' }}>›</div>
-                </div>
-              </Link>
-            )}
 
             {/* Günün özeti */}
             <button onClick={() => setShowOzet(v => !v)}

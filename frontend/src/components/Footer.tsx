@@ -11,7 +11,7 @@ const PAGES = [
 
 export default function Footer() {
   return (
-    <footer className="mt-16 border-t" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
+    <footer className="mt-16 border-t hidden md:block" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
       <div className="max-w-5xl mx-auto px-4 py-8">
         <div className="flex flex-wrap gap-4 justify-center mb-4">
           {PAGES.map((p, i) => (

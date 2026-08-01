@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/lib/store'
 import { isMuted, toggleMuted } from '@/lib/sound'
 
-type Tab = 'ayarlar' | 'oyun' | 'hesap'
+type Tab = 'ayarlar' | 'oyun' | 'gizlilik' | 'hesap'
 
 function LinkCard({ href, icon, label, color }: { href: string; icon: string; label: string; color: string }) {
   return (
@@ -31,6 +31,7 @@ export default function MenuPage() {
   const tabs: { key: Tab; label: string; icon: string }[] = [
     { key: 'ayarlar', label: 'Ayarlar', icon: '⚙️' },
     { key: 'oyun', label: 'Oyun', icon: '🎮' },
+    { key: 'gizlilik', label: 'Gizlilik', icon: '🔒' },
     { key: 'hesap', label: 'Hesap', icon: '👤' },
   ]
 
@@ -45,13 +46,13 @@ export default function MenuPage() {
       <div className="flex gap-2 mb-4">
         {tabs.map(t => (
           <button key={t.key} onClick={() => setTab(t.key)}
-            className="flex-1 py-2 rounded-xl text-sm font-bold"
+            className="flex-1 py-2 rounded-xl text-xs font-bold"
             style={{
               background: tab === t.key ? 'rgba(79,195,247,0.2)' : 'rgba(255,255,255,0.05)',
               border: tab === t.key ? '1px solid #4FC3F7' : '1px solid rgba(255,255,255,0.1)',
               color: tab === t.key ? '#4FC3F7' : '#B0BEC5',
             }}>
-            {t.icon} {t.label}
+            {t.icon}<br />{t.label}
           </button>
         ))}
       </div>
@@ -78,6 +79,17 @@ export default function MenuPage() {
           <LinkCard href="/gecmis" icon="🕐" label="Geçmiş" color="#81C784" />
           <LinkCard href="/mini-oyunlar" icon="🧩" label="Mini Oyunlar" color="#00BCD4" />
           <LinkCard href="/testler/olustur" icon="📝" label="Test Oluştur" color="#4FC3F7" />
+        </div>
+      )}
+
+      {tab === 'gizlilik' && (
+        <div className="grid grid-cols-2 gap-3">
+          <LinkCard href="/sayfa/gizlilik-politikasi" icon="🔒" label="Gizlilik Politikası" color="#4CAF50" />
+          <LinkCard href="/sayfa/kullanici-sozlesmesi" icon="📄" label="Kullanıcı Sözleşmesi" color="#E91E63" />
+          <LinkCard href="/sayfa/cerez-politikasi" icon="🍪" label="Çerez Politikası" color="#FF9800" />
+          <LinkCard href="/sayfa/hakkimizda" icon="ℹ️" label="Hakkımızda" color="#4FC3F7" />
+          <LinkCard href="/sayfa/iletisim" icon="✉️" label="İletişim" color="#9C27B0" />
+          <LinkCard href="/blog" icon="📝" label="Blog" color="#81C784" />
         </div>
       )}
 
