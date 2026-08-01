@@ -297,6 +297,41 @@ async def update_avatar_url(
     return {"ok": True, "avatar_url": current_user.avatar_url or ""}
 
 
+@router.get("/me/answers")
+async def my_answered_questions(
+    limit: int = 30,
+    offset: int = 0,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Kullanıcının son cevapladığı sorular (maç + solo)."""
+    limit = max(1, min(100, limit))
+    offset = max(0, offset)
+    rows = (await db.execute(
+        select(MatchAnswer, Question, Category)
+        .join(Question, Question.id == MatchAnswer.question_id)
+        .outerjoin(Category, Category.id == Question.category_id)
+        .where(MatchAnswer.user_id == current_user.id)
+        .order_by(MatchAnswer.created_at.desc())
+        .limit(limit).offset(offset)
+    )).all()
+    out = []
+    for a, q, cat in rows:
+        diff = q.difficulty.value if hasattr(q.difficulty, "value") else str(q.difficulty)
+        out.append({
+            "question_text": q.text,
+            "selected": a.selected_answer,
+            "correct_answer": q.correct_answer,
+            "is_correct": bool(a.is_correct),
+            "difficulty": diff,
+            "category_name": cat.name if cat else "",
+            "option_a": q.option_a, "option_b": q.option_b,
+            "option_c": q.option_c, "option_d": q.option_d,
+            "created_at": a.created_at.isoformat() if a.created_at else None,
+        })
+    return {"answers": out, "has_more": len(rows) >= limit}
+
+
 @router.get("/{username}/achievements")
 async def get_profile_achievements(username: str, db: AsyncSession = Depends(get_db)):
     """Kupa / madalya / rozet — kazanılan + kilitli slotlar."""
