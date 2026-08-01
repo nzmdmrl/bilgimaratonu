@@ -297,6 +297,45 @@ async def update_avatar_url(
     return {"ok": True, "avatar_url": current_user.avatar_url or ""}
 
 
+@router.get("/me/today")
+async def my_today(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Kullanıcının bugünkü özeti (TR günü)."""
+    from datetime import datetime, timedelta, timezone
+    from sqlalchemy import text as _t
+    now_utc = datetime.now(timezone.utc)
+    tr = now_utc + timedelta(hours=3)
+    start_utc = datetime(tr.year, tr.month, tr.day, tzinfo=timezone.utc) - timedelta(hours=3)
+    uid = str(current_user.id)
+    p = {"u": uid, "s": start_utc}
+
+    ans = (await db.execute(_t("""
+        SELECT COUNT(*) AS total,
+               COALESCE(SUM(CASE WHEN is_correct THEN 1 ELSE 0 END), 0) AS correct
+        FROM match_answers WHERE user_id::text = :u AND created_at >= :s
+    """), p)).mappings().first()
+
+    mt = (await db.execute(_t("""
+        SELECT COUNT(*) AS total,
+               COALESCE(SUM(CASE WHEN winner_id::text = :u THEN 1 ELSE 0 END), 0) AS wins
+        FROM matches
+        WHERE status = 'finished' AND finished_at >= :s
+              AND (player1_id::text = :u OR player2_id::text = :u)
+    """), p)).mappings().first()
+
+    total = int(ans["total"] or 0)
+    correct = int(ans["correct"] or 0)
+    return {
+        "matches": int(mt["total"] or 0),
+        "wins": int(mt["wins"] or 0),
+        "answers": total,
+        "correct": correct,
+        "accuracy": round(correct / total * 100, 1) if total else 0.0,
+    }
+
+
 @router.get("/me/answers")
 async def my_answered_questions(
     limit: int = 30,

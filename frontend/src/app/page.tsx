@@ -28,9 +28,11 @@ export default function HomePage() {
   const [modules, setModules] = useState<any>({})
   const [titles, setTitles] = useState<any[]>([])
   const [showOzet, setShowOzet] = useState(false)
+  const [today, setToday] = useState<any>(null)
 
   useEffect(() => {
     fetchMe()
+    api.get('/api/profile/me/today').then(r => setToday(r.data)).catch(() => {})
     api.get('/api/league/daily?limit=10').then(r => setLeagueTop(r.data.table)).catch(() => {})
     api.get('/api/admin/settings/public').then(r => {
       setModules(r.data.modules || {})
@@ -126,6 +128,18 @@ export default function HomePage() {
               {playCard('/market', '🛒', 'Market', '#9C27B0')}
             </div>
 
+            {/* Mini Oyunlar */}
+            <Link href="/mini-oyunlar" className="block glass p-4 mb-3" style={{ borderRadius: 14, background: 'rgba(0,188,212,0.08)', border: '1px solid rgba(0,188,212,0.25)', textDecoration: 'none' }}>
+              <div className="flex items-center gap-3">
+                <div className="text-4xl">🧩</div>
+                <div className="flex-1 min-w-0">
+                  <div className="font-black" style={{ color: '#00BCD4' }}>Mini Oyunlar</div>
+                  <div className="text-xs" style={{ color: '#B0BEC5' }}>Bellek oyunları ve daha fazlası — yakında</div>
+                </div>
+                <div className="text-2xl" style={{ color: '#00BCD4' }}>›</div>
+              </div>
+            </Link>
+
             {/* Turnuva promo */}
             {marathonEnabled && (
               <Link href="/turnuva" className="block glass p-4 mb-3" style={{ borderRadius: 14, background: 'rgba(255,215,0,0.08)', border: '1px solid rgba(255,215,0,0.25)', textDecoration: 'none' }}>
@@ -150,6 +164,22 @@ export default function HomePage() {
             </button>
             {showOzet && (
               <div className="glass p-2 mb-3" style={{ borderRadius: 14 }}>
+                {today && (
+                  <div className="grid grid-cols-4 gap-2 mb-2">
+                    {[
+                      { l: 'Maç', v: today.matches, c: '#4FC3F7' },
+                      { l: 'Galibiyet', v: today.wins, c: '#4CAF50' },
+                      { l: 'Doğru', v: today.correct, c: '#FFD700' },
+                      { l: 'İsabet', v: `%${today.accuracy}`, c: '#E91E63' },
+                    ].map(s => (
+                      <div key={s.l} className="text-center py-2 rounded-lg" style={{ background: 'rgba(255,255,255,0.04)' }}>
+                        <div className="font-black" style={{ color: s.c, fontSize: 18 }}>{s.v}</div>
+                        <div style={{ fontSize: 10, color: '#B0BEC5' }}>{s.l}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <div className="text-xs font-bold mb-1 px-1" style={{ color: '#B0BEC5' }}>Son Maçlar</div>
                 {recentMatches.length === 0 ? (
                   <div className="text-xs text-center py-4" style={{ color: '#607D8B' }}>Henüz maç yok</div>
                 ) : recentMatches.slice(0, 8).map((m: any, i: number) => (
