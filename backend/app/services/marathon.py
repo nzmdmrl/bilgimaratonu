@@ -60,7 +60,7 @@ async def get_round_questions(
         q_map = {str(q.id): q for q in questions}
         return [q_map[qid] for qid in q_ids if qid in q_map]
 
-    # Yeni soru seti seç
+    # Yeni soru seti seç — turdaki sorular farklı kategorilerden olsun
     difficulty = ROUND_DIFFICULTIES.get(round_number, DifficultyLevel.easy)
     from sqlalchemy import func
     q_result = await db.execute(
@@ -72,9 +72,24 @@ async def get_round_questions(
             Question.difficulty == difficulty,
         )
         .order_by(func.random())
-        .limit(questions_per_round)
+        .limit(max(questions_per_round * 6, 20))
     )
-    questions = q_result.scalars().all()
+    cands = q_result.scalars().all()
+    questions = []
+    used_categories = set()
+    for q in cands:
+        if len(questions) >= questions_per_round:
+            break
+        if q.category_id in used_categories:
+            continue
+        questions.append(q); used_categories.add(q.category_id)
+    if len(questions) < questions_per_round:  # yeterli farklı kategori yoksa tamamla
+        for q in cands:
+            if len(questions) >= questions_per_round:
+                break
+            if q in questions:
+                continue
+            questions.append(q)
 
     # Kaydet
     rq[str(round_number)] = [str(q.id) for q in questions]

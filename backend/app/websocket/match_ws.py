@@ -41,7 +41,10 @@ async def get_random_questions(db: AsyncSession, count: int):
         scale = total_questions / total_from_dist
         distribution = [(d, max(1, round(q * scale))) for d, q in distribution if q > 0]
 
+    # Kategori çeşitliliği: maç içinde bir kategoriden en fazla bir soru
     questions = []
+    used_categories = set()
+    picked_ids = set()
     for difficulty, q_count in distribution:
         result = await db.execute(
             select(Question)
@@ -54,11 +57,26 @@ async def get_random_questions(db: AsyncSession, count: int):
                 Question.category.has(in_general_match=True),
             )
             .order_by(func.random())
-            .limit(q_count)
+            .limit(max(q_count * 6, 30))
         )
-        questions.extend(result.scalars().all())
+        cands = result.scalars().all()
+        chosen = 0
+        # 1. tur: henüz kullanılmamış kategorilerden
+        for q in cands:
+            if chosen >= q_count:
+                break
+            if q.id in picked_ids or q.category_id in used_categories:
+                continue
+            questions.append(q); picked_ids.add(q.id); used_categories.add(q.category_id); chosen += 1
+        # 2. tur: yeterli farklı kategori yoksa tekrara izin ver
+        if chosen < q_count:
+            for q in cands:
+                if chosen >= q_count:
+                    break
+                if q.id in picked_ids:
+                    continue
+                questions.append(q); picked_ids.add(q.id); chosen += 1
 
-    # Zorluk sırasına göre sıralı gelsin (kolay → çok zor)
     return questions
 
 def build_question_payload(q: Question, index: int, total: int) -> dict:
