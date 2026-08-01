@@ -41,19 +41,34 @@ def _simulate_score(elo: float) -> float:
     return round(s, 2)
 
 
-def _simulate_match(elo_a: float, elo_b: float):
+async def _match_scoring(db):
+    """Gerçek maçla aynı: soru dağılımı (total_questions'a ölçekli) + zorluk puanları — ayardan."""
+    ms = await get_settings(db, "match")
+    dc = await get_settings(db, "difficulty_config")
+    dist = ms.get("distribution", {"easy": 5, "medium": 5, "hard": 3, "very_hard": 2})
+    d = [("easy", dist.get("easy", 5)), ("medium", dist.get("medium", 5)),
+         ("hard", dist.get("hard", 3)), ("very_hard", dist.get("very_hard", 2))]
+    total_from = sum(c for _, c in d)
+    total_q = int(ms.get("total_questions", 15) or 15)
+    if total_from != total_q and total_from > 0:
+        scale = total_q / total_from
+        d = [(k, max(1, round(c * scale))) for k, c in d if c > 0]
+    points = {k: float((dc.get(k) or {}).get("correct", _POINTS[k][0])) for k in ("easy", "medium", "hard", "very_hard")}
+    return d, points
+
+
+def _simulate_match(elo_a: float, elo_b: float, dist, points):
     """Kafa-kafaya 1v1: her soruyu sadece BİR bot alır (buzzer). İkisi de yanlışsa puan yok.
-    Böylece skorlar gerçek maçlardaki gibi bölüşülür (aşırı yüksek olmaz)."""
+    Soru sayısı ve puanlar gerçek maç ayarından gelir."""
     acc_a = bot_accuracy(elo_a or 1000)
     acc_b = bot_accuracy(elo_b or 1000)
     sa = sb = 0.0
-    for diff, n in _DIST:
-        cp, _wp = _POINTS[diff]
+    for diff, n in dist:
+        cp = points.get(diff, 10.0)
         for _ in range(n):
             a_ok = random.random() < acc_a
             b_ok = random.random() < acc_b
             if a_ok and b_ok:
-                # ikisi de bilir — hızlı olan alır (güçlü bot daha olası)
                 if random.random() < acc_a / (acc_a + acc_b):
                     sa += cp + random.uniform(0, 0.15)
                 else:
@@ -86,11 +101,12 @@ async def _run_matches(db, category_id, n: int) -> int:
     )).scalars().all()
     if len(pool) < 2:
         return 0
+    dist, points = await _match_scoring(db)
     done = 0
     for i in range(0, len(pool) - 1, 2):
         a, b = pool[i], pool[i + 1]
         try:
-            score_a, score_b = _simulate_match(a.elo_rating, b.elo_rating)
+            score_a, score_b = _simulate_match(a.elo_rating, b.elo_rating, dist, points)
             await update_league_score(db, str(a.id), score_a, None, date.today(), category_id=category_id)
             await update_league_score(db, str(b.id), score_b, None, date.today(), category_id=category_id)
             done += 1
