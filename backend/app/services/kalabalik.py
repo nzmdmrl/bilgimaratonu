@@ -30,16 +30,40 @@ def _tr_now() -> datetime:
 
 
 def _simulate_score(elo: float) -> float:
+    # (Tekil skor — artık kullanılmıyor; gerçekçi kafa-kafaya için _simulate_match)
     acc = bot_accuracy(elo or 1000)
     s = 0.0
     for diff, n in _DIST:
         cp, wp = _POINTS[diff]
         for _ in range(n):
             if random.random() < acc:
-                s += cp + random.uniform(0, 0.15)  # küçük hız bonusu
-            else:
-                s += wp
+                s += cp + random.uniform(0, 0.15)
     return round(s, 2)
+
+
+def _simulate_match(elo_a: float, elo_b: float):
+    """Kafa-kafaya 1v1: her soruyu sadece BİR bot alır (buzzer). İkisi de yanlışsa puan yok.
+    Böylece skorlar gerçek maçlardaki gibi bölüşülür (aşırı yüksek olmaz)."""
+    acc_a = bot_accuracy(elo_a or 1000)
+    acc_b = bot_accuracy(elo_b or 1000)
+    sa = sb = 0.0
+    for diff, n in _DIST:
+        cp, _wp = _POINTS[diff]
+        for _ in range(n):
+            a_ok = random.random() < acc_a
+            b_ok = random.random() < acc_b
+            if a_ok and b_ok:
+                # ikisi de bilir — hızlı olan alır (güçlü bot daha olası)
+                if random.random() < acc_a / (acc_a + acc_b):
+                    sa += cp + random.uniform(0, 0.15)
+                else:
+                    sb += cp + random.uniform(0, 0.15)
+            elif a_ok:
+                sa += cp + random.uniform(0, 0.15)
+            elif b_ok:
+                sb += cp + random.uniform(0, 0.15)
+            # ikisi de yanlış -> puan yok
+    return round(sa, 2), round(sb, 2)
 
 
 async def _cfg(db) -> dict:
@@ -66,8 +90,9 @@ async def _run_matches(db, category_id, n: int) -> int:
     for i in range(0, len(pool) - 1, 2):
         a, b = pool[i], pool[i + 1]
         try:
-            await update_league_score(db, str(a.id), _simulate_score(a.elo_rating), None, date.today(), category_id=category_id)
-            await update_league_score(db, str(b.id), _simulate_score(b.elo_rating), None, date.today(), category_id=category_id)
+            score_a, score_b = _simulate_match(a.elo_rating, b.elo_rating)
+            await update_league_score(db, str(a.id), score_a, None, date.today(), category_id=category_id)
+            await update_league_score(db, str(b.id), score_b, None, date.today(), category_id=category_id)
             done += 1
         except Exception as e:
             print(f"[Kalabalik] maç hata: {e}")
