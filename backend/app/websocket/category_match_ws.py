@@ -266,6 +266,17 @@ async def handle_category_match_ws(websocket: WebSocket, category_slug: str, tok
                 q = manager.match_queues.get(current_match_id, {}).get(user_id)
                 if q:
                     await q.put(data)
+            elif current_match_id and data.get("type") == "emoji":
+                # Emoji — rakibe ilet (whitelist + oyuncu başına maçta en fazla 2)
+                from app.websocket.match_ws import ALLOWED_EMOJIS, _emoji_counts
+                emoji = data.get("emoji")
+                if emoji in ALLOWED_EMOJIS:
+                    key = f"{current_match_id}:{user_id}"
+                    if _emoji_counts.get(key, 0) < 2:
+                        _emoji_counts[key] = _emoji_counts.get(key, 0) + 1
+                        for pid in list(manager.match_queues.get(current_match_id, {}).keys()):
+                            if pid != user_id:
+                                await manager.send_to_user(pid, current_match_id, {"type": "opponent_emoji", "emoji": emoji})
     except Exception:
         pass
     finally:
