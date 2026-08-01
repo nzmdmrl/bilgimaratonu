@@ -27,11 +27,11 @@ export default function BottomNav() {
   const hrefFor = (it: any) => (it.href === '/profil' ? `/p/${user.username}` : it.href)
 
   return (
-    <nav className="md:hidden" style={{
+    <nav className="md:hidden flex items-end justify-around" style={{
       position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 200,
       background: 'rgba(15,20,40,0.98)', borderTop: '1px solid rgba(255,255,255,0.08)',
-      backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'flex-end',
-      justifyContent: 'space-around', padding: '6px 4px 8px', paddingBottom: 'calc(8px + env(safe-area-inset-bottom))',
+      backdropFilter: 'blur(10px)',
+      padding: '6px 4px 8px', paddingBottom: 'calc(8px + env(safe-area-inset-bottom))',
     }}>
       {items.map(it => {
         const active = it.match(pathname)
