@@ -38,6 +38,8 @@ export default function AdminPage() {
   const [qPage, setQPage] = useState(1)
   const [qTotal, setQTotal] = useState(0)
   const [qSearch, setQSearch] = useState('')
+  const [qCategory, setQCategory] = useState('')
+  const [catCounts, setCatCounts] = useState<{ total: number; categories: any[] }>({ total: 0, categories: [] })
   const [users, setUsers] = useState<UserRow[]>([])
   const [uPage, setUPage] = useState(1)
   const [uTotal, setUTotal] = useState(0)
@@ -98,7 +100,12 @@ export default function AdminPage() {
     })
   }, [])
 
-  useEffect(() => { if (tab === 'sorular') loadQuestions() }, [tab, qPage, qSearch])
+  useEffect(() => { if (tab === 'sorular') loadQuestions() }, [tab, qPage, qSearch, qCategory])
+  useEffect(() => {
+    if (tab === 'sorular') {
+      api.get('/api/admin/questions/category-counts').then(r => setCatCounts(r.data)).catch(() => {})
+    }
+  }, [tab])
   useEffect(() => { if (tab === 'kullanicilar') loadUsers() }, [tab, uPage, uSearch])
   useEffect(() => { if (tab === 'kategoriler') loadCategories() }, [tab])
   useEffect(() => { if (tab === 'ayarlar') loadSettings() }, [tab])
@@ -428,7 +435,8 @@ export default function AdminPage() {
   }, [tab, statsPeriod])
 
   const loadQuestions = async () => {
-    const r = await api.get(`/api/admin/questions?page=${qPage}&limit=15&search=${qSearch}`)
+    const catQ = qCategory ? `&category_slug=${encodeURIComponent(qCategory)}` : ''
+    const r = await api.get(`/api/admin/questions?page=${qPage}&limit=15&search=${qSearch}${catQ}`)
     setQuestions(r.data.questions)
     setQTotal(r.data.total)
   }
@@ -641,16 +649,42 @@ export default function AdminPage() {
       {/* SORULAR */}
       {tab === 'sorular' && (
         <div className="animate-fade-in">
-          <div className="flex gap-3 mb-4">
+          <div className="flex gap-3 mb-3 flex-wrap">
             <input
               className="input-field flex-1"
+              style={{ minWidth: 160 }}
               placeholder="Soru ara..."
               value={qSearch}
               onChange={e => { setQSearch(e.target.value); setQPage(1) }}
             />
+            <select
+              className="input-field"
+              style={{ minWidth: 200 }}
+              value={qCategory}
+              onChange={e => { setQCategory(e.target.value); setQPage(1) }}>
+              <option value="">Tüm kategoriler ({catCounts.total})</option>
+              {catCounts.categories.map((c: any) => (
+                <option key={c.slug} value={c.slug}>{c.name} ({c.count})</option>
+              ))}
+            </select>
             <span style={{ color: '#B0BEC5', alignSelf: 'center', fontSize: 14 }}>
               {qTotal} soru
             </span>
+          </div>
+
+          {/* Kategori sayıları özeti */}
+          <div className="flex gap-2 mb-4 flex-wrap">
+            {catCounts.categories.map((c: any) => (
+              <button key={c.slug} onClick={() => { setQCategory(qCategory === c.slug ? '' : c.slug); setQPage(1) }}
+                className="text-xs px-2 py-1 rounded-lg font-bold"
+                style={{
+                  background: qCategory === c.slug ? 'rgba(79,195,247,0.2)' : 'rgba(255,255,255,0.05)',
+                  border: qCategory === c.slug ? '1px solid #4FC3F7' : '1px solid rgba(255,255,255,0.1)',
+                  color: qCategory === c.slug ? '#4FC3F7' : '#B0BEC5',
+                }}>
+                {c.name} <span style={{ color: '#FFD700' }}>{c.count}</span>
+              </button>
+            ))}
           </div>
 
           <div className="glass overflow-hidden">

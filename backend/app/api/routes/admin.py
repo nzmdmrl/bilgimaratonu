@@ -245,23 +245,26 @@ async def list_questions(
     db: AsyncSession = Depends(get_db),
     admin: User = Depends(get_current_admin),
 ):
-    query = select(Question, Category.name.label("category_name")).join(
-        Category, Category.id == Question.category_id
-    ).where(Question.deleted_at == None)
-
+    cat = None
     if category_slug:
         cat_r = await db.execute(select(Category).where(Category.slug == category_slug))
         cat = cat_r.scalar_one_or_none()
-        if cat:
-            query = query.where(Question.category_id == cat.id)
 
+    query = select(Question, Category.name.label("category_name")).join(
+        Category, Category.id == Question.category_id
+    ).where(Question.deleted_at == None)
+    count_q = select(func.count(Question.id)).where(Question.deleted_at == None)
+
+    if cat:
+        query = query.where(Question.category_id == cat.id)
+        count_q = count_q.where(Question.category_id == cat.id)
     if difficulty and difficulty in DIFFICULTY_MAP:
         query = query.where(Question.difficulty == DIFFICULTY_MAP[difficulty])
-
+        count_q = count_q.where(Question.difficulty == DIFFICULTY_MAP[difficulty])
     if search:
         query = query.where(Question.text.ilike(f"%{search}%"))
+        count_q = count_q.where(Question.text.ilike(f"%{search}%"))
 
-    count_q = select(func.count(Question.id)).where(Question.deleted_at == None)
     total = (await db.execute(count_q)).scalar()
 
     query = query.order_by(Question.created_at.desc()).offset((page-1)*limit).limit(limit)
@@ -287,6 +290,33 @@ async def list_questions(
         "page": page,
         "pages": (total + limit - 1) // limit,
     }
+
+@router.get("/questions/category-counts")
+async def question_category_counts(
+    db: AsyncSession = Depends(get_db),
+    admin: User = Depends(get_current_admin),
+):
+    """Her kategoride kaç aktif-olmayan-dahil soru var (silinmemiş)."""
+    from sqlalchemy import text as _t
+    rows = (await db.execute(_t("""
+        SELECT c.slug, c.name,
+               COUNT(q.id) AS cnt,
+               COUNT(q.id) FILTER (WHERE q.is_active) AS active_cnt
+        FROM categories c
+        LEFT JOIN questions q ON q.category_id = c.id AND q.deleted_at IS NULL
+        WHERE c.is_active = true
+        GROUP BY c.slug, c.name
+        ORDER BY c.name
+    """))).mappings().all()
+    total = sum(int(r["cnt"]) for r in rows)
+    return {
+        "total": total,
+        "categories": [
+            {"slug": r["slug"], "name": r["name"], "count": int(r["cnt"]), "active": int(r["active_cnt"] or 0)}
+            for r in rows
+        ],
+    }
+
 
 @router.post("/questions/{question_id}/toggle-active")
 async def toggle_question(
