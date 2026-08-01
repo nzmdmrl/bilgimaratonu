@@ -74,6 +74,9 @@ export default function MacPage() {
   const [jokerActive, setJokerActive] = useState(false) // Joker kullanıldı, sadece joker kullanan cevap verebilir
   const [iAmJokerUser, setIAmJokerUser] = useState(false) // Ben mi joker kullandım
 
+  const [emojiSent, setEmojiSent] = useState(0)
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false)
+  const [receivedEmoji, setReceivedEmoji] = useState<string | null>(null)
   const [jokers, setJokers] = useState(1)
   const [myCardColor, setMyCardColor] = useState<string | null>(null)
   const [oppCardColor, setOppCardColor] = useState<string | null>(null)
@@ -281,6 +284,11 @@ export default function MacPage() {
         setStatusMessage('Rakip pas geçti')
         break
 
+      case 'opponent_emoji':
+        setReceivedEmoji(msg.emoji)
+        setTimeout(() => setReceivedEmoji(prev => (prev === msg.emoji ? null : prev)), 3000)
+        break
+
       case 'match_end':
         stopTimer()
         stopRadar()
@@ -344,6 +352,14 @@ export default function MacPage() {
     if (!wsRef.current || passes <= 0 || myAnswer || !canAnswer) return
     setPasses(p => p - 1)
     wsRef.current.send(JSON.stringify({ type: 'pass' }))
+  }
+
+  const MATCH_EMOJIS = ['😂', '👍', '😮', '😎', '😢', '😡', '🤔']
+  const sendEmoji = (e: string) => {
+    if (!wsRef.current || emojiSent >= 2) return
+    setEmojiSent(c => c + 1)
+    setShowEmojiPicker(false)
+    wsRef.current.send(JSON.stringify({ type: 'emoji', emoji: e }))
   }
 
   // Şık rengi hesapla
@@ -720,7 +736,38 @@ export default function MacPage() {
           }}>
           ⏭ Pas ({passes})
         </button>
+
+        {/* Emoji */}
+        <div style={{ position: 'relative' }}>
+          <button onClick={() => setShowEmojiPicker(v => !v)} disabled={emojiSent >= 2}
+            style={{
+              background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(79,195,247,0.3)',
+              borderRadius: 12, padding: '10px 16px', color: '#4FC3F7', fontWeight: 700, fontSize: 18,
+              cursor: emojiSent >= 2 ? 'not-allowed' : 'pointer', opacity: emojiSent >= 2 ? 0.35 : 1,
+            }} title={emojiSent >= 2 ? 'Emoji hakkın bitti' : 'Emoji gönder'}>😊</button>
+          {showEmojiPicker && emojiSent < 2 && (
+            <div style={{
+              position: 'absolute', bottom: '115%', left: '50%', transform: 'translateX(-50%)',
+              display: 'flex', gap: 2, background: 'rgba(15,20,40,0.98)',
+              border: '1px solid rgba(255,255,255,0.12)', borderRadius: 12, padding: '6px 8px',
+              zIndex: 50, boxShadow: '0 4px 16px rgba(0,0,0,0.5)',
+            }}>
+              {MATCH_EMOJIS.map(e => (
+                <button key={e} onClick={() => sendEmoji(e)}
+                  style={{ fontSize: 24, background: 'transparent', border: 'none', cursor: 'pointer', padding: '2px 4px', lineHeight: 1 }}>{e}</button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
+
+      {/* Rakipten gelen emoji */}
+      {receivedEmoji && (
+        <div className="animate-fade-in" style={{
+          position: 'fixed', top: 90, left: '50%', transform: 'translateX(-50%)', zIndex: 300,
+          fontSize: 72, pointerEvents: 'none', filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.6))',
+        }}>{receivedEmoji}</div>
+      )}
 
       {/* Joker bilgileri */}
       <div className="flex justify-center gap-6 mt-2 text-xs">

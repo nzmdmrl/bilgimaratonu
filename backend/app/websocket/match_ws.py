@@ -18,6 +18,10 @@ from app.websocket.bot_match import run_bot_match, find_bot_opponent, get_random
 
 QUESTIONS_PER_MATCH = 15  # Varsayılan, ayarlardan override edilir
 
+# Maç içi emoji (en popüler 7) — oyuncu başına maçta en fazla 2
+ALLOWED_EMOJIS = {"😂", "👍", "😮", "😎", "😢", "😡", "🤔"}
+_emoji_counts: dict = {}  # {"match_id:user_id": adet}
+
 async def get_random_questions(db: AsyncSession, count: int):
     """
     Soru dağılımı — admin ayarlarından okunur.
@@ -695,6 +699,17 @@ async def handle_match_ws(websocket: WebSocket, token: str):
                     q = manager.match_queues.get(mid, {}).get(user_id)
                     if q:
                         await q.put(data)
+                elif msg_type == "emoji":
+                    # Emoji — rakibe ilet (maçta oyuncu başına en fazla 2, whitelist)
+                    emoji = data.get("emoji")
+                    mid = manager.user_match.get(user_id) or match_id
+                    if emoji in ALLOWED_EMOJIS and mid:
+                        key = f"{mid}:{user_id}"
+                        if _emoji_counts.get(key, 0) < 2:
+                            _emoji_counts[key] = _emoji_counts.get(key, 0) + 1
+                            for pid in list(manager.match_queues.get(mid, {}).keys()):
+                                if pid != user_id:
+                                    await manager.send_to_user(pid, mid, {"type": "opponent_emoji", "emoji": emoji})
                 elif msg_type == "ping":
                     await websocket.send_json({"type": "pong"})
 
