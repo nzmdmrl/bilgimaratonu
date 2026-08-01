@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import HeaderWrapper from '@/components/HeaderWrapper'
 import Footer from '@/components/Footer'
+import BottomNav from '@/components/BottomNav'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -18,6 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <HeaderWrapper />
         {children}
         <Footer />
+        <BottomNav />
       </body>
     </html>
   )

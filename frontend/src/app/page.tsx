@@ -25,11 +25,16 @@ export default function HomePage() {
   const [marathonInfo, setMarathonInfo] = useState<any>(null)
   const [marathonEnabled, setMarathonEnabled] = useState(false)
   const [announcementClosed, setAnnouncementClosed] = useState(false)
+  const [modules, setModules] = useState<any>({})
+  const [titles, setTitles] = useState<any[]>([])
+  const [showOzet, setShowOzet] = useState(false)
 
   useEffect(() => {
     fetchMe()
     api.get('/api/league/daily?limit=10').then(r => setLeagueTop(r.data.table)).catch(() => {})
     api.get('/api/admin/settings/public').then(r => {
+      setModules(r.data.modules || {})
+      if (r.data.titles) setTitles(r.data.titles)
       if (r.data.modules?.marathon) {
         setMarathonEnabled(true)
         api.get('/api/marathon/active').then(mr => {
@@ -63,9 +68,114 @@ export default function HomePage() {
     return () => clearInterval(interval)
   }, [])
 
+  const DEFAULT_TITLES = [
+    { min_xp: 0, title: 'Çaylak', color: '#B0BEC5', icon: '🌱' },
+    { min_xp: 500, title: 'Sohbetçi', color: '#4FC3F7', icon: '💬' },
+    { min_xp: 2000, title: 'Mahalli Ünlü', color: '#81C784', icon: '⭐' },
+    { min_xp: 5000, title: 'Şehir Efsanesi', color: '#FFD700', icon: '🏆' },
+    { min_xp: 15000, title: 'Sanal Efsane', color: '#E91E63', icon: '👑' },
+  ]
+  const tlist: any[] = titles.length ? titles : DEFAULT_TITLES
+  const xp = user?.xp || 0
+  const unvan = [...tlist].reverse().find((u: any) => xp >= u.min_xp) || tlist[0]
+  const nextUnvan = tlist.find((u: any) => u.min_xp > xp)
+  const xpProgress = nextUnvan ? Math.min(100, Math.round(((xp - unvan.min_xp) / (nextUnvan.min_xp - unvan.min_xp)) * 100)) : 100
+
+  const playCard = (href: string, icon: string, label: string, color: string) => (
+    <Link href={href} key={href}
+      className="flex flex-col items-center justify-center gap-1 py-6"
+      style={{ borderRadius: 16, background: color + '18', border: `1px solid ${color}44`, textDecoration: 'none' }}>
+      <div className="text-4xl">{icon}</div>
+      <div className="font-black text-sm" style={{ color }}>{label}</div>
+    </Link>
+  )
+
   return (
     <div className="min-h-screen">
-      <main className="max-w-5xl mx-auto px-4 py-12">
+
+      {/* ─── MOBİL ─── */}
+      <div className="md:hidden px-3 pt-3" style={{ paddingBottom: 96 }}>
+        {user ? (
+          <>
+            {/* XP çizgisi + ünvan */}
+            <div className="glass p-3 mb-3" style={{ borderRadius: 14 }}>
+              <div className="flex items-center justify-between mb-2">
+                <span className="font-black text-sm" style={{ color: unvan.color }}>{unvan.icon} {unvan.title}</span>
+                <span className="text-xs" style={{ color: '#B0BEC5' }}>💎 {xp.toLocaleString()} XP · 🌟 {user.solo_stars ?? 0}</span>
+              </div>
+              <div style={{ height: 10, borderRadius: 999, background: 'rgba(255,255,255,0.1)', overflow: 'hidden' }}>
+                <div style={{ width: `${xpProgress}%`, height: '100%', background: 'linear-gradient(90deg,#4FC3F7,#FFD700)', borderRadius: 999, transition: 'width .4s' }} />
+              </div>
+              {nextUnvan && (
+                <div className="text-right mt-1" style={{ fontSize: 10, color: '#607D8B' }}>
+                  Sonraki: {nextUnvan.icon} {nextUnvan.title} ({nextUnvan.min_xp.toLocaleString()} XP)
+                </div>
+              )}
+            </div>
+
+            {/* Oyna */}
+            <div className="font-black text-lg mb-2" style={{ color: '#fff' }}>🎮 Oyna</div>
+            <div className="grid grid-cols-2 gap-3 mb-3">
+              {playCard('/maraton', '🏅', 'Maraton', '#81C784')}
+              {playCard('/mac', '⚡', '1v1 Maç', '#4FC3F7')}
+              {playCard('/kategoriler', '🗂', 'Kategoriler', '#FFD700')}
+              {playCard('/testler', '📝', 'Testler', '#E91E63')}
+            </div>
+            <div className="grid grid-cols-2 gap-3 mb-3">
+              {playCard('/lig', '🏆', 'Lig', '#FFB300')}
+              {playCard('/market', '🛒', 'Market', '#9C27B0')}
+            </div>
+
+            {/* Turnuva promo */}
+            {marathonEnabled && (
+              <Link href="/turnuva" className="block glass p-4 mb-3" style={{ borderRadius: 14, background: 'rgba(255,215,0,0.08)', border: '1px solid rgba(255,215,0,0.25)', textDecoration: 'none' }}>
+                <div className="flex items-center gap-3">
+                  <div className="text-4xl">🏆</div>
+                  <div className="flex-1 min-w-0">
+                    <div className="font-black" style={{ color: '#FFD700' }}>Turnuva</div>
+                    <div className="text-xs" style={{ color: '#B0BEC5' }}>
+                      {marathonInfo?.status === 'waiting' || marathonInfo?.status === 'lobby' ? 'Lobi açık — hemen katıl!' : 'Eleme usulü büyük yarış'}
+                    </div>
+                  </div>
+                  <div className="text-2xl" style={{ color: '#FFD700' }}>›</div>
+                </div>
+              </Link>
+            )}
+
+            {/* Günün özeti */}
+            <button onClick={() => setShowOzet(v => !v)}
+              className="w-full glass p-3 mb-3 flex items-center justify-between" style={{ borderRadius: 14 }}>
+              <span className="font-bold" style={{ color: '#4FC3F7' }}>📊 Günün Özeti — Son Maçlar</span>
+              <span style={{ color: '#B0BEC5' }}>{showOzet ? '▲' : '▼'}</span>
+            </button>
+            {showOzet && (
+              <div className="glass p-2 mb-3" style={{ borderRadius: 14 }}>
+                {recentMatches.length === 0 ? (
+                  <div className="text-xs text-center py-4" style={{ color: '#607D8B' }}>Henüz maç yok</div>
+                ) : recentMatches.slice(0, 8).map((m: any, i: number) => (
+                  <div key={i} className="flex items-center gap-2 px-1 py-1.5" style={{ fontSize: 12, borderBottom: i < 7 ? '1px solid rgba(255,255,255,0.05)' : 'none' }}>
+                    <img src={avatarSrc(m.avatar1, m.player1)} alt="" style={{ width: 22, height: 22, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+                    <span className="flex-1 truncate" style={{ color: m.winner === m.player1 ? '#FFD700' : '#E0E0E0' }}>{m.player1}</span>
+                    <span style={{ fontWeight: 800, color: '#4FC3F7' }}>{m.score1}-{m.score2}</span>
+                    <span className="flex-1 truncate text-right" style={{ color: m.winner === m.player2 ? '#FFD700' : '#E0E0E0' }}>{m.player2}</span>
+                    <img src={avatarSrc(m.avatar2, m.player2)} alt="" style={{ width: 22, height: 22, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="text-center py-12">
+            <h1 className="text-2xl font-black mb-2"><span style={{ color: '#FFD700' }}>Bilgi</span> <span style={{ color: '#4FC3F7' }}>Maratonu</span></h1>
+            <p className="text-sm mb-6" style={{ color: '#B0BEC5' }}>Bilginin rekabetle buluştuğu adres</p>
+            <Link href="/kayit" className="btn-gold block mb-3">🚀 Hemen Başla</Link>
+            <Link href="/giris" className="btn-primary block">Giriş Yap</Link>
+          </div>
+        )}
+      </div>
+
+      {/* ─── MASAÜSTÜ ─── */}
+      <main className="max-w-5xl mx-auto px-4 py-12 hidden md:block">
 
         {/* Hero */}
         <div className="text-center mb-14 animate-fade-in">
