@@ -120,8 +120,13 @@ async def invite_to_arena(slug: str, req: InviteRequest, db: AsyncSession = Depe
         raise HTTPException(status_code=404, detail="Arena bulunamadı.")
     if str(event.creator_id) != str(current_user.id):
         raise HTTPException(status_code=403, detail="Sadece oluşturan davet edebilir.")
-    if event.type != "arena":
-        raise HTTPException(status_code=400, detail="Bu bir arena değil.")
+    if event.type not in ("arena", "duel"):
+        raise HTTPException(status_code=400, detail="Bu test davet edilebilir değil.")
+
+    is_arena = event.type == "arena"
+    ntype = "arena_invite" if is_arena else "duel_invite"
+    ntitle = "🎯 Arena Daveti" if is_arena else "⚔️ Düello Daveti"
+    nmsg = "seni bir arenaya davet etti." if is_arena else "seni bir düelloya davet etti."
 
     sent = 0
     for fid in req.friend_ids:
@@ -137,10 +142,10 @@ async def invite_to_arena(slug: str, req: InviteRequest, db: AsyncSession = Depe
             continue
         db.add(Notification(
             user_id=fid,
-            type="arena_invite",
-            title="🎯 Arena Daveti",
-            message=f"{current_user.username} seni bir arenaya davet etti.",
-            data={"slug": event.slug, "event_id": str(event.id), "from_username": current_user.username, "from_user_id": str(current_user.id)},
+            type=ntype,
+            title=ntitle,
+            message=f"{current_user.username} {nmsg}",
+            data={"slug": event.slug, "event_id": str(event.id), "event_type": event.type, "from_username": current_user.username, "from_user_id": str(current_user.id)},
         ))
         sent += 1
     await db.commit()
@@ -154,10 +159,10 @@ async def decline_arena_invite(slug: str, db: AsyncSession = Depends(get_db),
     event = (await db.execute(select(Event).where(Event.slug == slug))).scalar_one_or_none()
     if not event:
         raise HTTPException(status_code=404, detail="Arena bulunamadı.")
-    # ilgili daveti okundu işaretle
+    # ilgili daveti okundu işaretle (arena veya düello)
     await db.execute(_t(
-        "UPDATE notifications SET is_read = true WHERE user_id = :uid AND type = 'arena_invite' "
-        "AND (data->>'event_id') = :eid"
+        "UPDATE notifications SET is_read = true WHERE user_id = :uid "
+        "AND type IN ('arena_invite','duel_invite') AND (data->>'event_id') = :eid"
     ), {"uid": str(current_user.id), "eid": str(event.id)})
     await db.commit()
     # ev sahibine gerçek-zamanlı bildir (sadece ona popup)

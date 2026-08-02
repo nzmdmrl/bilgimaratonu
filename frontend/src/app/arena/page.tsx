@@ -225,6 +225,14 @@ export default function ArenaPage() {
         {/* özel arena: ev sahibi başlat butonu */}
         {isPrivate && !full && (
           <div className="w-full mt-5">
+            {isHost && eventRef.current && (
+              <button onClick={() => {
+                const link = `${window.location.origin}/arena?event=${eventRef.current}`
+                navigator.clipboard.writeText(link); alert('Katılım linki kopyalandı!')
+              }} className="w-full glass p-2 mb-3 text-sm font-bold" style={{ color: '#4FC3F7', borderRadius: 10 }}>
+                📋 Katılım linkini kopyala
+              </button>
+            )}
             {isHost ? (
               <>
                 <button onClick={startGame} disabled={players.length < minStart}

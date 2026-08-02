@@ -19,6 +19,7 @@ function iconFor(n: Notif): string {
   if (n.type === 'medal') return n.data?.rank === 3 ? '🥉' : '🥈'
   if (n.type === 'friend_request' || n.type === 'friend_accepted') return '🤝'
   if (n.type === 'arena_invite') return '🎯'
+  if (n.type === 'duel_invite') return '⚔️'
   return '🔔'
 }
 
@@ -43,10 +44,11 @@ export default function BildirimlerPage() {
   const [acted, setActed] = useState<Record<string, 'accepted' | 'rejected'>>({})
   const [busy, setBusy] = useState<string | null>(null)
 
-  const handleArenaInvite = async (n: Notif, action: 'accept' | 'reject') => {
+  const handleInvite = async (n: Notif, action: 'accept' | 'reject') => {
     const slug = n.data?.slug
     if (!slug) return
-    if (action === 'accept') { router.push(`/arena?event=${slug}`); return }
+    const isDuel = n.type === 'duel_invite'
+    if (action === 'accept') { router.push(isDuel ? `/testler/${slug}` : `/arena?event=${slug}`); return }
     setBusy(n.id)
     try {
       await api.post(`/api/events/${slug}/decline`)
@@ -130,16 +132,16 @@ export default function BildirimlerPage() {
                     </div>
                   )
                 )}
-                {n.type === 'arena_invite' && (
+                {(n.type === 'arena_invite' || n.type === 'duel_invite') && (
                   acted[n.id] === 'rejected' ? (
                     <div style={{ fontSize: 13, fontWeight: 700, marginTop: 8, color: '#B0BEC5' }}>Reddedildi</div>
                   ) : (
                     <div className="flex gap-2" style={{ marginTop: 10 }}>
-                      <button onClick={() => handleArenaInvite(n, 'accept')} disabled={busy === n.id}
+                      <button onClick={() => handleInvite(n, 'accept')} disabled={busy === n.id}
                         className="font-bold" style={{ fontSize: 13, padding: '6px 14px', borderRadius: 10, background: 'rgba(255,112,67,0.2)', border: '1px solid #FF7043', color: '#FF7043' }}>
-                        🎯 Kabul Et & Katıl
+                        {n.type === 'duel_invite' ? '⚔️' : '🎯'} Kabul Et & Katıl
                       </button>
-                      <button onClick={() => handleArenaInvite(n, 'reject')} disabled={busy === n.id}
+                      <button onClick={() => handleInvite(n, 'reject')} disabled={busy === n.id}
                         className="font-bold" style={{ fontSize: 13, padding: '6px 14px', borderRadius: 10, background: 'rgba(244,67,54,0.12)', border: '1px solid rgba(244,67,54,0.4)', color: '#F44336' }}>
                         Reddet
                       </button>

@@ -88,27 +88,38 @@ export default function OlusturPage() {
     } catch { setFriends([]) }
   }
 
+  const joinPath = () => type === 'duel' ? `/testler/${created?.slug}` : `/arena?event=${created?.slug}`
+  const shareLink = () => typeof window !== 'undefined' ? `${window.location.origin}${joinPath()}` : ''
+
   const sendInvites = async () => {
     setSending(true)
     try {
       if (selectedFriends.length) {
         await api.post(`/api/events/${created.slug}/invite`, { friend_ids: selectedFriends })
       }
-      router.push(`/arena?event=${created.slug}`)
+      router.push(joinPath())
     } catch (e: any) {
       alert(e.response?.data?.detail || 'Davet gönderilemedi')
       setSending(false)
     }
   }
 
-  // ARENA oluşturulduysa: davet ekranı
-  if (created && type === 'arena') return (
+  // ARENA / DÜELLO oluşturulduysa: davet + link ekranı
+  if (created && (type === 'arena' || type === 'duel')) return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="glass p-6 max-w-md w-full animate-fade-in">
         <div className="text-center">
-          <div className="text-5xl mb-2">🎯</div>
-          <h2 className="text-2xl font-black mb-1" style={{ color: '#FF7043' }}>Arena Hazır!</h2>
+          <div className="text-5xl mb-2">{type === 'duel' ? '⚔️' : '🎯'}</div>
+          <h2 className="text-2xl font-black mb-1" style={{ color: '#FF7043' }}>{type === 'duel' ? 'Düello Hazır!' : 'Arena Hazır!'}</h2>
           <p className="mb-4 text-sm" style={{ color: '#B0BEC5' }}>{created.question_count} soru · {maxParticipants} kişilik</p>
+        </div>
+
+        {/* Paylaşım linki — link ile de katılabilirler */}
+        <div className="glass p-3 mb-3">
+          <p className="text-xs mb-1" style={{ color: '#B0BEC5' }}>Katılım linki (link ile de girebilirler):</p>
+          <div className="font-mono text-xs break-all mb-2" style={{ color: '#4FC3F7' }}>{shareLink()}</div>
+          <button onClick={() => { navigator.clipboard.writeText(shareLink()); alert('Link kopyalandı!') }}
+            className="text-xs font-bold" style={{ color: '#FF7043' }}>📋 Linki Kopyala</button>
         </div>
 
         {!inviteOpen ? (
@@ -116,15 +127,15 @@ export default function OlusturPage() {
             <button onClick={openInvite} className="btn-gold w-full mb-3">
               🤝 Arkadaşlarını Davet Et
             </button>
-            <button onClick={() => router.push(`/arena?event=${created.slug}`)}
+            <button onClick={() => router.push(joinPath())}
               className="w-full glass p-3 text-sm font-bold" style={{ color: '#FF7043' }}>
-              Davet etmeden arenaya geç →
+              Davet etmeden {type === 'duel' ? 'düelloya' : 'arenaya'} geç →
             </button>
           </>
         ) : sending ? (
           <div className="text-center py-6">
             <div className="text-lg font-black" style={{ color: '#4CAF50' }}>✓ Davet gönderildi</div>
-            <div className="text-sm mt-1" style={{ color: '#B0BEC5' }}>Arenaya geçiliyor…</div>
+            <div className="text-sm mt-1" style={{ color: '#B0BEC5' }}>{type === 'duel' ? 'Düelloya' : 'Arenaya'} geçiliyor…</div>
           </div>
         ) : (
           <>
@@ -178,7 +189,9 @@ export default function OlusturPage() {
               </>
             )}
             <button onClick={sendInvites} className="btn-gold w-full">
-              {selectedFriends.length ? `Davet Et (${selectedFriends.length}) & Arenaya Geç` : 'Davet etmeden Arenaya Geç'}
+              {selectedFriends.length
+                ? `Davet Et (${selectedFriends.length}) & ${type === 'duel' ? 'Düelloya' : 'Arenaya'} Geç`
+                : `Davet etmeden ${type === 'duel' ? 'Düelloya' : 'Arenaya'} Geç`}
             </button>
           </>
         )}
