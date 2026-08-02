@@ -24,7 +24,7 @@ interface UserRow {
 interface Category {
   id: string; name: string; slug: string; icon: string
   is_active: boolean; question_count: number
-  in_general_match: boolean; has_category_match: boolean
+  in_general_match: boolean; has_category_match: boolean; has_arena_match?: boolean
 }
 
 export default function AdminPage() {
@@ -826,18 +826,19 @@ export default function AdminPage() {
       {tab === 'kategoriler' && (
         <div className="animate-fade-in glass overflow-hidden">
           <div className="grid text-xs font-bold px-4 py-3"
-            style={{ gridTemplateColumns: '40px 1fr 80px 100px 100px 80px', color: '#B0BEC5', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+            style={{ gridTemplateColumns: '40px 1fr 70px 90px 90px 90px 70px', color: '#B0BEC5', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
             <span>İkon</span>
             <span>Kategori</span>
             <span>Sorular</span>
             <span>Genel Maç</span>
             <span>Özel Maç</span>
+            <span>Arena</span>
             <span>Durum</span>
           </div>
           {categories.map(cat => (
             <div key={cat.id} className="grid px-4 py-3 items-center"
               style={{
-                gridTemplateColumns: '40px 1fr 80px 100px 100px 80px',
+                gridTemplateColumns: '40px 1fr 70px 90px 90px 90px 70px',
                 borderBottom: '1px solid rgba(255,255,255,0.05)',
                 opacity: cat.is_active ? 1 : 0.5,
               }}>
@@ -867,6 +868,17 @@ export default function AdminPage() {
                   color: cat.has_category_match ? '#4FC3F7' : '#666'
                 }}>
                 {cat.has_category_match ? '✓ Var' : '✗ Yok'}
+              </button>
+              <button onClick={async () => {
+                await api.patch(`/api/categories/${cat.id}`, { has_arena_match: !cat.has_arena_match })
+                loadCategories()
+              }}
+                className="text-xs px-2 py-1 rounded"
+                style={{
+                  background: cat.has_arena_match ? 'rgba(255,112,67,0.2)' : 'rgba(255,255,255,0.05)',
+                  color: cat.has_arena_match ? '#FF7043' : '#666'
+                }}>
+                {cat.has_arena_match ? '✓ Var' : '✗ Yok'}
               </button>
               <button onClick={() => toggleCategory(cat.id)}
                 className="text-xs px-3 py-1 rounded"
@@ -1810,6 +1822,7 @@ export default function AdminPage() {
                 { key: 'match_1v1', label: '1v1 İnsan Maçı' },
                 { key: 'match_bot', label: '1v1 Bot Maçı' },
                 { key: 'marathon', label: 'Turnuva' },
+                { key: 'arena', label: 'Arena' },
                 { key: 'league_daily', label: 'Günlük Lig' },
                 { key: 'league_weekly', label: 'Haftalık Lig' },
                 { key: 'league_monthly', label: 'Aylık Lig' },
@@ -1874,6 +1887,55 @@ export default function AdminPage() {
             </div>
 
             <button onClick={() => saveSettings('match', siteSettings.match)}
+              disabled={settingsSaving}
+              className="btn-gold mt-4">
+              {settingsSaving ? 'Kaydediliyor...' : '💾 Kaydet'}
+            </button>
+          </div>
+
+          {/* Arena Ayarları */}
+          <div className="glass p-5">
+            <h3 className="font-bold mb-1" style={{ color: '#FF7043' }}>🎯 Arena Ayarları</h3>
+            <p className="text-xs mb-4" style={{ color: '#B0BEC5' }}>5 kişilik eşzamanlı yarışma. Sorular "Arena" işaretli kategorilerden gelir.</p>
+            <div className="flex items-center justify-between glass p-3 mb-4">
+              <span className="text-sm font-bold">Arena Botları Çalışsın</span>
+              <button
+                onClick={() => setSiteSettings((prev: any) => ({ ...prev, arena: { ...prev.arena, bot_enabled: !prev.arena?.bot_enabled } }))}
+                className="px-3 py-1 rounded-lg text-sm font-bold"
+                style={{
+                  background: siteSettings.arena?.bot_enabled ? 'rgba(76,175,80,0.2)' : 'rgba(244,67,54,0.2)',
+                  color: siteSettings.arena?.bot_enabled ? '#4CAF50' : '#F44336',
+                }}>
+                {siteSettings.arena?.bot_enabled ? '✓ Açık' : '✗ Kapalı'}
+              </button>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm mb-1 block" style={{ color: '#B0BEC5' }}>Soru Sayısı</label>
+                <input type="number" className="input-field w-full"
+                  value={siteSettings.arena?.questions ?? 7}
+                  onChange={e => setSiteSettings((prev: any) => ({ ...prev, arena: { ...prev.arena, questions: parseInt(e.target.value) } }))} />
+              </div>
+              <div>
+                <label className="text-sm mb-1 block" style={{ color: '#B0BEC5' }}>Soru Süresi (sn)</label>
+                <input type="number" className="input-field w-full"
+                  value={siteSettings.arena?.answer_seconds ?? 10}
+                  onChange={e => setSiteSettings((prev: any) => ({ ...prev, arena: { ...prev.arena, answer_seconds: parseInt(e.target.value) } }))} />
+              </div>
+              <div>
+                <label className="text-sm mb-1 block" style={{ color: '#B0BEC5' }}>Bot Başlama Süresi (sn)</label>
+                <input type="number" className="input-field w-full"
+                  value={siteSettings.arena?.bot_start_seconds ?? 15}
+                  onChange={e => setSiteSettings((prev: any) => ({ ...prev, arena: { ...prev.arena, bot_start_seconds: parseInt(e.target.value) } }))} />
+              </div>
+              <div>
+                <label className="text-sm mb-1 block" style={{ color: '#B0BEC5' }}>Bot Arası Süre (sn)</label>
+                <input type="number" className="input-field w-full"
+                  value={siteSettings.arena?.bot_interval_seconds ?? 2}
+                  onChange={e => setSiteSettings((prev: any) => ({ ...prev, arena: { ...prev.arena, bot_interval_seconds: parseInt(e.target.value) } }))} />
+              </div>
+            </div>
+            <button onClick={() => saveSettings('arena', siteSettings.arena)}
               disabled={settingsSaving}
               className="btn-gold mt-4">
               {settingsSaving ? 'Kaydediliyor...' : '💾 Kaydet'}

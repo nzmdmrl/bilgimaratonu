@@ -13,6 +13,7 @@ DEFAULT_SETTINGS = {
         "match_1v1": True,        # 1v1 maç aktif mi
         "match_bot": True,        # Bot maç aktif mi
         "marathon": True,          # Maraton aktif mi
+        "arena": True,             # Arena aktif mi
         "league_daily": True,      # Günlük lig
         "league_weekly": False,    # Haftalık lig
         "league_monthly": True,    # Aylık lig
@@ -73,6 +74,17 @@ DEFAULT_SETTINGS = {
     # ─ Solo Level Ayarları
     "solo": {
         "xp_per_star": 20,  # Kazanılan her yeni yıldız için verilecek XP
+    },
+
+    # ─ Arena (5 kişilik eşzamanlı yarış)
+    "arena": {
+        "enabled": True,
+        "players": 5,
+        "questions": 7,
+        "answer_seconds": 10,
+        "bot_enabled": True,
+        "bot_start_seconds": 15,   # üye gelmezse bu kadar sonra botlar girmeye başlar
+        "bot_interval_seconds": 2,
     },
 
     # ─ Kalabalık (bot maçlarıyla ligleri doldurma)

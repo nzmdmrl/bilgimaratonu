@@ -50,6 +50,11 @@ app.include_router(settings_router.router)
 async def match_websocket(websocket: WebSocket, token: str = Query(...)):
     await handle_match_ws(websocket, token)
 
+@app.websocket("/api/arena/ws")
+async def arena_websocket(websocket: WebSocket, token: str = Query(...)):
+    from app.websocket.arena_ws import handle_arena_ws
+    await handle_arena_ws(websocket, token)
+
 from app.services.marathon_scheduler import marathon_scheduler, get_or_create_next_marathon
 from app.services.badge import seed_badges
 from app.services.settings import seed_settings
@@ -88,6 +93,8 @@ async def startup():
         # Bracket kolonlari (idempotent)
         await db.execute(_sqltext("ALTER TABLE marathon_participants ADD COLUMN IF NOT EXISTS seed INTEGER"))
         await db.execute(_sqltext("ALTER TABLE marathon_matches ADD COLUMN IF NOT EXISTS bracket_index INTEGER"))
+        # Arena kategori bayragi (idempotent)
+        await db.execute(_sqltext("ALTER TABLE categories ADD COLUMN IF NOT EXISTS has_arena_match BOOLEAN DEFAULT FALSE"))
         # Botlarin kupa/madalya/rozet kazanimlarini temizle (profillerine yansimasin)
         await db.execute(_sqltext(
             "DELETE FROM achievements WHERE user_id IN (SELECT id FROM users WHERE is_bot = true)"

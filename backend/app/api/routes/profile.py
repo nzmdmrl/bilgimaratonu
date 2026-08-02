@@ -423,6 +423,15 @@ async def get_profile_achievements(username: str, db: AsyncSession = Depends(get
         "league": "Turnuva", "period_type": "marathon",
     })
 
+    # Arena kupasi
+    a_trophy = won.get((1, "arena", None), 0)
+    trophies.append({
+        "icon": "🏆",
+        "title": "Arena Şampiyonu",
+        "count": a_trophy, "earned": a_trophy > 0,
+        "league": "Arena", "period_type": "arena",
+    })
+
     medals = []
     for cat_id, lig_name in leagues:
         for pt in PERIODS:
@@ -442,6 +451,15 @@ async def get_profile_achievements(username: str, db: AsyncSession = Depends(get
         "title": "Turnuva İkincisi",
         "count": m_medal, "earned": m_medal > 0,
         "league": "Turnuva", "period_type": "marathon", "rank": 2,
+    })
+
+    # Arena madalyasi (2.lik)
+    a_medal = won.get((2, "arena", None), 0)
+    medals.append({
+        "icon": "🥈",
+        "title": "Arena İkincisi",
+        "count": a_medal, "earned": a_medal > 0,
+        "league": "Arena", "period_type": "arena", "rank": 2,
     })
 
     # Rozetler: tüm aktif tanımlar + kazanım durumu (kilitli/açık)

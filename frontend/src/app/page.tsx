@@ -138,6 +138,20 @@ export default function HomePage() {
               </Link>
             )}
 
+            {/* Arena — 5 kişilik eşzamanlı */}
+            {modules.arena && (
+              <Link href="/arena" className="block glass p-4 mb-3" style={{ borderRadius: 14, background: 'rgba(255,112,67,0.1)', border: '1px solid rgba(255,112,67,0.3)', textDecoration: 'none' }}>
+                <div className="flex items-center gap-3">
+                  <div className="text-4xl">🎯</div>
+                  <div className="flex-1 min-w-0">
+                    <div className="font-black" style={{ color: '#FF7043' }}>Arena</div>
+                    <div className="text-xs" style={{ color: '#B0BEC5' }}>5 kişi aynı anda yarışır — en hızlı ve en doğru kazanır!</div>
+                  </div>
+                  <div className="text-2xl" style={{ color: '#FF7043' }}>›</div>
+                </div>
+              </Link>
+            )}
+
             <div className="grid grid-cols-2 gap-3 mb-3">
               {playCard('/kategoriler', '🗂', 'Kategoriler', '#FFD700')}
               {playCard('/testler', '📝', 'Testler', '#E91E63')}
@@ -333,6 +347,25 @@ export default function HomePage() {
                 </div>
                 <Link href="/turnuva" className="btn-gold px-6 py-3 font-black">
                   {marathonInfo?.status === 'waiting' || marathonInfo?.status === 'lobby' ? '🏆 Katıl' : '🏆 Turnuvaya Git'}
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {/* Arena - tam genişlik */}
+          {modules.arena && (
+            <div className="col-span-1 md:col-span-2 glass p-6"
+              style={{ background: 'rgba(255,112,67,0.07)', border: '1px solid rgba(255,112,67,0.25)' }}>
+              <div className="flex items-center justify-between flex-wrap gap-4">
+                <div className="flex items-center gap-4">
+                  <div className="text-5xl">🎯</div>
+                  <div>
+                    <h3 className="text-xl font-black" style={{ color: '#FF7043' }}>Arena</h3>
+                    <p className="text-sm" style={{ color: '#B0BEC5' }}>5 kişi aynı anda yarışır — en hızlı ve en doğru kazanır! Kupa ve madalya seni bekliyor.</p>
+                  </div>
+                </div>
+                <Link href="/arena" className="btn-gold px-6 py-3 font-black" style={{ background: 'linear-gradient(135deg,#FF7043,#FF5722)' }}>
+                  🎯 Arenaya Gir
                 </Link>
               </div>
             </div>

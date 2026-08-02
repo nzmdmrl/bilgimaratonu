@@ -18,6 +18,7 @@ class CategoryResponse(BaseModel):
     display_order: int
     in_general_match: bool
     has_category_match: bool
+    has_arena_match: bool = False
 
     class Config:
         from_attributes = True
@@ -25,6 +26,7 @@ class CategoryResponse(BaseModel):
 class CategoryUpdate(BaseModel):
     in_general_match: Optional[bool] = None
     has_category_match: Optional[bool] = None
+    has_arena_match: Optional[bool] = None
     is_active: Optional[bool] = None
 
 @router.get("", response_model=List[CategoryResponse])
@@ -44,6 +46,7 @@ async def get_categories(db: AsyncSession = Depends(get_db)):
         display_order=c.display_order,
         in_general_match=c.in_general_match if c.in_general_match is not None else True,
         has_category_match=c.has_category_match if c.has_category_match is not None else False,
+        has_arena_match=getattr(c, 'has_arena_match', False) or False,
     ) for c in categories]
 
 @router.get("/all")
@@ -63,6 +66,7 @@ async def get_all_categories(db: AsyncSession = Depends(get_db)):
         display_order=c.display_order,
         in_general_match=c.in_general_match if c.in_general_match is not None else True,
         has_category_match=c.has_category_match if c.has_category_match is not None else False,
+        has_arena_match=getattr(c, 'has_arena_match', False) or False,
     ) for c in categories]}
 
 @router.patch("/{category_id}")
@@ -84,6 +88,8 @@ async def update_category(
         cat.in_general_match = req.in_general_match
     if req.has_category_match is not None:
         cat.has_category_match = req.has_category_match
+    if req.has_arena_match is not None:
+        cat.has_arena_match = req.has_arena_match
     if req.is_active is not None:
         cat.is_active = req.is_active
     

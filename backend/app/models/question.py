@@ -43,6 +43,7 @@ class Category(Base):
 
     in_general_match = Column(Boolean, default=True)
     has_category_match = Column(Boolean, default=False)
+    has_arena_match = Column(Boolean, default=False)
 
     questions = relationship("Question", back_populates="category")
 
