@@ -16,6 +16,7 @@ interface Notif {
 function iconFor(n: Notif): string {
   if (n.type === 'trophy') return '🏆'
   if (n.type === 'medal') return n.data?.rank === 3 ? '🥉' : '🥈'
+  if (n.type === 'friend_request' || n.type === 'friend_accepted') return '🤝'
   return '🔔'
 }
 
@@ -36,6 +37,20 @@ export default function BildirimlerPage() {
   const { user, fetchMe } = useAuthStore()
   const [notifs, setNotifs] = useState<Notif[]>([])
   const [loading, setLoading] = useState(true)
+  const [acted, setActed] = useState<Record<string, 'accepted' | 'rejected'>>({})
+  const [busy, setBusy] = useState<string | null>(null)
+
+  const handleFriend = async (n: Notif, action: 'accept' | 'reject') => {
+    const fid = n.data?.friendship_id
+    if (!fid) return
+    setBusy(n.id)
+    try {
+      await api.post(`/api/friends/${action}/${fid}`)
+      setActed(a => ({ ...a, [n.id]: action === 'accept' ? 'accepted' : 'rejected' }))
+    } catch (e: any) {
+      alert(e?.response?.data?.detail || 'İşlem başarısız.')
+    } finally { setBusy(null) }
+  }
 
   useEffect(() => {
     fetchMe()
@@ -81,6 +96,24 @@ export default function BildirimlerPage() {
                 <div style={{ color: '#fff', fontWeight: 700, fontSize: 15 }}>{n.title}</div>
                 <div style={{ color: '#B0BEC5', fontSize: 13, marginTop: 2 }}>{n.message}</div>
                 <div style={{ color: '#607D8B', fontSize: 11, marginTop: 6 }}>{formatDate(n.created_at)}</div>
+                {n.type === 'friend_request' && (
+                  acted[n.id] ? (
+                    <div style={{ fontSize: 13, fontWeight: 700, marginTop: 8, color: acted[n.id] === 'accepted' ? '#4CAF50' : '#B0BEC5' }}>
+                      {acted[n.id] === 'accepted' ? '✓ Kabul edildi' : 'Reddedildi'}
+                    </div>
+                  ) : (
+                    <div className="flex gap-2" style={{ marginTop: 10 }}>
+                      <button onClick={() => handleFriend(n, 'accept')} disabled={busy === n.id}
+                        className="font-bold" style={{ fontSize: 13, padding: '6px 14px', borderRadius: 10, background: 'rgba(76,175,80,0.2)', border: '1px solid #4CAF50', color: '#4CAF50' }}>
+                        ✓ Kabul Et
+                      </button>
+                      <button onClick={() => handleFriend(n, 'reject')} disabled={busy === n.id}
+                        className="font-bold" style={{ fontSize: 13, padding: '6px 14px', borderRadius: 10, background: 'rgba(244,67,54,0.12)', border: '1px solid rgba(244,67,54,0.4)', color: '#F44336' }}>
+                        Reddet
+                      </button>
+                    </div>
+                  )
+                )}
               </div>
               {!n.is_read && (
                 <span style={{

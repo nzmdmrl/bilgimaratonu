@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.core.database import AsyncSessionLocal
 from app.core.seed import seed_categories
-from app.api.routes import auth, categories, questions, profile, league, admin, marathon, badges, solo, events, pages, blog, announcements, upload, shop, importer, question_generator, notifications
+from app.api.routes import auth, categories, questions, profile, league, admin, marathon, badges, solo, events, pages, blog, announcements, upload, shop, importer, question_generator, notifications, friends
 from app.api.routes import settings as settings_router
 from app.websocket.match_ws import handle_match_ws
 
@@ -34,6 +34,7 @@ app.include_router(league.router)
 app.include_router(admin.router)
 app.include_router(marathon.router)
 app.include_router(notifications.router)
+app.include_router(friends.router)
 app.include_router(badges.router)
 app.include_router(solo.router)
 app.include_router(events.router)
@@ -81,6 +82,20 @@ async def startup():
             )
         """))
         await db.execute(_sqltext("CREATE INDEX IF NOT EXISTS ix_solo_progress_user_id ON solo_progress(user_id)"))
+        # Arkadaşlık tablosu (migration olmadan idempotent olustur)
+        await db.execute(_sqltext("""
+            CREATE TABLE IF NOT EXISTS friendships (
+                id UUID PRIMARY KEY,
+                requester_id UUID NOT NULL REFERENCES users(id),
+                addressee_id UUID NOT NULL REFERENCES users(id),
+                status VARCHAR(20) NOT NULL DEFAULT 'pending',
+                created_at TIMESTAMPTZ DEFAULT NOW(),
+                updated_at TIMESTAMPTZ DEFAULT NOW(),
+                CONSTRAINT uq_friend_pair UNIQUE (requester_id, addressee_id)
+            )
+        """))
+        await db.execute(_sqltext("CREATE INDEX IF NOT EXISTS ix_friendships_requester ON friendships(requester_id)"))
+        await db.execute(_sqltext("CREATE INDEX IF NOT EXISTS ix_friendships_addressee ON friendships(addressee_id)"))
         # Avatarsiz botlara DiceBear thumbs avatari ata (idempotent)
         await db.execute(_sqltext(
             "UPDATE users SET avatar_url = 'https://api.dicebear.com/9.x/thumbs/svg?seed=' || username "

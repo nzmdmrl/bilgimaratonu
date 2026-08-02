@@ -1942,6 +1942,23 @@ export default function AdminPage() {
             </button>
           </div>
 
+          {/* Arkadaşlık Ayarları */}
+          <div className="glass p-5">
+            <h3 className="font-bold mb-1" style={{ color: '#81C784' }}>🤝 Arkadaşlık Ayarları</h3>
+            <p className="text-xs mb-4" style={{ color: '#B0BEC5' }}>Spam önlemek için saatlik arkadaşlık isteği limiti.</p>
+            <div style={{ maxWidth: 260 }}>
+              <label className="text-sm mb-1 block" style={{ color: '#B0BEC5' }}>Saatte Maks. İstek</label>
+              <input type="number" className="input-field w-full"
+                value={siteSettings.friendship?.requests_per_hour ?? 5}
+                onChange={e => setSiteSettings((prev: any) => ({ ...prev, friendship: { ...prev.friendship, requests_per_hour: parseInt(e.target.value) } }))} />
+            </div>
+            <button onClick={() => saveSettings('friendship', siteSettings.friendship)}
+              disabled={settingsSaving}
+              className="btn-gold mt-4">
+              {settingsSaving ? 'Kaydediliyor...' : '💾 Kaydet'}
+            </button>
+          </div>
+
           {/* Zorluk Puan ve Süre Ayarları */}
           <div className="glass p-5">
             <h3 className="font-bold mb-1" style={{ color: '#FFD700' }}>🎯 Zorluk Puan ve Süre Ayarları</h3>

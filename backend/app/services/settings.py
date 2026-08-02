@@ -20,6 +20,11 @@ DEFAULT_SETTINGS = {
         "league_yearly": True,     # Yıllık lig
     },
 
+    # ─ Arkadaşlık
+    "friendship": {
+        "requests_per_hour": 5,    # Saatte gönderilebilecek maks arkadaşlık isteği
+    },
+
     # ─ Maç Ayarları
     "match": {
         "total_questions": 15,

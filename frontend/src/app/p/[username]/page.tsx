@@ -18,6 +18,9 @@ interface Profile {
   solo_stars?: number
   role: string
   created_at: string
+  is_bot?: boolean
+  friend_count?: number
+  avatar_url?: string
 }
 
 interface CategoryStat {
@@ -85,6 +88,8 @@ export default function ProfilePage() {
   const [achTab, setAchTab] = useState<'trophy'|'medal'|'badge'>('trophy')
   const [tab, setTab] = useState<Tab>('genel')
   const [loading, setLoading] = useState(true)
+  const [friend, setFriend] = useState<any>(null)   // {status, friendship_id, is_bot, friend_count}
+  const [friendBusy, setFriendBusy] = useState(false)
 
   useEffect(() => {
     loadProfile()
@@ -102,6 +107,10 @@ export default function ProfilePage() {
         api.get(`/api/profile/${username}/achievements`),
       ])
       setProfile(profileRes.data)
+      // Arkadaşlık durumu (giriş yapılmışsa ve başkasının profiliyse)
+      if (user && user.username !== username && !profileRes.data.is_bot) {
+        api.get(`/api/friends/status/${username}`).then(r => setFriend(r.data)).catch(() => {})
+      }
       // Kendi profilini görüyorsa pending avatarı çek
       if (user?.username === username) {
         api.get('/api/upload/my-pending-avatar').then(r => {
@@ -118,6 +127,27 @@ export default function ProfilePage() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const sendFriendRequest = async () => {
+    setFriendBusy(true)
+    try {
+      const r = await api.post(`/api/friends/request/${username}`)
+      setFriend((f: any) => ({ ...f, status: r.data.status, friendship_id: r.data.friendship_id }))
+    } catch (e: any) {
+      alert(e?.response?.data?.detail || 'İstek gönderilemedi.')
+    } finally { setFriendBusy(false) }
+  }
+
+  const acceptFriend = async () => {
+    if (!friend?.friendship_id) return
+    setFriendBusy(true)
+    try {
+      await api.post(`/api/friends/accept/${friend.friendship_id}`)
+      setFriend((f: any) => ({ ...f, status: 'friends', friend_count: (f.friend_count || 0) + 1 }))
+    } catch (e: any) {
+      alert(e?.response?.data?.detail || 'Kabul edilemedi.')
+    } finally { setFriendBusy(false) }
   }
 
   if (loading) {
@@ -240,6 +270,14 @@ export default function ProfilePage() {
                   <span style={{ fontSize: 18 }}>🎖️</span>
                   <span className="font-black" style={{ color: '#4FC3F7' }}>{achievements.summary.badges}</span>
                 </button>
+                {!profile.is_bot && (
+                  <div className="flex items-center gap-1 px-3 py-1 rounded-full"
+                    style={{ background: 'rgba(129,199,132,0.12)', border: '1px solid rgba(129,199,132,0.3)', fontSize: 15 }}
+                    title="Arkadaş sayısı">
+                    <span style={{ fontSize: 18 }}>🤝</span>
+                    <span className="font-black" style={{ color: '#81C784' }}>{friend?.friend_count ?? profile.friend_count ?? 0}</span>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -250,9 +288,32 @@ export default function ProfilePage() {
                 ⚙️ Profili Düzenle
               </Link>
             ) : (
-              <Link href="/mac" className="btn-gold" style={{ fontSize: 14, padding: '8px 16px' }}>
-                ⚡ Maç Başlat
-              </Link>
+              <div className="flex flex-col gap-2">
+                <Link href="/mac" className="btn-gold text-center" style={{ fontSize: 14, padding: '8px 16px' }}>
+                  ⚡ Maç Başlat
+                </Link>
+                {user && !profile.is_bot && friend && friend.status !== 'self' && (
+                  friend.status === 'friends' ? (
+                    <div className="text-center font-bold" style={{ fontSize: 14, padding: '8px 16px', borderRadius: 12, background: 'rgba(129,199,132,0.15)', border: '1px solid rgba(129,199,132,0.4)', color: '#81C784' }}>
+                      🤝 Arkadaşsınız
+                    </div>
+                  ) : friend.status === 'request_sent' ? (
+                    <div className="text-center font-bold" style={{ fontSize: 14, padding: '8px 16px', borderRadius: 12, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)', color: '#B0BEC5' }}>
+                      ⏳ İstek gönderildi
+                    </div>
+                  ) : friend.status === 'request_received' ? (
+                    <button onClick={acceptFriend} disabled={friendBusy} className="font-bold"
+                      style={{ fontSize: 14, padding: '8px 16px', borderRadius: 12, background: 'rgba(76,175,80,0.2)', border: '1px solid #4CAF50', color: '#4CAF50' }}>
+                      ✓ İsteği Kabul Et
+                    </button>
+                  ) : (
+                    <button onClick={sendFriendRequest} disabled={friendBusy} className="font-bold"
+                      style={{ fontSize: 14, padding: '8px 16px', borderRadius: 12, background: 'rgba(129,199,132,0.15)', border: '1px solid rgba(129,199,132,0.4)', color: '#81C784' }}>
+                      🤝 Arkadaş Ekle
+                    </button>
+                  )
+                )}
+              </div>
             )}
         </div>
       </div>

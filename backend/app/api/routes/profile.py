@@ -29,6 +29,9 @@ async def get_profile(username: str, db: AsyncSession = Depends(get_db)):
     )
     solo_stars = int(stars_res.scalar() or 0)
 
+    from app.api.routes.friends import friend_count as _fc
+    fcount = await _fc(db, user.id)
+
     return {
         "id": str(user.id),
         "username": user.username,
@@ -40,6 +43,8 @@ async def get_profile(username: str, db: AsyncSession = Depends(get_db)):
         "total_losses": user.total_losses,
         "win_rate": win_rate,
         "solo_stars": solo_stars,
+        "friend_count": fcount,
+        "is_bot": bool(user.is_bot),
         "created_at": user.created_at.strftime("%B %Y") if user.created_at else "",
         "avatar_url": user.avatar_url or "",
     }
