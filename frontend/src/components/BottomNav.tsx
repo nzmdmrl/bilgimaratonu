@@ -10,7 +10,7 @@ export default function BottomNav() {
   if (!user) return null // sadece giriş yapınca
 
   // Tam ekran oyun ekranlarında gizle (kontrolleri kapatmasın)
-  const hidden = ['/mac', '/kategori-mac', '/turnuva'].some(p => pathname.startsWith(p))
+  const hidden = ['/mac', '/kategori-mac', '/turnuva', '/arena'].some(p => pathname.startsWith(p))
     || (pathname.startsWith('/testler/') && pathname !== '/testler')
     || ['/giris', '/kayit'].includes(pathname)
   if (hidden) return null

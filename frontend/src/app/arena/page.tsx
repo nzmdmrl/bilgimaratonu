@@ -303,7 +303,7 @@ export default function ArenaPage() {
       </div>
     )
     return (
-      <div style={{ position: 'fixed', inset: 0, zIndex: 60, background: 'linear-gradient(180deg,#141a3a,#0A0E27)', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'linear-gradient(180deg,#141a3a,#0A0E27)', display: 'flex', flexDirection: 'column' }}>
         {/* banner */}
         <div className="flex items-center gap-3 px-4" style={{ background: myLast?.is_correct ? '#7CB342' : '#EF6C00', paddingTop: 'min(3vh,16px)', paddingBottom: 'min(3vh,16px)', flexShrink: 0 }}>
           <Link href="/" style={{ background: 'rgba(255,255,255,0.25)', borderRadius: '50%', width: 34, height: 34, minWidth: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 20, textDecoration: 'none' }}>←</Link>
