@@ -191,6 +191,7 @@ export default function CategoryMatchPage() {
         setJokerActive(false)
         break
       case 'opponent_joker':
+        if (msg.eliminated?.length) setEliminatedOptions(msg.eliminated)
         setJokerActive(true); setIAmJokerUser(false)
         setStatusMessage('Rakip joker kullandı, cevap bekliyor...')
         break
