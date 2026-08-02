@@ -62,9 +62,12 @@ from app.services.settings import seed_settings
 @app.on_event("startup")
 async def startup():
     async with AsyncSessionLocal() as db:
+        from sqlalchemy import text as _sqltext
+        # Arena kategori bayragi — seed_categories ORM sorgusundan ONCE eklenmeli (idempotent)
+        await db.execute(_sqltext("ALTER TABLE categories ADD COLUMN IF NOT EXISTS has_arena_match BOOLEAN DEFAULT FALSE"))
+        await db.commit()
         await seed_categories(db)
         # Yarim kalmis maratonlari temizle (redeploy sonrasi takilmayi onler)
-        from sqlalchemy import text as _sqltext
         await db.execute(_sqltext("UPDATE marathons SET status='finished', finished_at=NOW() WHERE status IN ('waiting','in_progress')"))
         # Solo level ilerleme tablosu (migration olmadan idempotent olustur)
         await db.execute(_sqltext("""
@@ -93,8 +96,6 @@ async def startup():
         # Bracket kolonlari (idempotent)
         await db.execute(_sqltext("ALTER TABLE marathon_participants ADD COLUMN IF NOT EXISTS seed INTEGER"))
         await db.execute(_sqltext("ALTER TABLE marathon_matches ADD COLUMN IF NOT EXISTS bracket_index INTEGER"))
-        # Arena kategori bayragi (idempotent)
-        await db.execute(_sqltext("ALTER TABLE categories ADD COLUMN IF NOT EXISTS has_arena_match BOOLEAN DEFAULT FALSE"))
         # Botlarin kupa/madalya/rozet kazanimlarini temizle (profillerine yansimasin)
         await db.execute(_sqltext(
             "DELETE FROM achievements WHERE user_id IN (SELECT id FROM users WHERE is_bot = true)"
