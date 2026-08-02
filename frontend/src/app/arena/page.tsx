@@ -332,15 +332,17 @@ export default function ArenaPage() {
           </div>
         </div>
 
-        {/* alt oyuncu şeridi */}
-        <div className="flex items-center justify-around px-2" style={{ borderTop: '1px solid rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.03)', paddingTop: 'min(1.4vh,10px)', paddingBottom: 'min(1.4vh,10px)', flexShrink: 0 }}>
-          {players.map(p => (
-            <div key={p.user_id} className="flex flex-col items-center" style={{ minWidth: 0, flex: 1 }}>
-              <img src={avatarSrc(p.avatar_url, p.username)} alt=""
-                style={{ width: 'min(11vw,44px)', height: 'min(11vw,44px)', borderRadius: '50%', objectFit: 'cover', border: p.user_id === me ? '2px solid #FFD700' : '2px solid rgba(255,255,255,0.15)' }} />
-              <span style={{ fontSize: 10, color: '#B0BEC5', marginTop: 3, maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.username}</span>
-            </div>
-          ))}
+        {/* alt oyuncu şeridi — ızgarayla aynı genişlikte ve ortalı */}
+        <div className="flex justify-center px-2" style={{ borderTop: '1px solid rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.03)', paddingTop: 'min(1.4vh,10px)', paddingBottom: 'min(1.4vh,10px)', flexShrink: 0 }}>
+          <div className="flex items-start justify-around" style={{ width: '100%', maxWidth: `calc(${cols} * 68px + ${cols - 1} * 12px + 40px)` }}>
+            {players.map(p => (
+              <div key={p.user_id} className="flex flex-col items-center" style={{ minWidth: 0, flex: 1 }}>
+                <img src={avatarSrc(p.avatar_url, p.username)} alt=""
+                  style={{ width: 'min(11vw,44px)', height: 'min(11vw,44px)', borderRadius: '50%', objectFit: 'cover', border: p.user_id === me ? '2px solid #FFD700' : '2px solid rgba(255,255,255,0.15)' }} />
+                <span style={{ fontSize: 10, color: '#B0BEC5', marginTop: 3, maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.username}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     )
