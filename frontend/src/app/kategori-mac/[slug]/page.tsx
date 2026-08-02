@@ -31,6 +31,7 @@ export default function CategoryMatchPage() {
   const [opponent, setOpponent] = useState<any>(null)
   const [vsCountdown, setVsCountdown] = useState<number | null>(null)
   const [playerNumber, setPlayerNumber] = useState(1)
+  const playerNumberRef = useRef(1)  // handleMsg stale closure'ını önlemek için
   const [matchId, setMatchId] = useState('')
   const [question, setQuestion] = useState<any>(null)
   const [myAnswer, setMyAnswer] = useState<string | null>(null)
@@ -113,6 +114,7 @@ export default function CategoryMatchPage() {
         playSound('match_found')
         setMatchId(msg.match_id)
         setPlayerNumber(msg.player_number)
+        playerNumberRef.current = msg.player_number
         setOpponent(msg.opponent)
         setMyScore(0); setOppScore(0)
         setGameState('starting')
@@ -127,7 +129,7 @@ export default function CategoryMatchPage() {
         setCanAnswer(true); setJokerActive(false); setIAmJokerUser(false)
         setStatusMessage('')
         if (msg.scores) {
-          if (playerNumber === 1) { setMyScore(msg.scores.p1 || 0); setOppScore(msg.scores.p2 || 0) }
+          if (playerNumberRef.current === 1) { setMyScore(msg.scores.p1 || 0); setOppScore(msg.scores.p2 || 0) }
           else { setMyScore(msg.scores.p2 || 0); setOppScore(msg.scores.p1 || 0) }
         }
         playSound('new_question')
@@ -137,9 +139,9 @@ export default function CategoryMatchPage() {
         stopTimer()
         setCorrectAnswer(msg.correct_answer || null)
         setCanAnswer(false)
-        const myS = msg.player_number === playerNumber ? msg.scores?.p1 : msg.scores?.p2
-        const oppS = msg.player_number === playerNumber ? msg.scores?.p2 : msg.scores?.p1
-        if (playerNumber === 1) { setMyScore(msg.scores?.p1 || 0); setOppScore(msg.scores?.p2 || 0) }
+        const myS = msg.player_number === playerNumberRef.current ? msg.scores?.p1 : msg.scores?.p2
+        const oppS = msg.player_number === playerNumberRef.current ? msg.scores?.p2 : msg.scores?.p1
+        if (playerNumberRef.current === 1) { setMyScore(msg.scores?.p1 || 0); setOppScore(msg.scores?.p2 || 0) }
         else { setMyScore(msg.scores?.p2 || 0); setOppScore(msg.scores?.p1 || 0) }
         if (msg.points !== undefined) showPoints(msg.points)
         setStatusMessage(msg.is_correct ? '✓ Doğru!' : '✗ Yanlış')
@@ -156,7 +158,7 @@ export default function CategoryMatchPage() {
         setCanAnswer(false)
         stopTimer()
         setStatusMessage('Rakip doğru yaptı!')
-        if (playerNumber === 1) { setMyScore(msg.scores?.p1 || 0); setOppScore(msg.scores?.p2 || 0) }
+        if (playerNumberRef.current === 1) { setMyScore(msg.scores?.p1 || 0); setOppScore(msg.scores?.p2 || 0) }
         else { setMyScore(msg.scores?.p2 || 0); setOppScore(msg.scores?.p1 || 0) }
         playSound('opponent_correct')
         break
@@ -173,7 +175,7 @@ export default function CategoryMatchPage() {
         setCorrectAnswer(msg.correct_answer)
         setCanAnswer(false)
         if (msg.opp_answer) setOpponentWrongAnswer(msg.opp_answer)
-        if (playerNumber === 1) { setMyScore(msg.scores?.p1 || 0); setOppScore(msg.scores?.p2 || 0) }
+        if (playerNumberRef.current === 1) { setMyScore(msg.scores?.p1 || 0); setOppScore(msg.scores?.p2 || 0) }
         else { setMyScore(msg.scores?.p2 || 0); setOppScore(msg.scores?.p1 || 0) }
         setStatusMessage('İkisi de yanlış!')
         playSound('both_wrong')
@@ -202,8 +204,8 @@ export default function CategoryMatchPage() {
         setGameState('finished')
         setMatchResult(msg)
         {
-          const myFinal = playerNumber === 1 ? msg.player1_score : msg.player2_score
-          const oppFinal = playerNumber === 1 ? msg.player2_score : msg.player1_score
+          const myFinal = playerNumberRef.current === 1 ? msg.player1_score : msg.player2_score
+          const oppFinal = playerNumberRef.current === 1 ? msg.player2_score : msg.player1_score
           if (myFinal > oppFinal) playSound('win')
           else if (myFinal < oppFinal) playSound('lose')
           if (msg.new_badges?.length > 0) setTimeout(() => playSound('badge'), 900)
