@@ -7,7 +7,8 @@ import { avatarSrc } from '@/lib/avatar'
 import { initSounds, playSound, playCountdownTick, playCountdownBeep } from '@/lib/sound'
 
 interface Player { user_id: string; username: string; avatar_url: string; is_bot: boolean }
-type Screen = 'finding' | 'lobby_full' | 'countdown' | 'question' | 'result' | 'end'
+type Screen = 'finding' | 'lobby_full' | 'countdown' | 'question' | 'result' | 'grid' | 'end'
+interface CellRes { is_correct: boolean; flash: boolean; answered: boolean }
 const LETTERS = ['A', 'B', 'C', 'D'] as const
 
 export default function ArenaPage() {
@@ -15,6 +16,7 @@ export default function ArenaPage() {
   const router = useRouter()
   const wsRef = useRef<WebSocket | null>(null)
   const timerRef = useRef<NodeJS.Timeout | null>(null)
+  const resultTimerRef = useRef<NodeJS.Timeout | null>(null)
 
   const [me, setMe] = useState('')
   const meRef = useRef('')
@@ -33,6 +35,7 @@ export default function ArenaPage() {
   const [result, setResult] = useState<any>(null) // question_result
   const [scores, setScores] = useState<Record<string, number>>({})
   const [ranking, setRanking] = useState<any[]>([])
+  const [history, setHistory] = useState<Record<number, Record<string, CellRes>>>({}) // qIndex -> uid -> sonuç
 
   const playerMap = useRef<Record<string, Player>>({})
 
@@ -46,6 +49,7 @@ export default function ArenaPage() {
     return () => {
       wsRef.current?.close()
       if (timerRef.current) clearInterval(timerRef.current)
+      if (resultTimerRef.current) clearTimeout(resultTimerRef.current)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -95,6 +99,7 @@ export default function ArenaPage() {
       case 'starting': {
         setPlayersState(msg.players || [])
         setQTotal(msg.questions || 7)
+        setHistory({})
         setScreen('countdown')
         let c = 3; setCountdown(3); playCountdownBeep(3)
         const iv = setInterval(() => {
@@ -104,6 +109,7 @@ export default function ArenaPage() {
         break
       }
       case 'question':
+        if (resultTimerRef.current) clearTimeout(resultTimerRef.current)
         setQ(msg.question); setQIndex(msg.index); setQTotal(msg.total)
         setAnsweredBy({}); setMyAnswer(null); setResult(null)
         setScreen('question')
@@ -113,16 +119,26 @@ export default function ArenaPage() {
       case 'player_answered':
         setAnsweredBy(prev => ({ ...prev, [msg.user_id]: msg.answer }))
         break
-      case 'question_result':
+      case 'question_result': {
         if (timerRef.current) clearInterval(timerRef.current)
         setResult(msg)
         setScores(msg.scores || {})
+        const qi = msg.index
+        const row: Record<string, CellRes> = {}
+        Object.entries(msg.results || {}).forEach(([uid, r]: any) => {
+          row[uid] = { is_correct: !!r.is_correct, flash: !!r.flash, answered: r.answer != null }
+        })
+        setHistory(prev => ({ ...prev, [qi]: row }))
         setScreen('result')
         {
           const mine = msg.results?.[meRef.current]
           if (mine) playSound(mine.is_correct ? 'correct' : 'wrong')
         }
+        // kısa doğru-cevap gösterimi, sonra ızgara sahnesi
+        if (resultTimerRef.current) clearTimeout(resultTimerRef.current)
+        resultTimerRef.current = setTimeout(() => setScreen('grid'), 1700)
         break
+      }
       case 'arena_end':
         if (timerRef.current) clearInterval(timerRef.current)
         setRanking(msg.ranking || [])
@@ -250,9 +266,87 @@ export default function ArenaPage() {
     )
   }
 
+  // ── IZGARA SAHNESİ (her sorudan sonra) ──
+  if (screen === 'grid') {
+    const answeredCount = qIndex + 1
+    const remaining = Math.max(0, qTotal - answeredCount)
+    const rowsQ: number[] = []
+    for (let i = qIndex; i >= 0; i--) rowsQ.push(i)  // yeni soru en üstte
+    const correctCounts: Record<string, number> = {}
+    players.forEach(p => {
+      let c = 0
+      for (let i = 0; i <= qIndex; i++) if (history[i]?.[p.user_id]?.is_correct) c++
+      correctCounts[p.user_id] = c
+    })
+    const myLast = history[qIndex]?.[me]
+    const banners = myLast?.is_correct
+      ? ['Aynen böyle devam!', 'Harika gidiyorsun!', 'Süpersin!', 'Çok iyi!']
+      : ['Bir sonrakini kap!', 'Vazgeçme!', 'Toparlanırsın!', 'Bu sefer olmadı!']
+    const banner = banners[qIndex % banners.length]
+    const cols = players.length || 5
+    const gridCols = `repeat(${cols}, 1fr)`
+    const Cell = ({ r }: { r?: CellRes }) => (
+      <div style={{
+        position: 'relative', aspectRatio: '1', borderRadius: 10,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        background: r ? (r.is_correct ? '#6d7d54' : '#b07f88') : 'transparent',
+        border: r ? 'none' : '2px solid rgba(79,195,247,0.55)',
+        color: '#fff', fontSize: 26, fontWeight: 900,
+      }}>
+        {r ? (r.is_correct ? '✓' : '✕') : ''}
+        {r?.flash && (
+          <span style={{ position: 'absolute', top: -6, left: -6, background: '#FFC107', borderRadius: '50%', width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, boxShadow: '0 1px 4px rgba(0,0,0,0.4)' }}>⚡</span>
+        )}
+      </div>
+    )
+    return (
+      <div className="min-h-screen flex flex-col">
+        {/* yeşil banner */}
+        <div className="flex items-center gap-3 px-4 py-4" style={{ background: myLast?.is_correct ? '#7CB342' : '#EF6C00' }}>
+          <Link href="/" style={{ background: 'rgba(255,255,255,0.25)', borderRadius: '50%', width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 20, textDecoration: 'none', flexShrink: 0 }}>←</Link>
+          <div className="font-black text-2xl arena-pop" style={{ color: '#fff' }}>{banner}</div>
+        </div>
+
+        {/* ızgara */}
+        <div className="flex-1 flex flex-col justify-center px-3">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxWidth: 480, width: '100%', margin: '0 auto' }}>
+            {Array.from({ length: remaining }).map((_, ri) => (
+              <div key={`e${ri}`} style={{ display: 'grid', gridTemplateColumns: gridCols, gap: 8 }}>
+                {players.map(p => <Cell key={p.user_id} />)}
+              </div>
+            ))}
+            {rowsQ.map(qq => (
+              <div key={qq} className="arena-slideup" style={{ display: 'grid', gridTemplateColumns: gridCols, gap: 8 }}>
+                {players.map(p => <Cell key={p.user_id} r={history[qq]?.[p.user_id] || { is_correct: false, flash: false, answered: false }} />)}
+              </div>
+            ))}
+            {/* doğru/toplam */}
+            <div style={{ display: 'grid', gridTemplateColumns: gridCols, gap: 8, marginTop: 4 }}>
+              {players.map(p => (
+                <div key={p.user_id} className="text-center font-black" style={{ color: '#B0BEC5', fontSize: 15 }}>
+                  {correctCounts[p.user_id]}/{qTotal}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* alt oyuncu şeridi */}
+        <div className="flex items-center justify-around px-2 py-3" style={{ borderTop: '1px solid rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.03)' }}>
+          {players.map(p => (
+            <div key={p.user_id} className="flex flex-col items-center" style={{ minWidth: 0, flex: 1 }}>
+              <img src={avatarSrc(p.avatar_url, p.username)} alt=""
+                style={{ width: 44, height: 44, borderRadius: '50%', objectFit: 'cover', border: p.user_id === me ? '2px solid #FFD700' : '2px solid rgba(255,255,255,0.15)' }} />
+              <span style={{ fontSize: 10, color: '#B0BEC5', marginTop: 3, maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.username}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
   // ── QUESTION / RESULT ──
   const correctLetter = result?.correct_answer
-  const standings = [...players].sort((a, b) => (scores[b.user_id] || 0) - (scores[a.user_id] || 0))
   return (
     <div className="min-h-screen flex flex-col" style={{ maxWidth: 640, margin: '0 auto' }}>
       {/* üst bar */}
@@ -317,31 +411,6 @@ export default function ArenaPage() {
           )
         })}
       </div>
-
-      {/* SONUÇ: durum tablosu */}
-      {screen === 'result' && (
-        <div className="px-4 mt-3 arena-slideup">
-          <div className="glass p-2" style={{ borderRadius: 12 }}>
-            <div className="text-xs font-bold mb-1 px-1" style={{ color: '#FF7043' }}>📊 Durum</div>
-            {standings.map((p, i) => {
-              const r = result?.results?.[p.user_id]
-              return (
-                <div key={p.user_id} className="flex items-center gap-2 px-1 py-1"
-                  style={{ background: p.user_id === me ? 'rgba(255,215,0,0.08)' : 'transparent', borderRadius: 8 }}>
-                  <span className="font-black text-xs w-4 text-center" style={{ color: '#607D8B' }}>{i + 1}</span>
-                  <img src={avatarSrc(p.avatar_url, p.username)} alt="" style={{ width: 26, height: 26, borderRadius: '50%', objectFit: 'cover' }} />
-                  <span className="text-sm font-bold flex-1 truncate" style={{ color: p.user_id === me ? '#FFD700' : '#fff' }}>{p.username}</span>
-                  {r?.flash && <span style={{ fontSize: 13 }}>⚡</span>}
-                  {r && (r.is_correct
-                    ? <span className="text-xs font-bold" style={{ color: '#4CAF50' }}>+{r.points}</span>
-                    : <span className="text-xs" style={{ color: '#F44336' }}>{r.answer ? '✗' : '—'}</span>)}
-                  <span className="font-black text-sm w-10 text-right" style={{ color: '#FFD700' }}>{scores[p.user_id] || 0}</span>
-                </div>
-              )
-            })}
-          </div>
-        </div>
-      )}
 
       {/* alt oyuncu şeridi (soru sırasında) */}
       {screen === 'question' && (

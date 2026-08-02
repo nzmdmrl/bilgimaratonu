@@ -291,7 +291,7 @@ async def _start(room):
             "results": results,
             "scores": {u: round(room.scores[u] + room.bonus[u]) for u in room.players},
         })
-        await asyncio.sleep(2.5)
+        await asyncio.sleep(4.5)
 
     await _finish(room)
 
