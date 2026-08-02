@@ -387,7 +387,7 @@ export default function ArenaPage() {
           let border = '1px solid rgba(255,255,255,0.12)'
           if (isCorrect) { bg = 'rgba(76,175,80,0.35)'; border = '2px solid #4CAF50' }
           else if (isMineWrong) { bg = 'rgba(244,67,54,0.3)'; border = '2px solid #F44336' }
-          else if (myAnswer === letter) { bg = 'rgba(255,112,67,0.25)'; border = '2px solid #FF7043' }
+          else if (myAnswer === letter) { bg = 'rgba(55,60,72,0.95)'; border = '2px solid #6B7280' }
           return (
             <button key={letter} onClick={() => answer(letter)} disabled={!!myAnswer || screen !== 'question'}
               style={{
