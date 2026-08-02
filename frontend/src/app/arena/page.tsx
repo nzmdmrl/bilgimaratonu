@@ -284,59 +284,60 @@ export default function ArenaPage() {
       : ['Bir sonrakini kap!', 'Vazgeçme!', 'Toparlanırsın!', 'Bu sefer olmadı!']
     const banner = banners[qIndex % banners.length]
     const cols = players.length || 5
-    const gridCols = `repeat(${cols}, 1fr)`
+    // Hücreyi hem genişliğe hem yüksekliğe sığdır — böylece her cihazda kaydırmasız
+    const CELL = `min(calc(88vw / ${cols}), 7.4vh, 68px)`
+    const gap = 'min(1.6vw, 0.8vh)'
+    const gridCols = `repeat(${cols}, ${CELL})`
     const Cell = ({ r }: { r?: CellRes }) => (
       <div style={{
-        position: 'relative', aspectRatio: '1', borderRadius: 10,
+        position: 'relative', width: CELL, height: CELL, borderRadius: 'min(2vw,10px)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         background: r ? (r.is_correct ? '#6d7d54' : '#b07f88') : 'transparent',
         border: r ? 'none' : '2px solid rgba(79,195,247,0.55)',
-        color: '#fff', fontSize: 26, fontWeight: 900,
+        color: '#fff', fontSize: 'min(6vw,3.4vh)', fontWeight: 900,
       }}>
         {r ? (r.is_correct ? '✓' : '✕') : ''}
         {r?.flash && (
-          <span style={{ position: 'absolute', top: -6, left: -6, background: '#FFC107', borderRadius: '50%', width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, boxShadow: '0 1px 4px rgba(0,0,0,0.4)' }}>⚡</span>
+          <span style={{ position: 'absolute', top: '-5%', left: '-5%', background: '#FFC107', borderRadius: '50%', width: 'min(4.4vw,2.4vh)', height: 'min(4.4vw,2.4vh)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 'min(2.6vw,1.5vh)', boxShadow: '0 1px 4px rgba(0,0,0,0.4)' }}>⚡</span>
         )}
       </div>
     )
     return (
-      <div className="min-h-screen flex flex-col">
-        {/* yeşil banner */}
-        <div className="flex items-center gap-3 px-4 py-4" style={{ background: myLast?.is_correct ? '#7CB342' : '#EF6C00' }}>
-          <Link href="/" style={{ background: 'rgba(255,255,255,0.25)', borderRadius: '50%', width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 20, textDecoration: 'none', flexShrink: 0 }}>←</Link>
-          <div className="font-black text-2xl arena-pop" style={{ color: '#fff' }}>{banner}</div>
+      <div style={{ position: 'fixed', inset: 0, zIndex: 60, background: 'linear-gradient(180deg,#141a3a,#0A0E27)', display: 'flex', flexDirection: 'column' }}>
+        {/* banner */}
+        <div className="flex items-center gap-3 px-4" style={{ background: myLast?.is_correct ? '#7CB342' : '#EF6C00', paddingTop: 'min(3vh,16px)', paddingBottom: 'min(3vh,16px)', flexShrink: 0 }}>
+          <Link href="/" style={{ background: 'rgba(255,255,255,0.25)', borderRadius: '50%', width: 34, height: 34, minWidth: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 20, textDecoration: 'none' }}>←</Link>
+          <div className="font-black arena-pop truncate" style={{ color: '#fff', fontSize: 'clamp(18px,5vw,30px)' }}>{banner}</div>
         </div>
 
         {/* ızgara */}
-        <div className="flex-1 flex flex-col justify-center px-3">
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxWidth: 480, width: '100%', margin: '0 auto' }}>
-            {Array.from({ length: remaining }).map((_, ri) => (
-              <div key={`e${ri}`} style={{ display: 'grid', gridTemplateColumns: gridCols, gap: 8 }}>
-                {players.map(p => <Cell key={p.user_id} />)}
-              </div>
-            ))}
-            {rowsQ.map(qq => (
-              <div key={qq} className="arena-slideup" style={{ display: 'grid', gridTemplateColumns: gridCols, gap: 8 }}>
-                {players.map(p => <Cell key={p.user_id} r={history[qq]?.[p.user_id] || { is_correct: false, flash: false, answered: false }} />)}
-              </div>
-            ))}
-            {/* doğru/toplam */}
-            <div style={{ display: 'grid', gridTemplateColumns: gridCols, gap: 8, marginTop: 4 }}>
-              {players.map(p => (
-                <div key={p.user_id} className="text-center font-black" style={{ color: '#B0BEC5', fontSize: 15 }}>
-                  {correctCounts[p.user_id]}/{qTotal}
-                </div>
-              ))}
+        <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap }}>
+          {Array.from({ length: remaining }).map((_, ri) => (
+            <div key={`e${ri}`} style={{ display: 'grid', gridTemplateColumns: gridCols, gap }}>
+              {players.map(p => <Cell key={p.user_id} />)}
             </div>
+          ))}
+          {rowsQ.map(qq => (
+            <div key={qq} className="arena-slideup" style={{ display: 'grid', gridTemplateColumns: gridCols, gap }}>
+              {players.map(p => <Cell key={p.user_id} r={history[qq]?.[p.user_id] || { is_correct: false, flash: false, answered: false }} />)}
+            </div>
+          ))}
+          {/* doğru/toplam */}
+          <div style={{ display: 'grid', gridTemplateColumns: gridCols, gap, marginTop: 'min(1vh,6px)' }}>
+            {players.map(p => (
+              <div key={p.user_id} className="text-center font-black" style={{ color: '#B0BEC5', fontSize: 'min(3.4vw,1.9vh)' }}>
+                {correctCounts[p.user_id]}/{qTotal}
+              </div>
+            ))}
           </div>
         </div>
 
         {/* alt oyuncu şeridi */}
-        <div className="flex items-center justify-around px-2 py-3" style={{ borderTop: '1px solid rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.03)' }}>
+        <div className="flex items-center justify-around px-2" style={{ borderTop: '1px solid rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.03)', paddingTop: 'min(1.4vh,10px)', paddingBottom: 'min(1.4vh,10px)', flexShrink: 0 }}>
           {players.map(p => (
             <div key={p.user_id} className="flex flex-col items-center" style={{ minWidth: 0, flex: 1 }}>
               <img src={avatarSrc(p.avatar_url, p.username)} alt=""
-                style={{ width: 44, height: 44, borderRadius: '50%', objectFit: 'cover', border: p.user_id === me ? '2px solid #FFD700' : '2px solid rgba(255,255,255,0.15)' }} />
+                style={{ width: 'min(11vw,44px)', height: 'min(11vw,44px)', borderRadius: '50%', objectFit: 'cover', border: p.user_id === me ? '2px solid #FFD700' : '2px solid rgba(255,255,255,0.15)' }} />
               <span style={{ fontSize: 10, color: '#B0BEC5', marginTop: 3, maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.username}</span>
             </div>
           ))}
