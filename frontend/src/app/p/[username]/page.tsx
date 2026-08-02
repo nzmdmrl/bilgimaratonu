@@ -280,41 +280,39 @@ export default function ProfilePage() {
                 )}
               </div>
             )}
-          </div>
 
-          {/* Sağ taraf butonlar */}
-          {isOwnProfile ? (
-              <Link href="/profil-duzenle" className="btn-gold" style={{ fontSize: 14, padding: '8px 16px' }}>
-                ⚙️ Profili Düzenle
-              </Link>
-            ) : (
-              <div className="flex flex-col gap-2">
-                <Link href="/mac" className="btn-gold text-center" style={{ fontSize: 14, padding: '8px 16px' }}>
-                  ⚡ Maç Başlat
-                </Link>
-                {user && !profile.is_bot && friend && friend.status !== 'self' && (
-                  friend.status === 'friends' ? (
-                    <div className="text-center font-bold" style={{ fontSize: 14, padding: '8px 16px', borderRadius: 12, background: 'rgba(129,199,132,0.15)', border: '1px solid rgba(129,199,132,0.4)', color: '#81C784' }}>
-                      🤝 Arkadaşsınız
-                    </div>
-                  ) : friend.status === 'request_sent' ? (
-                    <div className="text-center font-bold" style={{ fontSize: 14, padding: '8px 16px', borderRadius: 12, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)', color: '#B0BEC5' }}>
-                      ⏳ İstek gönderildi
-                    </div>
-                  ) : friend.status === 'request_received' ? (
-                    <button onClick={acceptFriend} disabled={friendBusy} className="font-bold"
-                      style={{ fontSize: 14, padding: '8px 16px', borderRadius: 12, background: 'rgba(76,175,80,0.2)', border: '1px solid #4CAF50', color: '#4CAF50' }}>
-                      ✓ İsteği Kabul Et
-                    </button>
-                  ) : (
-                    <button onClick={sendFriendRequest} disabled={friendBusy} className="font-bold"
-                      style={{ fontSize: 14, padding: '8px 16px', borderRadius: 12, background: 'rgba(129,199,132,0.15)', border: '1px solid rgba(129,199,132,0.4)', color: '#81C784' }}>
-                      🤝 Arkadaş Ekle
-                    </button>
-                  )
+            {/* Arkadaş Ekle / durum butonu (başkasının profilinde, bot değilse) */}
+            {!isOwnProfile && user && !profile.is_bot && friend && friend.status !== 'self' && (
+              <div className="mt-3">
+                {friend.status === 'friends' ? (
+                  <span className="inline-block font-bold" style={{ fontSize: 14, padding: '8px 16px', borderRadius: 12, background: 'rgba(129,199,132,0.15)', border: '1px solid rgba(129,199,132,0.4)', color: '#81C784' }}>
+                    🤝 Arkadaşsınız
+                  </span>
+                ) : friend.status === 'request_sent' ? (
+                  <span className="inline-block font-bold" style={{ fontSize: 14, padding: '8px 16px', borderRadius: 12, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)', color: '#B0BEC5' }}>
+                    ⏳ İstek gönderildi
+                  </span>
+                ) : friend.status === 'request_received' ? (
+                  <button onClick={acceptFriend} disabled={friendBusy} className="font-bold"
+                    style={{ fontSize: 14, padding: '8px 16px', borderRadius: 12, background: 'rgba(76,175,80,0.2)', border: '1px solid #4CAF50', color: '#4CAF50' }}>
+                    ✓ İsteği Kabul Et
+                  </button>
+                ) : (
+                  <button onClick={sendFriendRequest} disabled={friendBusy} className="font-bold"
+                    style={{ fontSize: 14, padding: '8px 16px', borderRadius: 12, background: 'rgba(129,199,132,0.15)', border: '1px solid rgba(129,199,132,0.4)', color: '#81C784' }}>
+                    🤝 Arkadaş Ekle
+                  </button>
                 )}
               </div>
             )}
+          </div>
+
+          {/* Sağ taraf: sadece kendi profilinde düzenle butonu */}
+          {isOwnProfile && (
+            <Link href="/profil-duzenle" className="btn-gold flex-shrink-0" style={{ fontSize: 14, padding: '8px 16px' }}>
+              ⚙️ Profili Düzenle
+            </Link>
+          )}
         </div>
       </div>
 
