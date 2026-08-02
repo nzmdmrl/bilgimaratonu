@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, or_, and_, func, text as _t
+from pydantic import BaseModel
 from datetime import datetime, timedelta, timezone
 
 from app.core.database import get_db
@@ -11,6 +12,8 @@ from app.models.notification import Notification
 from app.services.settings import get_settings
 
 router = APIRouter(prefix="/api/friends", tags=["friends"])
+
+FRIEND_TYPES = {"aile", "is", "yakin", "diger"}
 
 
 async def friend_count(db: AsyncSession, user_id) -> int:
@@ -38,23 +41,48 @@ async def _relationship(db: AsyncSession, me, other_id):
 
 @router.get("/list")
 async def my_friends(db: AsyncSession = Depends(get_db), current_user=Depends(get_current_user)):
-    """Kullanıcının KENDİ arkadaş listesi (sadece kendisi görebilir)."""
+    """Kullanıcının KENDİ arkadaş listesi + o arkadaşa verdiği grup tipi."""
     rows = (await db.execute(
         select(Friendship).where(
             Friendship.status == "accepted",
             or_(Friendship.requester_id == current_user.id, Friendship.addressee_id == current_user.id),
         )
     )).scalars().all()
-    ids = []
+    type_map = {}   # friend_id -> benim ona verdiğim tip
     for f in rows:
-        ids.append(f.addressee_id if str(f.requester_id) == str(current_user.id) else f.requester_id)
-    if not ids:
+        if str(f.requester_id) == str(current_user.id):
+            type_map[str(f.addressee_id)] = f.requester_type or "diger"
+        else:
+            type_map[str(f.requester_id)] = f.addressee_type or "diger"
+    if not type_map:
         return {"friends": []}
-    users = (await db.execute(select(User).where(User.id.in_(ids)))).scalars().all()
+    users = (await db.execute(select(User).where(User.id.in_(list(type_map.keys()))))).scalars().all()
     return {"friends": [
-        {"user_id": str(u.id), "username": u.username, "avatar_url": u.avatar_url or ""}
+        {"user_id": str(u.id), "username": u.username, "avatar_url": u.avatar_url or "", "type": type_map.get(str(u.id), "diger")}
         for u in users
     ]}
+
+
+class TypeRequest(BaseModel):
+    type: str
+
+
+@router.patch("/type/{username}")
+async def set_friend_type(username: str, req: TypeRequest, db: AsyncSession = Depends(get_db),
+                          current_user=Depends(get_current_user)):
+    other = (await db.execute(select(User).where(User.username == username))).scalar_one_or_none()
+    if not other:
+        raise HTTPException(status_code=404, detail="Kullanıcı bulunamadı.")
+    fr = await _relationship(db, current_user.id, other.id)
+    if not fr or fr.status != "accepted":
+        raise HTTPException(status_code=400, detail="Bu kişi arkadaşın değil.")
+    t = req.type if req.type in FRIEND_TYPES else "diger"
+    if str(fr.requester_id) == str(current_user.id):
+        fr.requester_type = t
+    else:
+        fr.addressee_type = t
+    await db.commit()
+    return {"ok": True, "type": t}
 
 
 @router.get("/status/{username}")

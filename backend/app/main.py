@@ -96,6 +96,9 @@ async def startup():
         """))
         await db.execute(_sqltext("CREATE INDEX IF NOT EXISTS ix_friendships_requester ON friendships(requester_id)"))
         await db.execute(_sqltext("CREATE INDEX IF NOT EXISTS ix_friendships_addressee ON friendships(addressee_id)"))
+        # Arkadaş grup tipleri (aile/is/yakin/diger)
+        await db.execute(_sqltext("ALTER TABLE friendships ADD COLUMN IF NOT EXISTS requester_type VARCHAR(20) DEFAULT 'diger'"))
+        await db.execute(_sqltext("ALTER TABLE friendships ADD COLUMN IF NOT EXISTS addressee_type VARCHAR(20) DEFAULT 'diger'"))
         # Avatarsiz botlara DiceBear thumbs avatari ata (idempotent)
         await db.execute(_sqltext(
             "UPDATE users SET avatar_url = 'https://api.dicebear.com/9.x/thumbs/svg?seed=' || username "

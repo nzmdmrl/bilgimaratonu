@@ -67,7 +67,14 @@ interface MatchRecord {
   finished_at: string
 }
 
-type Tab = 'genel' | 'istatistikler' | 'maclar' | 'rozetler'
+type Tab = 'genel' | 'istatistikler' | 'maclar' | 'rozetler' | 'arkadaslar'
+
+const FRIEND_TYPES = [
+  { key: 'aile', label: 'Aile', icon: '👨‍👩‍👧' },
+  { key: 'is', label: 'İş', icon: '💼' },
+  { key: 'yakin', label: 'Yakın', icon: '💚' },
+  { key: 'diger', label: 'Diğer', icon: '👤' },
+]
 
 const DIFF_COLORS: Record<string, string> = {
   easy: '#4CAF50', medium: '#FFC107', hard: '#FF7043', very_hard: '#E91E63'
@@ -90,6 +97,7 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true)
   const [friend, setFriend] = useState<any>(null)   // {status, friendship_id, is_bot, friend_count}
   const [friendBusy, setFriendBusy] = useState(false)
+  const [myFriends, setMyFriends] = useState<any[]>([])   // kendi profilim: arkadaş listesi + tip
 
   useEffect(() => {
     fetchMe()
@@ -103,6 +111,19 @@ export default function ProfilePage() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, profile, username])
+
+  // Kendi profilim + Arkadaşlar sekmesi: arkadaş listesini çek
+  useEffect(() => {
+    if (tab === 'arkadaslar' && user && profile && user.username === profile.username) {
+      api.get('/api/friends/list').then(r => setMyFriends(r.data.friends || [])).catch(() => {})
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab, user, profile])
+
+  const setFriendType = async (fusername: string, type: string) => {
+    setMyFriends(fs => fs.map(f => f.username === fusername ? { ...f, type } : f))
+    try { await api.patch(`/api/friends/type/${fusername}`, { type }) } catch {}
+  }
 
   const loadProfile = async () => {
     setLoading(true)
@@ -339,12 +360,13 @@ export default function ProfilePage() {
       </div>
 
       {/* Sekmeler */}
-      <div className="flex gap-2 mb-4">
+      <div className="flex flex-wrap gap-2 mb-4">
         {[
           { key: 'genel', label: '📋 Genel' },
           { key: 'istatistikler', label: '📊 İstatistik' },
           { key: 'maclar', label: '🎮 Maç' },
           { key: 'rozetler', label: '🏆 Başarılar' },
+          ...(isOwnProfile ? [{ key: 'arkadaslar', label: '🤝 Arkadaşlar' }] : []),
         ].map(t => (
           <button key={t.key} onClick={() => setTab(t.key as Tab)}
             className="px-4 py-2 rounded-xl text-sm font-bold transition-all"
@@ -357,6 +379,40 @@ export default function ProfilePage() {
           </button>
         ))}
       </div>
+
+      {/* ARKADAŞLAR (sadece kendi profilim) */}
+      {tab === 'arkadaslar' && isOwnProfile && (
+        <div className="animate-fade-in">
+          <div className="glass p-4">
+            <h3 className="font-bold mb-3" style={{ color: '#81C784' }}>🤝 Arkadaşların ({myFriends.length})</h3>
+            {myFriends.length === 0 ? (
+              <p className="text-sm text-center py-6" style={{ color: '#B0BEC5' }}>Henüz arkadaşın yok. Başka profillerden arkadaş ekleyebilirsin.</p>
+            ) : (
+              <div className="space-y-2">
+                {myFriends.map(f => (
+                  <div key={f.user_id} className="glass p-3 flex items-center gap-3 flex-wrap" style={{ borderRadius: 12 }}>
+                    <img src={avatarSrc(f.avatar_url, f.username)} alt="" style={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'cover' }} />
+                    <Link href={`/p/${f.username}`} className="font-bold" style={{ color: '#fff' }}>{f.username}</Link>
+                    <div className="flex gap-1 ml-auto flex-wrap">
+                      {FRIEND_TYPES.map(ft => (
+                        <button key={ft.key} onClick={() => setFriendType(f.username, ft.key)}
+                          className="text-xs px-2 py-1 rounded-full font-bold transition-all"
+                          style={{
+                            background: (f.type || 'diger') === ft.key ? 'rgba(129,199,132,0.25)' : 'rgba(255,255,255,0.05)',
+                            border: (f.type || 'diger') === ft.key ? '1px solid #81C784' : '1px solid rgba(255,255,255,0.1)',
+                            color: (f.type || 'diger') === ft.key ? '#81C784' : '#B0BEC5',
+                          }}>
+                          {ft.icon} {ft.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* GENEL BAKIŞ */}
       {tab === 'genel' && (

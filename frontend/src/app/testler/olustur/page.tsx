@@ -7,6 +7,14 @@ import { avatarSrc } from '@/lib/avatar'
 
 interface Category { id: string; name: string; icon: string }
 
+const FRIEND_FILTERS = [
+  { key: 'all', label: 'Tümü', icon: '👥' },
+  { key: 'aile', label: 'Aile', icon: '👨‍👩‍👧' },
+  { key: 'is', label: 'İş', icon: '💼' },
+  { key: 'yakin', label: 'Yakın', icon: '💚' },
+  { key: 'diger', label: 'Diğer', icon: '👤' },
+]
+
 export default function OlusturPage() {
   const { user, fetchMe } = useAuthStore()
   const router = useRouter()
@@ -34,6 +42,7 @@ export default function OlusturPage() {
   const [inviteOpen, setInviteOpen] = useState(false)
   const [selectedFriends, setSelectedFriends] = useState<string[]>([])
   const [sending, setSending] = useState(false)
+  const [friendFilter, setFriendFilter] = useState('all')
 
   useEffect(() => { fetchMe(); loadCategories() }, [])
 
@@ -125,8 +134,35 @@ export default function OlusturPage() {
             {friends.length === 0 ? (
               <div className="text-center text-sm py-4" style={{ color: '#B0BEC5' }}>Henüz arkadaşın yok. Profillerden arkadaş ekleyebilirsin.</div>
             ) : (
+              <>
+              {/* Grup filtreleri */}
+              <div className="flex gap-1 mb-2 flex-wrap">
+                {FRIEND_FILTERS.map(ff => {
+                  const active = friendFilter === ff.key
+                  return (
+                    <button key={ff.key} onClick={() => setFriendFilter(ff.key)}
+                      className="text-xs px-2 py-1 rounded-full font-bold transition-all"
+                      style={{
+                        background: active ? 'rgba(255,112,67,0.2)' : 'rgba(255,255,255,0.05)',
+                        border: active ? '1px solid #FF7043' : '1px solid rgba(255,255,255,0.1)',
+                        color: active ? '#FF7043' : '#B0BEC5',
+                      }}>
+                      {ff.icon} {ff.label}
+                    </button>
+                  )
+                })}
+              </div>
+              {/* Hızlı seç: filtredeki tüm arkadaşları ekle */}
+              {friendFilter !== 'all' && (
+                <button onClick={() => {
+                  const ids = friends.filter(f => (f.type || 'diger') === friendFilter).map(f => f.user_id)
+                  setSelectedFriends(prev => Array.from(new Set([...prev, ...ids])))
+                }} className="text-xs mb-2 font-bold" style={{ color: '#FF7043' }}>
+                  + Bu gruptakilerin hepsini seç
+                </button>
+              )}
               <div className="space-y-2 mb-3" style={{ maxHeight: 260, overflowY: 'auto' }}>
-                {friends.map(f => {
+                {friends.filter(f => friendFilter === 'all' || (f.type || 'diger') === friendFilter).map(f => {
                   const sel = selectedFriends.includes(f.user_id)
                   return (
                     <button key={f.user_id} onClick={() => setSelectedFriends(prev => sel ? prev.filter(x => x !== f.user_id) : [...prev, f.user_id])}
@@ -139,6 +175,7 @@ export default function OlusturPage() {
                   )
                 })}
               </div>
+              </>
             )}
             <button onClick={sendInvites} className="btn-gold w-full">
               {selectedFriends.length ? `Davet Et (${selectedFriends.length}) & Arenaya Geç` : 'Davet etmeden Arenaya Geç'}
@@ -388,6 +425,11 @@ export default function OlusturPage() {
         <button onClick={handleCreate} disabled={loading} className="btn-gold w-full text-lg">
           {loading ? 'Oluşturuluyor...' : '🚀 Test Oluştur'}
         </button>
+        {(type === 'arena' || type === 'duel') && (
+          <p className="text-xs text-center mt-3" style={{ color: '#B0BEC5' }}>
+            ℹ️ Oluşturduktan sonraki ekranda arkadaşlarınızı davet edebilir veya test paylaşım çeşitlerini görebilirsiniz.
+          </p>
+        )}
       </div>
     </div>
   )

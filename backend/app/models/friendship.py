@@ -12,6 +12,9 @@ class Friendship(Base):
     requester_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False, index=True)
     addressee_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False, index=True)
     status = Column(String(20), default="pending")  # pending | accepted
+    # Her taraf karşısını kendi grubuna koyar: aile | is | yakin | diger
+    requester_type = Column(String(20), default="diger")
+    addressee_type = Column(String(20), default="diger")
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
