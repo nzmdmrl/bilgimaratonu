@@ -316,6 +316,8 @@ async def _handle_private_ws(websocket: WebSocket, user, slug: str):
                     asyncio.ensure_future(_start_private(room))
                 else:
                     await websocket.send_json({"type": "error", "message": "Başlatmak için en az 2 kişi gerekli."})
+            elif t == "restart" and is_host and room.status == "finished":
+                asyncio.ensure_future(_restart_private(room))
             elif t == "ping":
                 await websocket.send_json({"type": "pong"})
     except WebSocketDisconnect:
@@ -433,6 +435,60 @@ async def _run_questions(room, qlist):
         await asyncio.sleep(4.5)
 
     await _finish(room)
+
+
+async def _event_arena_questions(db, ev):
+    """Testin kategori+dağılımından TAZE rastgele soru seç (tekrarda farklı sorular)."""
+    from app.models.question import Question as _Q
+    from sqlalchemy.orm import selectinload
+    base = select(_Q).options(selectinload(_Q.category)).where(_Q.is_active == True)
+    cats = ev.category_ids or []
+    if cats:
+        base = base.where(_Q.category_id.in_(cats))
+    dist = ev.distribution or {"easy": 5, "medium": 2}
+    out = []
+    for diff, count in dist.items():
+        if not count or int(count) <= 0:
+            continue
+        r = await db.execute(base.where(_Q.difficulty == diff).order_by(func.random()).limit(int(count)))
+        out.extend(r.scalars().all())
+    if not out:
+        r = await db.execute(base.order_by(func.random()).limit(ev.question_count or 7))
+        out = r.scalars().all()
+    return [_q_dict(x) for x in out]
+
+
+async def _restart_private(room):
+    """Aynı katılımcılarla, yeni sorularla tekrar başlat (yeni davet gitmez)."""
+    if room.status == "running":
+        return
+    room.status = "running"
+    # bağlantısı kopanları çıkar
+    for uid in [u for u, p in list(room.players.items()) if not p.get("ws")]:
+        del room.players[uid]
+    if not room.players:
+        room.status = "finished"
+        return
+    async with AsyncSessionLocal() as db:
+        from app.models.event import Event
+        ev = (await db.execute(select(Event).where(Event.id == room.event_id))).scalar_one_or_none()
+        qlist = await _event_arena_questions(db, ev) if ev else []
+    if not qlist:
+        await _broadcast(room, {"type": "error", "message": "Bu arenada soru yok."})
+        room.status = "finished"
+        return
+    # skorları sıfırla, oyuncuları koru
+    for uid in room.players:
+        room.scores[uid] = 0.0
+        room.correct[uid] = 0
+        room.flash[uid] = 0
+        room.bonus[uid] = 0.0
+    room.answers = {}
+    room.cur_q = -1
+    room.qlist = qlist
+    await _broadcast(room, {"type": "starting", "players": _players_payload(room), "questions": len(qlist), "countdown": 3})
+    await asyncio.sleep(3.3)
+    await _run_questions(room, qlist)
 
 
 async def _bot_answer(room, uid, qi, correct_answer):

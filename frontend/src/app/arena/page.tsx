@@ -315,8 +315,22 @@ export default function ArenaPage() {
           ))}
         </div>
 
-        <button onClick={() => router.push('/')} className="btn-gold w-full mt-6 py-3 font-black">Ana sayfaya dön</button>
-        <button onClick={() => window.location.reload()} className="w-full mt-2 py-3 font-black" style={{ color: '#FF7043' }}>🎯 Yeni Arena</button>
+        {isPrivate ? (
+          <>
+            {isHost ? (
+              <button onClick={() => wsRef.current?.send(JSON.stringify({ type: 'restart' }))}
+                className="btn-gold w-full mt-6 py-3 font-black">🔁 Tekrarla</button>
+            ) : (
+              <div className="text-center text-sm mt-6 mb-1" style={{ color: '#B0BEC5' }}>Ev sahibi yeni tur başlatabilir…</div>
+            )}
+            <button onClick={() => router.push('/')} className="w-full mt-2 py-3 font-black" style={{ color: '#B0BEC5' }}>Ana sayfaya dön</button>
+          </>
+        ) : (
+          <>
+            <button onClick={() => router.push('/')} className="btn-gold w-full mt-6 py-3 font-black">Ana sayfaya dön</button>
+            <button onClick={() => window.location.reload()} className="w-full mt-2 py-3 font-black" style={{ color: '#FF7043' }}>🎯 Yeni Arena</button>
+          </>
+        )}
       </div>
     )
   }

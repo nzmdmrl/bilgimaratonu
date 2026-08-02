@@ -75,7 +75,7 @@ const DIFF_COLORS: Record<string, string> = {
 
 export default function ProfilePage() {
   const { username } = useParams<{ username: string }>()
-  const { user } = useAuthStore()
+  const { user, fetchMe } = useAuthStore()
   const router = useRouter()
 
   const [profile, setProfile] = useState<Profile | null>(null)
@@ -92,8 +92,17 @@ export default function ProfilePage() {
   const [friendBusy, setFriendBusy] = useState(false)
 
   useEffect(() => {
+    fetchMe()
     loadProfile()
   }, [username])
+
+  // Arkadaşlık durumu: user store yüklendiğinde (veya profil geldiğinde) çek
+  useEffect(() => {
+    if (user && profile && user.username !== username && !profile.is_bot) {
+      api.get(`/api/friends/status/${username}`).then(r => setFriend(r.data)).catch(() => {})
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, profile, username])
 
   const loadProfile = async () => {
     setLoading(true)
@@ -107,10 +116,6 @@ export default function ProfilePage() {
         api.get(`/api/profile/${username}/achievements`),
       ])
       setProfile(profileRes.data)
-      // Arkadaşlık durumu (giriş yapılmışsa ve başkasının profiliyse)
-      if (user && user.username !== username && !profileRes.data.is_bot) {
-        api.get(`/api/friends/status/${username}`).then(r => setFriend(r.data)).catch(() => {})
-      }
       // Kendi profilini görüyorsa pending avatarı çek
       if (user?.username === username) {
         api.get('/api/upload/my-pending-avatar').then(r => {
