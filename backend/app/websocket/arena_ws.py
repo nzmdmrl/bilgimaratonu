@@ -233,6 +233,9 @@ async def _start(room):
         return
 
     total = len(questions)
+    # 5 kisi bulundu — 3 sn tanit ekrani, sonra geri sayim
+    await _broadcast(room, {"type": "lobby_full", "players": _players_payload(room)})
+    await asyncio.sleep(3.0)
     await _broadcast(room, {"type": "starting", "players": _players_payload(room), "questions": total, "countdown": 3})
     await asyncio.sleep(3.3)
 
@@ -297,14 +300,27 @@ async def _bot_answer(room, uid, qi, correct_answer):
     p = room.players.get(uid)
     if not p:
         return
-    wait = bot_response_time(p["elo"], room.cfg["answer_seconds"])
-    await asyncio.sleep(max(0.4, min(wait, room.cfg["answer_seconds"] - 0.4)))
-    if room.cur_q != qi or uid in room.answers.get(qi, {}):
-        return
-    if random.random() < bot_accuracy(p["elo"]):
+    limit = room.cfg["answer_seconds"]
+    # Zamanlama: botlar GENELDE insanlardan sonra, bazen (~%20) once cevaplar
+    if random.random() < 0.20:
+        wait = random.uniform(0.6, min(2.2, limit * 0.3))          # erken — bazen insandan once
+    else:
+        wait = random.uniform(limit * 0.4, limit * 0.85)           # gec — cogunlukla insandan sonra
+    wait = max(0.5, min(wait, limit - 0.4))
+
+    slept = 0.0
+    while slept < wait:
+        await asyncio.sleep(0.15)
+        slept += 0.15
+        if room.cur_q != qi or uid in room.answers.get(qi, {}):
+            return
+
+    # Dogruluk: botlar genellikle dogru cevaplar (taban %80)
+    acc = min(0.95, max(0.80, bot_accuracy(p["elo"])))
+    if random.random() < acc:
         ans = correct_answer
     else:
-        ans = random.choice([o for o in ["A", "B", "C", "D"] if o != correct_answer])
+        ans = random.choice([o for o in ["A", "B", "C", "D"] if o and o != correct_answer])
     room.answers.setdefault(qi, {})[uid] = {"answer": ans, "t": _time.time()}
     await _broadcast(room, {"type": "player_answered", "user_id": uid, "answer": ans})
 

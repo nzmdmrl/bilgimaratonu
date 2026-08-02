@@ -149,9 +149,13 @@ async def get_settings(db: AsyncSession, key: str) -> dict:
         select(SystemSettings).where(SystemSettings.key == key)
     )
     setting = result.scalar_one_or_none()
+    default = DEFAULT_SETTINGS.get(key, {})
     if setting:
+        # Eksik alt anahtarlar (ör. modules.arena, arena.*) varsayilana dussun
+        if isinstance(default, dict) and isinstance(setting.value, dict):
+            return {**default, **setting.value}
         return setting.value
-    return DEFAULT_SETTINGS.get(key, {})
+    return default
 
 async def set_settings(db: AsyncSession, key: str, value: dict) -> dict:
     """Ayarı kaydet."""
@@ -178,7 +182,13 @@ async def get_all_settings(db: AsyncSession) -> dict:
     # Varsayılanlarla birleştir
     merged = {}
     for key, default in DEFAULT_SETTINGS.items():
-        merged[key] = setting_map.get(key, default)
+        stored = setting_map.get(key)
+        if stored is None:
+            merged[key] = default
+        elif isinstance(default, dict) and isinstance(stored, dict):
+            merged[key] = {**default, **stored}  # eksik alt anahtarlar varsayilana dussun
+        else:
+            merged[key] = stored
 
     return merged
 

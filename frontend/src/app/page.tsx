@@ -139,7 +139,7 @@ export default function HomePage() {
             )}
 
             {/* Arena — 5 kişilik eşzamanlı */}
-            {modules.arena && (
+            {modules.arena !== false && (
               <Link href="/arena" className="block glass p-4 mb-3" style={{ borderRadius: 14, background: 'rgba(255,112,67,0.1)', border: '1px solid rgba(255,112,67,0.3)', textDecoration: 'none' }}>
                 <div className="flex items-center gap-3">
                   <div className="text-4xl">🎯</div>
@@ -353,7 +353,7 @@ export default function HomePage() {
           )}
 
           {/* Arena - tam genişlik */}
-          {modules.arena && (
+          {modules.arena !== false && (
             <div className="col-span-1 md:col-span-2 glass p-6"
               style={{ background: 'rgba(255,112,67,0.07)', border: '1px solid rgba(255,112,67,0.25)' }}>
               <div className="flex items-center justify-between flex-wrap gap-4">
