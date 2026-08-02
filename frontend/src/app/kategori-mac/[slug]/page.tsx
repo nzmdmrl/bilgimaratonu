@@ -166,6 +166,8 @@ export default function CategoryMatchPage() {
         setOpponentWrongAnswer(msg.wrong_answer)
         setCanAnswer(true)
         setMyAnswer(null)
+        setJokerActive(false)      // rakibin joker turu bitti — sıra bende, kalan şıkka basabilirim
+        setIAmJokerUser(false)
         setStatusMessage('🎯 Rakip yanlış yaptı! Sıra sende')
         if (msg.remaining_time) startTimer(msg.remaining_time)
         playSound('opponent_wrong')
@@ -271,7 +273,7 @@ export default function CategoryMatchPage() {
     let color = '#FFFFFF'
     let opacity = 1
 
-    if (isEliminated) { bg = 'rgba(0,0,0,0.2)'; color = '#333'; opacity = 0.3 }
+    if (isEliminated) { bg = 'rgba(244,67,54,0.12)'; border = 'rgba(244,67,54,0.45)'; color = '#EF9A9A'; opacity = 0.65 }
     else if (correctAnswer) {
       if (isCorrect) { bg = 'rgba(76,175,80,0.25)'; border = '#4CAF50' }
       else if (isMine) { bg = 'rgba(244,67,54,0.25)'; border = '#F44336' }
@@ -279,11 +281,12 @@ export default function CategoryMatchPage() {
       else { opacity = 0.4 }
     } else if (isMine) { bg = 'rgba(79,195,247,0.25)'; border = '#4FC3F7' }
     else if (isOpponentWrong) { bg = 'rgba(255,152,0,0.15)'; border = '#FF9800' }
-    else if (isBlocked) { opacity = 0.4 }
+    else if (isBlocked) { opacity = 0.9 }
 
     return {
       background: bg, border: `2px solid ${border}`, borderRadius: 14,
       padding: '14px 12px', color, fontWeight: 600, textAlign: 'left' as const,
+      textDecoration: isEliminated ? 'line-through' : 'none',
       cursor: (!canAnswer || myAnswer || isEliminated || isBlocked) ? 'not-allowed' : 'pointer',
       transition: 'all 0.2s', fontSize: 15, opacity,
       display: 'flex', alignItems: 'center', gap: 8,

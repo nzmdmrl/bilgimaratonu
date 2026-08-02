@@ -376,8 +376,9 @@ export default function MacPage() {
     let transform = 'scale(1)'
 
     if (isEliminated) {
-      bg = 'rgba(255,255,255,0.02)'
-      opacity = 0.2
+      bg = 'rgba(244,67,54,0.12)'
+      border = '2px solid rgba(244,67,54,0.45)'
+      opacity = 0.6
     } else if (isCorrect) {
       bg = 'rgba(76,175,80,0.45)'
       border = '2px solid #4CAF50'
@@ -408,6 +409,7 @@ export default function MacPage() {
       borderRadius: 12,
       padding: '16px 20px',
       color: 'white',
+      textDecoration: isEliminated ? 'line-through' : 'none',
       cursor: disabled ? 'not-allowed' : 'pointer',
       transition: 'all 0.3s ease',
       textAlign: 'left' as const,
