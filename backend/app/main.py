@@ -52,9 +52,9 @@ async def match_websocket(websocket: WebSocket, token: str = Query(...)):
     await handle_match_ws(websocket, token)
 
 @app.websocket("/api/arena/ws")
-async def arena_websocket(websocket: WebSocket, token: str = Query(...)):
+async def arena_websocket(websocket: WebSocket, token: str = Query(...), event: str = Query(None)):
     from app.websocket.arena_ws import handle_arena_ws
-    await handle_arena_ws(websocket, token)
+    await handle_arena_ws(websocket, token, event)
 
 from app.services.marathon_scheduler import marathon_scheduler, get_or_create_next_marathon
 from app.services.badge import seed_badges

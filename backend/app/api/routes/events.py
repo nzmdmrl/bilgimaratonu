@@ -105,6 +105,70 @@ async def create_event(
 
     return {"slug": slug, "event_id": str(event.id), "question_count": len(questions)}
 
+class InviteRequest(BaseModel):
+    friend_ids: List[str]
+
+
+@router.post("/{slug}/invite")
+async def invite_to_arena(slug: str, req: InviteRequest, db: AsyncSession = Depends(get_db),
+                          current_user: User = Depends(get_current_user)):
+    from app.models.notification import Notification
+    from app.models.friendship import Friendship
+    from sqlalchemy import or_, and_
+    event = (await db.execute(select(Event).where(Event.slug == slug))).scalar_one_or_none()
+    if not event:
+        raise HTTPException(status_code=404, detail="Arena bulunamadı.")
+    if str(event.creator_id) != str(current_user.id):
+        raise HTTPException(status_code=403, detail="Sadece oluşturan davet edebilir.")
+    if event.type != "arena":
+        raise HTTPException(status_code=400, detail="Bu bir arena değil.")
+
+    sent = 0
+    for fid in req.friend_ids:
+        # gerçekten arkadaş mı?
+        fr = (await db.execute(select(Friendship).where(
+            Friendship.status == "accepted",
+            or_(
+                and_(Friendship.requester_id == current_user.id, Friendship.addressee_id == fid),
+                and_(Friendship.requester_id == fid, Friendship.addressee_id == current_user.id),
+            )
+        ))).scalar_one_or_none()
+        if not fr:
+            continue
+        db.add(Notification(
+            user_id=fid,
+            type="arena_invite",
+            title="🎯 Arena Daveti",
+            message=f"{current_user.username} seni bir arenaya davet etti.",
+            data={"slug": event.slug, "event_id": str(event.id), "from_username": current_user.username, "from_user_id": str(current_user.id)},
+        ))
+        sent += 1
+    await db.commit()
+    return {"ok": True, "sent": sent}
+
+
+@router.post("/{slug}/decline")
+async def decline_arena_invite(slug: str, db: AsyncSession = Depends(get_db),
+                               current_user: User = Depends(get_current_user)):
+    from sqlalchemy import text as _t
+    event = (await db.execute(select(Event).where(Event.slug == slug))).scalar_one_or_none()
+    if not event:
+        raise HTTPException(status_code=404, detail="Arena bulunamadı.")
+    # ilgili daveti okundu işaretle
+    await db.execute(_t(
+        "UPDATE notifications SET is_read = true WHERE user_id = :uid AND type = 'arena_invite' "
+        "AND (data->>'event_id') = :eid"
+    ), {"uid": str(current_user.id), "eid": str(event.id)})
+    await db.commit()
+    # ev sahibine gerçek-zamanlı bildir (sadece ona popup)
+    try:
+        from app.websocket.arena_ws import notify_host_decline
+        await notify_host_decline(str(event.id), current_user.username)
+    except Exception:
+        pass
+    return {"ok": True}
+
+
 @router.get("/list")
 async def list_events(db: AsyncSession = Depends(get_db), page: int = 1, search: str = ""):
     q = select(Event).where(Event.visibility == "public", Event.is_active == True).order_by(Event.created_at.desc())
@@ -490,12 +554,15 @@ async def _event_summary(db, event):
     count = await db.execute(select(func.count(EventParticipant.id)).where(
         EventParticipant.event_id == str(event.id), EventParticipant.finished_at != None,
     ))
+    cu = await db.execute(select(User.username).where(User.id == event.creator_id))
+    creator_username = cu.scalar_one_or_none()
     return {
         "id": str(event.id), "slug": event.slug, "title": event.title,
         "type": event.type, "visibility": event.visibility,
         "scoreboard_type": event.scoreboard_type,
         "question_count": event.question_count,
         "participant_count": count.scalar(),
+        "creator": creator_username or "",
         "created_at": event.created_at.strftime("%d.%m.%Y") if event.created_at else "",
         "is_active": event.is_active,
     }

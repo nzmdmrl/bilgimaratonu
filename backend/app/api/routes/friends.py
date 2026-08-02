@@ -36,6 +36,27 @@ async def _relationship(db: AsyncSession, me, other_id):
     return res.scalar_one_or_none()
 
 
+@router.get("/list")
+async def my_friends(db: AsyncSession = Depends(get_db), current_user=Depends(get_current_user)):
+    """Kullanıcının KENDİ arkadaş listesi (sadece kendisi görebilir)."""
+    rows = (await db.execute(
+        select(Friendship).where(
+            Friendship.status == "accepted",
+            or_(Friendship.requester_id == current_user.id, Friendship.addressee_id == current_user.id),
+        )
+    )).scalars().all()
+    ids = []
+    for f in rows:
+        ids.append(f.addressee_id if str(f.requester_id) == str(current_user.id) else f.requester_id)
+    if not ids:
+        return {"friends": []}
+    users = (await db.execute(select(User).where(User.id.in_(ids)))).scalars().all()
+    return {"friends": [
+        {"user_id": str(u.id), "username": u.username, "avatar_url": u.avatar_url or ""}
+        for u in users
+    ]}
+
+
 @router.get("/status/{username}")
 async def status(username: str, db: AsyncSession = Depends(get_db), current_user=Depends(get_current_user)):
     other = (await db.execute(select(User).where(User.username == username, User.deleted_at == None))).scalar_one_or_none()

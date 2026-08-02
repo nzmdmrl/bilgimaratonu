@@ -37,10 +37,18 @@ export default function ArenaPage() {
   const [ranking, setRanking] = useState<any[]>([])
   const [history, setHistory] = useState<Record<number, Record<string, CellRes>>>({}) // qIndex -> uid -> sonuç
 
+  // Özel (davet) arena
+  const [isPrivate, setIsPrivate] = useState(false)
+  const [isHost, setIsHost] = useState(false)
+  const [minStart, setMinStart] = useState(2)
+  const [declineMsg, setDeclineMsg] = useState<string | null>(null)
+  const eventRef = useRef<string | null>(null)
+
   const playerMap = useRef<Record<string, Player>>({})
 
   useEffect(() => {
     initSounds()
+    try { eventRef.current = new URLSearchParams(window.location.search).get('event') } catch {}
     fetchMe().then(() => {
       const token = localStorage.getItem('access_token')
       if (!token) { router.push('/giris'); return }
@@ -55,10 +63,15 @@ export default function ArenaPage() {
   }, [])
 
   const connect = (token: string) => {
-    const ws = new WebSocket(`wss://api.bilgimaratonu.com/api/arena/ws?token=${token}`)
+    const ev = eventRef.current ? `&event=${encodeURIComponent(eventRef.current)}` : ''
+    const ws = new WebSocket(`wss://api.bilgimaratonu.com/api/arena/ws?token=${token}${ev}`)
     wsRef.current = ws
     ws.onmessage = e => { try { handle(JSON.parse(e.data)) } catch {} }
     ws.onerror = () => {}
+  }
+
+  const startGame = () => {
+    wsRef.current?.send(JSON.stringify({ type: 'start' }))
   }
 
   const setPlayersState = (ps: Player[]) => {
@@ -85,11 +98,17 @@ export default function ArenaPage() {
       case 'connected':
         meRef.current = msg.me; setMe(msg.me); setTarget(msg.target || 5); setQTotal(msg.questions || 7)
         setPlayersState(msg.players || [])
+        setIsPrivate(!!msg.private); setIsHost(!!msg.is_host)
+        if (msg.min_start) setMinStart(msg.min_start)
         setScreen('finding')
         break
       case 'lobby':
         setTarget(msg.target || 5)
         setPlayersState(msg.players || [])
+        break
+      case 'invite_declined':
+        setDeclineMsg(`${msg.username} arena davetini reddetti.`)
+        setTimeout(() => setDeclineMsg(null), 5000)
         break
       case 'lobby_full':
         setPlayersState(msg.players || [])
@@ -172,10 +191,20 @@ export default function ArenaPage() {
         <h1 className="text-3xl font-black mb-1" style={{ color: '#FF7043' }}>🎯 Arena</h1>
         {full ? (
           <div className="text-lg font-black mb-1 arena-pulse" style={{ color: '#4CAF50' }}>Rakipler bulundu! Başlıyor…</div>
+        ) : isPrivate ? (
+          <div className="text-sm mb-1" style={{ color: '#B0BEC5' }}>Arena lobisi — arkadaşların katılması bekleniyor ({players.length}/{target})</div>
         ) : (
           <div className="text-sm mb-1" style={{ color: '#B0BEC5' }}>Rakip aranıyor… ({players.length}/{target})</div>
         )}
         <div className="text-xs mb-6" style={{ color: '#607D8B' }}>{qTotal} soru · herkes aynı anda cevaplar</div>
+
+        {/* davet reddedildi popup (sadece ev sahibi) */}
+        {declineMsg && (
+          <div className="w-full mb-3 p-3 text-center font-bold arena-slidein" style={{ borderRadius: 12, background: 'rgba(244,67,54,0.15)', border: '1px solid rgba(244,67,54,0.4)', color: '#F44336' }}>
+            ❌ {declineMsg}
+          </div>
+        )}
+
         <div className="w-full space-y-2">
           {players.map((p, i) => (
             <div key={p.user_id} className="glass flex items-center gap-3 p-3 arena-slidein"
@@ -192,6 +221,32 @@ export default function ArenaPage() {
             </div>
           ))}
         </div>
+
+        {/* özel arena: ev sahibi başlat butonu */}
+        {isPrivate && !full && (
+          <div className="w-full mt-5">
+            {isHost ? (
+              <>
+                <button onClick={startGame} disabled={players.length < minStart}
+                  className="w-full font-black py-3" style={{
+                    borderRadius: 12,
+                    background: players.length >= minStart ? 'linear-gradient(135deg,#FF7043,#FF5722)' : 'rgba(255,255,255,0.06)',
+                    color: players.length >= minStart ? '#fff' : '#607D8B',
+                    border: players.length >= minStart ? 'none' : '1px solid rgba(255,255,255,0.1)',
+                  }}>
+                  {players.length >= minStart ? `🎯 Arenayı Başlat (${players.length} kişi)` : `Başlatmak için en az ${minStart} kişi`}
+                </button>
+                <div className="text-xs text-center mt-2" style={{ color: '#607D8B' }}>
+                  Herkesi beklemeden {minStart}+ kişiyle başlatabilirsin.
+                </div>
+              </>
+            ) : (
+              <div className="text-center text-sm py-2" style={{ color: '#B0BEC5' }}>
+                Ev sahibi başlatınca arena başlayacak…
+              </div>
+            )}
+          </div>
+        )}
       </div>
     )
   }

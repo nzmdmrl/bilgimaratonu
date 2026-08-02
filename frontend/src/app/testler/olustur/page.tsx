@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { useAuthStore } from '@/lib/store'
 import api from '@/lib/api'
 import { useRouter } from 'next/navigation'
+import { avatarSrc } from '@/lib/avatar'
 
 interface Category { id: string; name: string; icon: string }
 
@@ -27,6 +28,12 @@ export default function OlusturPage() {
   const [difficulty, setDifficulty] = useState('mixed')
   const [distribution, setDistribution] = useState({ easy: 5, medium: 5, hard: 3, very_hard: 2 })
   const [timeLimit, setTimeLimit] = useState(30)
+
+  // Arena davet akışı
+  const [friends, setFriends] = useState<any[]>([])
+  const [inviteOpen, setInviteOpen] = useState(false)
+  const [selectedFriends, setSelectedFriends] = useState<string[]>([])
+  const [sending, setSending] = useState(false)
 
   useEffect(() => { fetchMe(); loadCategories() }, [])
 
@@ -64,13 +71,91 @@ export default function OlusturPage() {
     }
   }
 
+  const openInvite = async () => {
+    setInviteOpen(true)
+    try {
+      const r = await api.get('/api/friends/list')
+      setFriends(r.data.friends || [])
+    } catch { setFriends([]) }
+  }
+
+  const sendInvites = async () => {
+    setSending(true)
+    try {
+      if (selectedFriends.length) {
+        await api.post(`/api/events/${created.slug}/invite`, { friend_ids: selectedFriends })
+      }
+      router.push(`/arena?event=${created.slug}`)
+    } catch (e: any) {
+      alert(e.response?.data?.detail || 'Davet gönderilemedi')
+      setSending(false)
+    }
+  }
+
+  // ARENA oluşturulduysa: davet ekranı
+  if (created && type === 'arena') return (
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="glass p-6 max-w-md w-full animate-fade-in">
+        <div className="text-center">
+          <div className="text-5xl mb-2">🎯</div>
+          <h2 className="text-2xl font-black mb-1" style={{ color: '#FF7043' }}>Arena Hazır!</h2>
+          <p className="mb-4 text-sm" style={{ color: '#B0BEC5' }}>{created.question_count} soru · {maxParticipants} kişilik</p>
+        </div>
+
+        {!inviteOpen ? (
+          <>
+            <button onClick={openInvite} className="btn-gold w-full mb-3">
+              🤝 Arkadaşlarını Davet Et
+            </button>
+            <button onClick={() => router.push(`/arena?event=${created.slug}`)}
+              className="w-full glass p-3 text-sm font-bold" style={{ color: '#FF7043' }}>
+              Davet etmeden arenaya geç →
+            </button>
+          </>
+        ) : sending ? (
+          <div className="text-center py-6">
+            <div className="text-lg font-black" style={{ color: '#4CAF50' }}>✓ Davet gönderildi</div>
+            <div className="text-sm mt-1" style={{ color: '#B0BEC5' }}>Arenaya geçiliyor…</div>
+          </div>
+        ) : (
+          <>
+            <div className="glass p-3 mb-3 text-sm" style={{ color: '#FFD54F', background: 'rgba(255,213,79,0.08)' }}>
+              🔒 Bu test sadece arkadaşlarınızın katılacağı şekilde ayarlandı.
+            </div>
+            {friends.length === 0 ? (
+              <div className="text-center text-sm py-4" style={{ color: '#B0BEC5' }}>Henüz arkadaşın yok. Profillerden arkadaş ekleyebilirsin.</div>
+            ) : (
+              <div className="space-y-2 mb-3" style={{ maxHeight: 260, overflowY: 'auto' }}>
+                {friends.map(f => {
+                  const sel = selectedFriends.includes(f.user_id)
+                  return (
+                    <button key={f.user_id} onClick={() => setSelectedFriends(prev => sel ? prev.filter(x => x !== f.user_id) : [...prev, f.user_id])}
+                      className="glass w-full flex items-center gap-3 p-2 transition-all"
+                      style={{ border: sel ? '2px solid #4CAF50' : '1px solid rgba(255,255,255,0.1)' }}>
+                      <img src={avatarSrc(f.avatar_url, f.username)} alt="" style={{ width: 34, height: 34, borderRadius: '50%', objectFit: 'cover' }} />
+                      <span className="font-bold text-sm flex-1 text-left">{f.username}</span>
+                      {sel && <span style={{ color: '#4CAF50' }}>✓</span>}
+                    </button>
+                  )
+                })}
+              </div>
+            )}
+            <button onClick={sendInvites} className="btn-gold w-full">
+              {selectedFriends.length ? `Davet Et (${selectedFriends.length}) & Arenaya Geç` : 'Davet etmeden Arenaya Geç'}
+            </button>
+          </>
+        )}
+      </div>
+    </div>
+  )
+
   if (created) return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="glass p-8 max-w-md w-full text-center animate-fade-in">
         <div className="text-5xl mb-4">🎉</div>
         <h2 className="text-2xl font-black mb-2" style={{ color: '#FFD700' }}>Test Oluşturuldu!</h2>
         <p className="mb-4 text-sm" style={{ color: '#B0BEC5' }}>{created.question_count} soru hazır.</p>
-        
+
         <div className="glass p-4 mb-4">
           <p className="text-xs mb-2" style={{ color: '#B0BEC5' }}>Test Linki:</p>
           <div className="font-mono text-sm break-all" style={{ color: '#4FC3F7' }}>
@@ -117,11 +202,17 @@ export default function OlusturPage() {
             {[
               { key: 'quiz', label: '📝 Standart Test', desc: 'Herkes kendi hızında çözer' },
               { key: 'duel', label: '⚔️ Düello', desc: 'Max 4 kişi anlık yarışır' },
+              { key: 'arena', label: '🎯 Arena', desc: 'Arkadaşlarınla eşzamanlı yarış' },
             ].map(t => (
               <button key={t.key} onClick={() => {
                 setType(t.key)
                 if (t.key === 'duel') setMaxParticipants(4)
-                else setMaxParticipants(1000)
+                else if (t.key === 'arena') {
+                  setMaxParticipants(5)
+                  setDistribution({ easy: 5, medium: 2, hard: 0, very_hard: 0 })
+                  setTimeLimit(10)
+                  setVisibility('hidden')
+                } else setMaxParticipants(1000)
               }}
                 className="glass p-3 text-left transition-all"
                 style={{
@@ -132,6 +223,23 @@ export default function OlusturPage() {
               </button>
             ))}
           </div>
+          {type === 'arena' && (
+            <div className="mt-3">
+              <label className="font-bold text-sm block mb-2">Kaç kişilik?</label>
+              <div className="grid grid-cols-4 gap-2">
+                {[2, 3, 4, 5].map(n => (
+                  <button key={n} onClick={() => setMaxParticipants(n)}
+                    className="glass p-3 text-center font-black transition-all"
+                    style={{ border: maxParticipants === n ? '2px solid #FF7043' : '1px solid rgba(255,255,255,0.1)', color: maxParticipants === n ? '#FF7043' : '#fff' }}>
+                    {n}
+                  </button>
+                ))}
+              </div>
+              <div className="text-xs mt-2" style={{ color: '#B0BEC5' }}>
+                Otomatik: Kolay 5 · Orta 2 soru · soru başına 10 sn. Ev sahibi 2 kişi olunca bile başlatabilir.
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Görünürlük */}
@@ -160,6 +268,7 @@ export default function OlusturPage() {
         </div>
 
         {/* Maç Tipi */}
+        {type !== 'arena' && (
         <div className="mb-5">
           <label className="font-bold text-sm block mb-2">Maç Tipi</label>
           <div className="grid grid-cols-2 gap-2">
@@ -178,8 +287,10 @@ export default function OlusturPage() {
             ))}
           </div>
         </div>
+        )}
 
         {/* Skor Tablosu */}
+        {type !== 'arena' && (
         <div className="mb-5">
           <label className="font-bold text-sm block mb-2">Skor Tablosu <span style={{ color: '#B0BEC5', fontWeight: 400 }}>(çoklu seçim)</span></label>
           <div className="grid grid-cols-2 gap-2">
@@ -207,6 +318,7 @@ export default function OlusturPage() {
             })}
           </div>
         </div>
+        )}
 
         {/* Kategoriler */}
         <div className="mb-5">

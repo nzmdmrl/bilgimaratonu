@@ -24,8 +24,29 @@ from app.services.bot import bot_accuracy, bot_response_time
 FLASH_SECONDS = 3
 FLASH_BONUS = 20
 
-_pending = None          # dolmakta olan oda
+_pending = None          # dolmakta olan oda (genel havuz)
+_private_rooms = {}      # event_id -> ArenaRoom (davet arenaları)
 _lock = asyncio.Lock()
+
+
+def _q_dict(q):
+    return {
+        "id": str(q.id), "text": q.text, "image": q.question_image or "",
+        "option_a": q.option_a, "option_b": q.option_b, "option_c": q.option_c, "option_d": q.option_d,
+        "correct_answer": q.correct_answer,
+        "difficulty": q.difficulty.value if hasattr(q.difficulty, "value") else str(q.difficulty),
+        "category_name": q.category.name if q.category else "",
+    }
+
+
+async def notify_host_decline(event_id, username):
+    """Davet reddedildiğinde ev sahibine (sadece ona) haber ver."""
+    room = _private_rooms.get(str(event_id))
+    if not room or not room.host_id:
+        return
+    host = room.players.get(str(room.host_id))
+    if host:
+        await _send(host, {"type": "invite_declined", "username": username})
 
 
 class ArenaRoom:
@@ -42,6 +63,11 @@ class ArenaRoom:
         self.cur_q = -1
         self.q_start = 0.0
         self.created_at = _time.time()
+        # Özel (davet) arena
+        self.is_private = False
+        self.host_id = None
+        self.event_id = None
+        self.qlist = None
 
     def _init_player(self, uid, username, avatar, is_bot, elo, ws=None):
         self.players[uid] = {"ws": ws, "username": username, "avatar": avatar or "", "is_bot": is_bot, "elo": elo or 1000}
@@ -115,7 +141,7 @@ async def _arena_questions(db, count):
 
 # ─────────── eşleştirme ───────────
 
-async def handle_arena_ws(websocket: WebSocket, token: str):
+async def handle_arena_ws(websocket: WebSocket, token: str, event: str = None):
     payload = decode_token(token)
     if not payload:
         await websocket.close(code=4001)
@@ -128,6 +154,11 @@ async def handle_arena_ws(websocket: WebSocket, token: str):
     if not user:
         await websocket.close(code=4001)
         return
+
+    if event:
+        await _handle_private_ws(websocket, user, event)
+        return
+
     if not cfg["enabled"]:
         await websocket.accept()
         await websocket.send_json({"type": "error", "message": "Arena şu an kapalı."})
@@ -216,9 +247,98 @@ async def _bot_filler(room, cfg):
         await asyncio.sleep(cfg["bot_interval_seconds"])
 
 
+# ─────────── özel (davet) arena ───────────
+
+async def _handle_private_ws(websocket: WebSocket, user, slug: str):
+    from app.models.event import Event, EventQuestion
+    from app.models.question import Question as _Q
+    from sqlalchemy.orm import selectinload
+
+    async with AsyncSessionLocal() as db:
+        ev = (await db.execute(
+            select(Event).options(
+                selectinload(Event.questions).selectinload(EventQuestion.question).selectinload(_Q.category)
+            ).where(Event.slug == slug)
+        )).scalar_one_or_none()
+        if not ev or ev.type != "arena":
+            await websocket.accept()
+            await websocket.send_json({"type": "error", "message": "Arena bulunamadı."})
+            await websocket.close()
+            return
+        qlist = [_q_dict(eq.question) for eq in ev.questions if eq.question]
+        cfg = {
+            "players": int(ev.max_participants or 5),
+            "answer_seconds": int(ev.time_limit_per_question or 10),
+            "questions": len(qlist),
+            "bot_enabled": False,
+        }
+        host_id = str(ev.creator_id)
+        event_id = str(ev.id)
+
+    await websocket.accept()
+
+    async with _lock:
+        room = _private_rooms.get(event_id)
+        if room is None or room.status == "finished":
+            room = ArenaRoom(cfg)
+            room.is_private = True
+            room.host_id = host_id
+            room.event_id = event_id
+            room.qlist = qlist
+            _private_rooms[event_id] = room
+        if str(user.id) in room.players:
+            room.players[str(user.id)]["ws"] = websocket  # yeniden bağlanma
+        elif room.status == "waiting":
+            room._init_player(str(user.id), user.username, user.avatar_url or "", False, user.elo_rating or 1000, ws=websocket)
+        else:
+            await websocket.send_json({"type": "error", "message": "Arena çoktan başladı."})
+            await websocket.close()
+            return
+
+    is_host = str(user.id) == host_id
+    await websocket.send_json({
+        "type": "connected", "arena_id": room.id, "me": str(user.id),
+        "target": cfg["players"], "questions": len(qlist),
+        "players": _players_payload(room), "private": True,
+        "is_host": is_host, "min_start": 2,
+    })
+    await _broadcast(room, {"type": "lobby", "players": _players_payload(room), "target": cfg["players"], "private": True, "host_id": host_id})
+
+    try:
+        while True:
+            data = await websocket.receive_json()
+            t = data.get("type")
+            if t == "answer":
+                await _record_answer(room, str(user.id), data)
+            elif t == "start" and is_host and room.status == "waiting":
+                if len(room.players) >= 2:
+                    room.status = "sealing"
+                    asyncio.ensure_future(_start_private(room))
+                else:
+                    await websocket.send_json({"type": "error", "message": "Başlatmak için en az 2 kişi gerekli."})
+            elif t == "ping":
+                await websocket.send_json({"type": "pong"})
+    except WebSocketDisconnect:
+        pass
+    except Exception:
+        pass
+    finally:
+        async with _lock:
+            if room.status == "waiting" and str(user.id) in room.players:
+                del room.players[str(user.id)]
+                await _broadcast(room, {"type": "lobby", "players": _players_payload(room), "target": cfg["players"], "private": True, "host_id": host_id})
+                if not room.players:
+                    _private_rooms.pop(event_id, None)
+            else:
+                p = room.players.get(str(user.id))
+                if p:
+                    p["ws"] = None
+
+
 # ─────────── motor ───────────
 
 async def _start(room):
+    """Genel havuz arenası: rastgele arena soruları çek, tanıt+geri sayım, çalıştır."""
     global _pending
     if _pending is room:
         _pending = None
@@ -227,19 +347,39 @@ async def _start(room):
 
     async with AsyncSessionLocal() as db:
         questions = await _arena_questions(db, cfg["questions"])
-    if not questions:
+        qlist = [_q_dict(q) for q in questions]
+    if not qlist:
         await _broadcast(room, {"type": "error", "message": "Yeterli arena sorusu yok."})
         room.status = "finished"
         return
 
-    total = len(questions)
     # 5 kisi bulundu — 3 sn tanit ekrani, sonra geri sayim
     await _broadcast(room, {"type": "lobby_full", "players": _players_payload(room)})
     await asyncio.sleep(3.0)
-    await _broadcast(room, {"type": "starting", "players": _players_payload(room), "questions": total, "countdown": 3})
+    await _broadcast(room, {"type": "starting", "players": _players_payload(room), "questions": len(qlist), "countdown": 3})
     await asyncio.sleep(3.3)
+    await _run_questions(room, qlist)
 
-    for qi, q in enumerate(questions):
+
+async def _start_private(room):
+    """Davet arenası: ev sahibi başlat dedi. Testin sorularını kullan."""
+    if str(room.event_id) in _private_rooms and _private_rooms[str(room.event_id)] is room:
+        _private_rooms.pop(str(room.event_id), None)  # yeni katılım almasın
+    room.status = "running"
+    qlist = room.qlist or []
+    if not qlist:
+        await _broadcast(room, {"type": "error", "message": "Bu arenada soru yok."})
+        room.status = "finished"
+        return
+    await _broadcast(room, {"type": "starting", "players": _players_payload(room), "questions": len(qlist), "countdown": 3})
+    await asyncio.sleep(3.3)
+    await _run_questions(room, qlist)
+
+
+async def _run_questions(room, qlist):
+    cfg = room.cfg
+    total = len(qlist)
+    for qi, q in enumerate(qlist):
         room.cur_q = qi
         room.answers[qi] = {}
         room.q_start = _time.time()
@@ -247,15 +387,14 @@ async def _start(room):
             "type": "question", "index": qi, "total": total,
             "time_limit": cfg["answer_seconds"],
             "question": {
-                "id": str(q.id), "text": q.text, "image": q.question_image or "",
-                "option_a": q.option_a, "option_b": q.option_b, "option_c": q.option_c, "option_d": q.option_d,
-                "difficulty": q.difficulty.value if hasattr(q.difficulty, "value") else str(q.difficulty),
-                "category_name": q.category.name if q.category else "",
+                "id": q["id"], "text": q["text"], "image": q["image"],
+                "option_a": q["option_a"], "option_b": q["option_b"], "option_c": q["option_c"], "option_d": q["option_d"],
+                "difficulty": q["difficulty"], "category_name": q["category_name"],
             },
         })
         for uid, p in room.players.items():
             if p["is_bot"]:
-                asyncio.ensure_future(_bot_answer(room, uid, qi, q.correct_answer))
+                asyncio.ensure_future(_bot_answer(room, uid, qi, q["correct_answer"]))
 
         deadline = room.q_start + cfg["answer_seconds"]
         while _time.time() < deadline:
@@ -264,7 +403,7 @@ async def _start(room):
             await asyncio.sleep(0.15)
 
         # puanla
-        correct = q.correct_answer
+        correct = q["correct_answer"]
         results = {}
         for uid, p in room.players.items():
             a = room.answers[qi].get(uid)
@@ -364,10 +503,12 @@ async def _finish(room):
                 if p["is_bot"]:
                     continue
                 r = ranks[uid]
-                if r == 1:
-                    await award_trophy_or_medal(db, uid, "arena", room.id[:8], rank=1)
-                elif r == 2:
-                    await award_trophy_or_medal(db, uid, "arena", room.id[:8], rank=2)
+                # Kupa/madalya sadece genel havuz arenasında (özel/davet arenası farmlanmasın)
+                if not room.is_private:
+                    if r == 1:
+                        await award_trophy_or_medal(db, uid, "arena", room.id[:8], rank=1)
+                    elif r == 2:
+                        await award_trophy_or_medal(db, uid, "arena", room.id[:8], rank=2)
                 # XP: doğru başına 5
                 xp = room.correct[uid] * 5
                 if xp:

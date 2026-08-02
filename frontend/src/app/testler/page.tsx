@@ -3,12 +3,13 @@ import { useEffect, useState } from 'react'
 import { useAuthStore } from '@/lib/store'
 import api from '@/lib/api'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 interface EventItem {
   id: string; slug: string; title: string; type: string
   visibility: string; scoreboard_type: string
   question_count: number; participant_count: number; created_at: string
-  is_active: boolean
+  is_active: boolean; creator?: string
 }
 
 const SCOREBOARD_LABELS: Record<string, string> = {
@@ -20,6 +21,7 @@ const VISIBILITY_LABELS: Record<string, string> = {
 
 export default function TestlerPage() {
   const { user } = useAuthStore()
+  const router = useRouter()
   const [events, setEvents] = useState<EventItem[]>([])
   const [myEvents, setMyEvents] = useState<EventItem[]>([])
   const [tab, setTab] = useState<'genel' | 'benim'>('genel')
@@ -198,6 +200,15 @@ export default function TestlerPage() {
                     {e.created_at}
                   </span>
                 </div>
+                {e.creator && (
+                  <div className="text-xs mt-1" style={{ color: '#B0BEC5' }}>
+                    Oluşturan:{' '}
+                    <span onClick={ev => { ev.preventDefault(); ev.stopPropagation(); router.push(`/p/${e.creator}`) }}
+                      className="font-bold" style={{ color: '#4FC3F7', cursor: 'pointer' }}>
+                      {e.creator}
+                    </span>
+                  </div>
+                )}
               </div>
               {tab === 'benim' ? (
                 <div className="flex items-center gap-2" onClick={e => e.preventDefault()}>

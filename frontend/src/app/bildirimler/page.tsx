@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/lib/store'
 import api from '@/lib/api'
 
@@ -17,6 +18,7 @@ function iconFor(n: Notif): string {
   if (n.type === 'trophy') return '🏆'
   if (n.type === 'medal') return n.data?.rank === 3 ? '🥉' : '🥈'
   if (n.type === 'friend_request' || n.type === 'friend_accepted') return '🤝'
+  if (n.type === 'arena_invite') return '🎯'
   return '🔔'
 }
 
@@ -35,10 +37,24 @@ function formatDate(iso: string | null): string {
 
 export default function BildirimlerPage() {
   const { user, fetchMe } = useAuthStore()
+  const router = useRouter()
   const [notifs, setNotifs] = useState<Notif[]>([])
   const [loading, setLoading] = useState(true)
   const [acted, setActed] = useState<Record<string, 'accepted' | 'rejected'>>({})
   const [busy, setBusy] = useState<string | null>(null)
+
+  const handleArenaInvite = async (n: Notif, action: 'accept' | 'reject') => {
+    const slug = n.data?.slug
+    if (!slug) return
+    if (action === 'accept') { router.push(`/arena?event=${slug}`); return }
+    setBusy(n.id)
+    try {
+      await api.post(`/api/events/${slug}/decline`)
+      setActed(a => ({ ...a, [n.id]: 'rejected' }))
+    } catch (e: any) {
+      alert(e?.response?.data?.detail || 'İşlem başarısız.')
+    } finally { setBusy(null) }
+  }
 
   const handleFriend = async (n: Notif, action: 'accept' | 'reject') => {
     const fid = n.data?.friendship_id
@@ -108,6 +124,22 @@ export default function BildirimlerPage() {
                         ✓ Kabul Et
                       </button>
                       <button onClick={() => handleFriend(n, 'reject')} disabled={busy === n.id}
+                        className="font-bold" style={{ fontSize: 13, padding: '6px 14px', borderRadius: 10, background: 'rgba(244,67,54,0.12)', border: '1px solid rgba(244,67,54,0.4)', color: '#F44336' }}>
+                        Reddet
+                      </button>
+                    </div>
+                  )
+                )}
+                {n.type === 'arena_invite' && (
+                  acted[n.id] === 'rejected' ? (
+                    <div style={{ fontSize: 13, fontWeight: 700, marginTop: 8, color: '#B0BEC5' }}>Reddedildi</div>
+                  ) : (
+                    <div className="flex gap-2" style={{ marginTop: 10 }}>
+                      <button onClick={() => handleArenaInvite(n, 'accept')} disabled={busy === n.id}
+                        className="font-bold" style={{ fontSize: 13, padding: '6px 14px', borderRadius: 10, background: 'rgba(255,112,67,0.2)', border: '1px solid #FF7043', color: '#FF7043' }}>
+                        🎯 Kabul Et & Katıl
+                      </button>
+                      <button onClick={() => handleArenaInvite(n, 'reject')} disabled={busy === n.id}
                         className="font-bold" style={{ fontSize: 13, padding: '6px 14px', borderRadius: 10, background: 'rgba(244,67,54,0.12)', border: '1px solid rgba(244,67,54,0.4)', color: '#F44336' }}>
                         Reddet
                       </button>
