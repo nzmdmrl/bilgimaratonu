@@ -21,6 +21,20 @@ export default function DuelRoom({ slug, event }: { slug: string; event: any }) 
   const [showScoreboard, setShowScoreboard] = useState(false)
   const [scoreboard, setScoreboard] = useState<any[]>([])
   const [opponentWrong, setOpponentWrong] = useState<Record<string,string>>({})
+  const [invOpen, setInvOpen] = useState(false)
+  const [invFriends, setInvFriends] = useState<any[]>([])
+  const [invSel, setInvSel] = useState<string[]>([])
+
+  const openInv = async () => {
+    setInvOpen(true)
+    try { const r = await api.get('/api/friends/list'); setInvFriends(r.data.friends || []) } catch {}
+  }
+  const sendInv = async () => {
+    if (!invSel.length) { setInvOpen(false); return }
+    try { await api.post(`/api/events/${slug}/invite`, { friend_ids: invSel }); alert('Davet gönderildi!') }
+    catch (e: any) { alert(e?.response?.data?.detail || 'Davet gönderilemedi') }
+    setInvOpen(false); setInvSel([])
+  }
 
   useEffect(() => {
     const token = localStorage.getItem('access_token')
@@ -157,10 +171,40 @@ export default function DuelRoom({ slug, event }: { slug: string; event: any }) 
             )
           })}
         </div>
-        <button onClick={() => { navigator.clipboard.writeText(window.location.href); alert('Link kopyalandı!') }}
-          className="w-full glass p-3 text-sm font-bold mb-3" style={{ color: '#4FC3F7' }}>
-          📋 Davet Linkini Kopyala
-        </button>
+        <div className="flex gap-2 mb-3">
+          {isHost && (
+            <button onClick={openInv} className="flex-1 glass p-3 text-sm font-bold" style={{ color: '#81C784' }}>
+              🤝 Arkadaş Davet Et
+            </button>
+          )}
+          <button onClick={() => { navigator.clipboard.writeText(window.location.href); alert('Link kopyalandı!') }}
+            className="flex-1 glass p-3 text-sm font-bold" style={{ color: '#4FC3F7' }}>
+            📋 {isHost ? 'Link' : 'Davet Linkini Kopyala'}
+          </button>
+        </div>
+        {invOpen && (
+          <div className="glass p-3 mb-3" style={{ borderRadius: 12 }}>
+            {invFriends.length === 0 ? (
+              <div className="text-xs text-center py-3" style={{ color: '#B0BEC5' }}>Arkadaş yok.</div>
+            ) : (
+              <div className="space-y-1" style={{ maxHeight: 200, overflowY: 'auto' }}>
+                {invFriends.map(f => {
+                  const sel = invSel.includes(f.user_id)
+                  return (
+                    <button key={f.user_id} onClick={() => setInvSel(prev => sel ? prev.filter(x => x !== f.user_id) : [...prev, f.user_id])}
+                      className="w-full flex items-center gap-2 p-2 rounded-lg" style={{ border: sel ? '2px solid #4CAF50' : '1px solid rgba(255,255,255,0.1)' }}>
+                      <span className="text-sm font-bold flex-1 text-left">{f.username}</span>
+                      {sel && <span style={{ color: '#4CAF50' }}>✓</span>}
+                    </button>
+                  )
+                })}
+              </div>
+            )}
+            <button onClick={sendInv} className="btn-gold w-full mt-2" style={{ fontSize: 14, padding: '8px' }}>
+              {invSel.length ? `Davet Et (${invSel.length})` : 'Kapat'}
+            </button>
+          </div>
+        )}
         {isHost ? (
           <button onClick={startDuel} className="btn-gold w-full">⚔️ Düelloyu Başlat</button>
         ) : (

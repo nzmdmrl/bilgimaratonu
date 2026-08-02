@@ -29,7 +29,7 @@ export default function OlusturPage() {
   const [visibility, setVisibility] = useState('public')
   const [password, setPassword] = useState('')
   const [matchType, setMatchType] = useState('single')
-  const [scoreboardTypes, setScoreboardTypes] = useState<string[]>(['all'])
+  const [scoreboardTypes, setScoreboardTypes] = useState<string[]>(['all', 'daily', 'monthly', 'yearly'])
   const [maxParticipants, setMaxParticipants] = useState(1000)
   const [questionCount, setQuestionCount] = useState(15)
   const [selectedCats, setSelectedCats] = useState<string[]>([])
@@ -48,7 +48,11 @@ export default function OlusturPage() {
 
   const loadCategories = async () => {
     const r = await api.get('/api/solo/categories')
-    setCategories(r.data.categories)
+    const cats = r.data.categories || []
+    setCategories(cats)
+    // Genel Kültür otomatik işaretli gelsin
+    const gk = cats.find((c: Category) => (c.name || '').toLocaleLowerCase('tr').includes('genel kültür'))
+    if (gk) setSelectedCats(prev => prev.length ? prev : [gk.id])
   }
 
   const toggleCat = (id: string) => {
@@ -256,13 +260,13 @@ export default function OlusturPage() {
             ].map(t => (
               <button key={t.key} onClick={() => {
                 setType(t.key)
-                if (t.key === 'duel') setMaxParticipants(4)
+                if (t.key === 'duel') { setMaxParticipants(2); setVisibility('hidden') }
                 else if (t.key === 'arena') {
                   setMaxParticipants(5)
                   setDistribution({ easy: 5, medium: 2, hard: 0, very_hard: 0 })
                   setTimeLimit(10)
                   setVisibility('hidden')
-                } else setMaxParticipants(1000)
+                } else { setMaxParticipants(1000); setVisibility('public') }
               }}
                 className="glass p-3 text-left transition-all"
                 style={{
@@ -273,11 +277,11 @@ export default function OlusturPage() {
               </button>
             ))}
           </div>
-          {type === 'arena' && (
+          {(type === 'arena' || type === 'duel') && (
             <div className="mt-3">
               <label className="font-bold text-sm block mb-2">Kaç kişilik?</label>
-              <div className="grid grid-cols-4 gap-2">
-                {[2, 3, 4, 5].map(n => (
+              <div className={`grid gap-2 ${type === 'arena' ? 'grid-cols-4' : 'grid-cols-3'}`}>
+                {(type === 'arena' ? [2, 3, 4, 5] : [2, 3, 4]).map(n => (
                   <button key={n} onClick={() => setMaxParticipants(n)}
                     className="glass p-3 text-center font-black transition-all"
                     style={{ border: maxParticipants === n ? '2px solid #FF7043' : '1px solid rgba(255,255,255,0.1)', color: maxParticipants === n ? '#FF7043' : '#fff' }}>
@@ -286,7 +290,9 @@ export default function OlusturPage() {
                 ))}
               </div>
               <div className="text-xs mt-2" style={{ color: '#B0BEC5' }}>
-                Otomatik: Kolay 5 · Orta 2 soru · soru başına 10 sn. Ev sahibi 2 kişi olunca bile başlatabilir.
+                {type === 'arena'
+                  ? 'Otomatik: Kolay 5 · Orta 2 soru · soru başına 10 sn. Ev sahibi 2 kişi olunca bile başlatabilir.'
+                  : 'Otomatik gizli olarak işaretlendi. Görünürlükten “Genel” yaparak herkese açabilirsin.'}
               </div>
             </div>
           )}
@@ -428,7 +434,7 @@ export default function OlusturPage() {
           {type === 'duel' && (
             <div className="glass p-3 flex items-center justify-center">
               <div className="text-center">
-                <div className="font-black text-2xl" style={{ color: '#FFD700' }}>4</div>
+                <div className="font-black text-2xl" style={{ color: '#FFD700' }}>{maxParticipants}</div>
                 <div className="text-xs" style={{ color: '#B0BEC5' }}>Max Katılımcı</div>
               </div>
             </div>

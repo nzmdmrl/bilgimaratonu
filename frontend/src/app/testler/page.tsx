@@ -179,7 +179,7 @@ export default function TestlerPage() {
       ) : (
         <div className="space-y-3">
           {filtered.map(e => (
-            <Link key={e.id} href={`/testler/${e.slug}`}
+            <Link key={e.id} href={e.type === 'arena' ? `/arena?event=${e.slug}` : `/testler/${e.slug}`}
               className="glass p-4 flex items-center gap-4 hover:bg-white hover:bg-opacity-5 transition-all block">
               <div className="flex-1 min-w-0">
                 <div className="font-bold truncate">{e.title}</div>

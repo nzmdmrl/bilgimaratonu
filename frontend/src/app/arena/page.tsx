@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuthStore } from '@/lib/store'
+import api from '@/lib/api'
 import { avatarSrc } from '@/lib/avatar'
 import { initSounds, playSound, playCountdownTick, playCountdownBeep } from '@/lib/sound'
 
@@ -10,6 +11,13 @@ interface Player { user_id: string; username: string; avatar_url: string; is_bot
 type Screen = 'finding' | 'lobby_full' | 'countdown' | 'question' | 'result' | 'grid' | 'end'
 interface CellRes { is_correct: boolean; flash: boolean; answered: boolean }
 const LETTERS = ['A', 'B', 'C', 'D'] as const
+const FRIEND_FILTERS = [
+  { key: 'all', label: 'Tümü', icon: '👥' },
+  { key: 'aile', label: 'Aile', icon: '👨‍👩‍👧' },
+  { key: 'is', label: 'İş', icon: '💼' },
+  { key: 'yakin', label: 'Yakın', icon: '💚' },
+  { key: 'diger', label: 'Diğer', icon: '👤' },
+]
 
 export default function ArenaPage() {
   const { fetchMe } = useAuthStore()
@@ -43,6 +51,26 @@ export default function ArenaPage() {
   const [minStart, setMinStart] = useState(2)
   const [declineMsg, setDeclineMsg] = useState<string | null>(null)
   const eventRef = useRef<string | null>(null)
+  // Lobide arkadaş davet
+  const [inviteOpen, setInviteOpen] = useState(false)
+  const [invFriends, setInvFriends] = useState<any[]>([])
+  const [invSel, setInvSel] = useState<string[]>([])
+  const [invFilter, setInvFilter] = useState('all')
+  const [invSentMsg, setInvSentMsg] = useState<string | null>(null)
+
+  const openInvite = async () => {
+    setInviteOpen(true)
+    try { const r = await api.get('/api/friends/list'); setInvFriends(r.data.friends || []) } catch {}
+  }
+  const sendInvite = async () => {
+    if (!eventRef.current || !invSel.length) { setInviteOpen(false); return }
+    try {
+      const r = await api.post(`/api/events/${eventRef.current}/invite`, { friend_ids: invSel })
+      setInvSentMsg(`${r.data.sent} kişiye davet gönderildi`)
+      setTimeout(() => setInvSentMsg(null), 4000)
+    } catch {}
+    setInviteOpen(false); setInvSel([])
+  }
 
   const playerMap = useRef<Record<string, Player>>({})
 
@@ -226,12 +254,56 @@ export default function ArenaPage() {
         {isPrivate && !full && (
           <div className="w-full mt-5">
             {isHost && eventRef.current && (
-              <button onClick={() => {
-                const link = `${window.location.origin}/arena?event=${eventRef.current}`
-                navigator.clipboard.writeText(link); alert('Katılım linki kopyalandı!')
-              }} className="w-full glass p-2 mb-3 text-sm font-bold" style={{ color: '#4FC3F7', borderRadius: 10 }}>
-                📋 Katılım linkini kopyala
-              </button>
+              <>
+                {invSentMsg && (
+                  <div className="w-full mb-2 p-2 text-center text-sm font-bold" style={{ borderRadius: 10, background: 'rgba(76,175,80,0.15)', color: '#4CAF50' }}>✓ {invSentMsg}</div>
+                )}
+                {!inviteOpen ? (
+                  <div className="flex gap-2 mb-3">
+                    <button onClick={openInvite} className="flex-1 glass p-2 text-sm font-bold" style={{ color: '#81C784', borderRadius: 10 }}>
+                      🤝 Arkadaş Davet Et
+                    </button>
+                    <button onClick={() => {
+                      const link = `${window.location.origin}/arena?event=${eventRef.current}`
+                      navigator.clipboard.writeText(link); alert('Katılım linki kopyalandı!')
+                    }} className="flex-1 glass p-2 text-sm font-bold" style={{ color: '#4FC3F7', borderRadius: 10 }}>
+                      📋 Linki Kopyala
+                    </button>
+                  </div>
+                ) : (
+                  <div className="glass p-3 mb-3" style={{ borderRadius: 12 }}>
+                    <div className="flex gap-1 mb-2 flex-wrap">
+                      {FRIEND_FILTERS.map(ff => (
+                        <button key={ff.key} onClick={() => setInvFilter(ff.key)}
+                          className="text-xs px-2 py-1 rounded-full font-bold"
+                          style={{ background: invFilter === ff.key ? 'rgba(255,112,67,0.2)' : 'rgba(255,255,255,0.05)', border: invFilter === ff.key ? '1px solid #FF7043' : '1px solid rgba(255,255,255,0.1)', color: invFilter === ff.key ? '#FF7043' : '#B0BEC5' }}>
+                          {ff.icon} {ff.label}
+                        </button>
+                      ))}
+                    </div>
+                    {invFriends.length === 0 ? (
+                      <div className="text-xs text-center py-3" style={{ color: '#B0BEC5' }}>Arkadaş yok.</div>
+                    ) : (
+                      <div className="space-y-1" style={{ maxHeight: 200, overflowY: 'auto' }}>
+                        {invFriends.filter(f => invFilter === 'all' || (f.type || 'diger') === invFilter).map(f => {
+                          const sel = invSel.includes(f.user_id)
+                          return (
+                            <button key={f.user_id} onClick={() => setInvSel(prev => sel ? prev.filter(x => x !== f.user_id) : [...prev, f.user_id])}
+                              className="w-full flex items-center gap-2 p-2 rounded-lg" style={{ border: sel ? '2px solid #4CAF50' : '1px solid rgba(255,255,255,0.1)' }}>
+                              <img src={avatarSrc(f.avatar_url, f.username)} alt="" style={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'cover' }} />
+                              <span className="text-sm font-bold flex-1 text-left">{f.username}</span>
+                              {sel && <span style={{ color: '#4CAF50' }}>✓</span>}
+                            </button>
+                          )
+                        })}
+                      </div>
+                    )}
+                    <button onClick={sendInvite} className="btn-gold w-full mt-2" style={{ fontSize: 14, padding: '8px' }}>
+                      {invSel.length ? `Davet Et (${invSel.length})` : 'Kapat'}
+                    </button>
+                  </div>
+                )}
+              </>
             )}
             {isHost ? (
               <>
