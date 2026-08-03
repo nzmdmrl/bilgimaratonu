@@ -1909,6 +1909,21 @@ export default function AdminPage() {
                 {siteSettings.arena?.bot_enabled ? '✓ Açık' : '✗ Kapalı'}
               </button>
             </div>
+            <div className="flex items-center justify-between glass p-3 mb-4">
+              <div>
+                <div className="text-sm font-bold">Sadece Kolay + Orta Sorular</div>
+                <div className="text-xs" style={{ color: '#B0BEC5' }}>Arena kategorilerinden zor/çok zor çekmez (hızlı yarış için).</div>
+              </div>
+              <button
+                onClick={() => setSiteSettings((prev: any) => ({ ...prev, arena: { ...prev.arena, only_easy_medium: !(prev.arena?.only_easy_medium ?? true) } }))}
+                className="px-3 py-1 rounded-lg text-sm font-bold flex-shrink-0 ml-3"
+                style={{
+                  background: (siteSettings.arena?.only_easy_medium ?? true) ? 'rgba(76,175,80,0.2)' : 'rgba(244,67,54,0.2)',
+                  color: (siteSettings.arena?.only_easy_medium ?? true) ? '#4CAF50' : '#F44336',
+                }}>
+                {(siteSettings.arena?.only_easy_medium ?? true) ? '✓ Açık' : '✗ Kapalı'}
+              </button>
+            </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="text-sm mb-1 block" style={{ color: '#B0BEC5' }}>Soru Sayısı</label>
