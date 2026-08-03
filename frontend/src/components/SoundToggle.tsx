@@ -15,8 +15,8 @@ export default function SoundToggle() {
       style={{
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         width: 34, height: 34, borderRadius: 8,
-        background: 'rgba(255,255,255,0.05)',
-        border: 'none', color: '#B0BEC5', fontSize: 16, lineHeight: 1,
+        background: 'var(--surface-2)',
+        border: 'none', color: 'var(--text-dim)', fontSize: 16, lineHeight: 1,
         cursor: 'pointer',
       }}>
       {muted ? '🔇' : '🔊'}

@@ -179,7 +179,7 @@ export default function ProfilePage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl" style={{ color: '#B0BEC5' }}>Yükleniyor...</div>
+        <div className="text-xl" style={{ color: 'var(--text-dim)' }}>Yükleniyor...</div>
       </div>
     )
   }
@@ -189,7 +189,7 @@ export default function ProfilePage() {
   const isOwnProfile = user?.username === profile.username
   // Unvanları settings'den al
   const unvanlar = stats?.titles || [
-    { min_xp: 0, title: 'Çaylak', color: '#B0BEC5', icon: '🌱' },
+    { min_xp: 0, title: 'Çaylak', color: 'var(--text-dim)', icon: '🌱' },
     { min_xp: 500, title: 'Sohbetçi', color: '#4FC3F7', icon: '💬' },
     { min_xp: 2000, title: 'Mahalli Ünlü', color: '#81C784', icon: '⭐' },
     { min_xp: 5000, title: 'Şehir Efsanesi', color: '#FFD700', icon: '🏆' },
@@ -217,7 +217,7 @@ export default function ProfilePage() {
 
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
-        <Link href="/" style={{ color: '#B0BEC5', fontSize: 14 }}>← Ana Sayfa</Link>
+        <Link href="/" style={{ color: 'var(--text-dim)', fontSize: 14 }}>← Ana Sayfa</Link>
       </div>
 
       {/* Profil Hero */}
@@ -257,17 +257,17 @@ export default function ProfilePage() {
                 </span>
               )}
             </div>
-            <div className="text-sm mt-1" style={{ color: '#B0BEC5' }}>
+            <div className="text-sm mt-1" style={{ color: 'var(--text-dim)' }}>
               {profile.created_at.replace('January','Ocak').replace('February','Şubat').replace('March','Mart').replace('April','Nisan').replace('May','Mayıs').replace('June','Haziran').replace('July','Temmuz').replace('August','Ağustos').replace('September','Eylül').replace('October','Ekim').replace('November','Kasım').replace('December','Aralık')}'den beri üye
             </div>
 
             {/* XP Bar */}
             <div className="mt-3">
-              <div className="flex justify-between text-xs mb-1" style={{ color: '#B0BEC5' }}>
+              <div className="flex justify-between text-xs mb-1" style={{ color: 'var(--text-dim)' }}>
                 <span>💎 {profile.xp.toLocaleString()} XP</span>
                 {nextUnvan && <span>{nextUnvan.title} için {(nextUnvan.min_xp - profile.xp).toLocaleString()} XP</span>}
               </div>
-              <div className="h-2 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.1)' }}>
+              <div className="h-2 rounded-full overflow-hidden" style={{ background: 'var(--surface-2)' }}>
                 <div className="h-full rounded-full transition-all" style={{
                   width: `${xpProgress}%`,
                   background: `linear-gradient(90deg, ${unvan.color}, ${nextUnvan?.color || unvan.color})`,
@@ -288,7 +288,7 @@ export default function ProfilePage() {
                   className="flex items-center gap-1 px-3 py-1 rounded-full transition-all"
                   style={{ background: 'rgba(176,190,197,0.12)', border: '1px solid rgba(176,190,197,0.3)', fontSize: 15 }}>
                   <span style={{ fontSize: 18 }}>🥈</span>
-                  <span className="font-black" style={{ color: '#B0BEC5' }}>{achievements.summary.medals}</span>
+                  <span className="font-black" style={{ color: 'var(--text-dim)' }}>{achievements.summary.medals}</span>
                 </button>
                 <button onClick={() => { setTab('rozetler'); setAchTab('badge') }}
                   className="flex items-center gap-1 px-3 py-1 rounded-full transition-all"
@@ -315,7 +315,7 @@ export default function ProfilePage() {
                     🤝 Arkadaşsınız
                   </span>
                 ) : friend.status === 'request_sent' ? (
-                  <span className="inline-block font-bold" style={{ fontSize: 14, padding: '8px 16px', borderRadius: 12, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)', color: '#B0BEC5' }}>
+                  <span className="inline-block font-bold" style={{ fontSize: 14, padding: '8px 16px', borderRadius: 12, background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--text-dim)' }}>
                     ⏳ İstek gönderildi
                   </span>
                 ) : friend.status === 'request_received' ? (
@@ -354,7 +354,7 @@ export default function ProfilePage() {
           <div key={stat.label} className="glass p-4 text-center">
             <div className="text-2xl mb-1">{stat.icon}</div>
             <div className="text-xl font-black" style={{ color: stat.color }}>{stat.value}</div>
-            <div className="text-xs" style={{ color: '#B0BEC5' }}>{stat.label}</div>
+            <div className="text-xs" style={{ color: 'var(--text-dim)' }}>{stat.label}</div>
           </div>
         ))}
       </div>
@@ -371,9 +371,9 @@ export default function ProfilePage() {
           <button key={t.key} onClick={() => setTab(t.key as Tab)}
             className="px-4 py-2 rounded-xl text-sm font-bold transition-all"
             style={{
-              background: tab === t.key ? 'rgba(79,195,247,0.2)' : 'rgba(255,255,255,0.05)',
-              border: tab === t.key ? '1px solid #4FC3F7' : '1px solid rgba(255,255,255,0.1)',
-              color: tab === t.key ? '#4FC3F7' : '#B0BEC5',
+              background: tab === t.key ? 'rgba(79,195,247,0.2)' : 'var(--surface-2)',
+              border: tab === t.key ? '1px solid #4FC3F7' : '1px solid var(--border)',
+              color: tab === t.key ? '#4FC3F7' : 'var(--text-dim)',
             }}>
             {t.label}
           </button>
@@ -386,21 +386,21 @@ export default function ProfilePage() {
           <div className="glass p-4">
             <h3 className="font-bold mb-3" style={{ color: '#81C784' }}>🤝 Arkadaşların ({myFriends.length})</h3>
             {myFriends.length === 0 ? (
-              <p className="text-sm text-center py-6" style={{ color: '#B0BEC5' }}>Henüz arkadaşın yok. Başka profillerden arkadaş ekleyebilirsin.</p>
+              <p className="text-sm text-center py-6" style={{ color: 'var(--text-dim)' }}>Henüz arkadaşın yok. Başka profillerden arkadaş ekleyebilirsin.</p>
             ) : (
               <div className="space-y-2">
                 {myFriends.map(f => (
                   <div key={f.user_id} className="glass p-3 flex items-center gap-3 flex-wrap" style={{ borderRadius: 12 }}>
                     <img src={avatarSrc(f.avatar_url, f.username)} alt="" style={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'cover' }} />
-                    <Link href={`/p/${f.username}`} className="font-bold" style={{ color: '#fff' }}>{f.username}</Link>
+                    <Link href={`/p/${f.username}`} className="font-bold" style={{ color: 'var(--text)' }}>{f.username}</Link>
                     <div className="flex gap-1 ml-auto flex-wrap">
                       {FRIEND_TYPES.map(ft => (
                         <button key={ft.key} onClick={() => setFriendType(f.username, ft.key)}
                           className="text-xs px-2 py-1 rounded-full font-bold transition-all"
                           style={{
-                            background: (f.type || 'diger') === ft.key ? 'rgba(129,199,132,0.25)' : 'rgba(255,255,255,0.05)',
-                            border: (f.type || 'diger') === ft.key ? '1px solid #81C784' : '1px solid rgba(255,255,255,0.1)',
-                            color: (f.type || 'diger') === ft.key ? '#81C784' : '#B0BEC5',
+                            background: (f.type || 'diger') === ft.key ? 'rgba(129,199,132,0.25)' : 'var(--surface-2)',
+                            border: (f.type || 'diger') === ft.key ? '1px solid #81C784' : '1px solid var(--border)',
+                            color: (f.type || 'diger') === ft.key ? '#81C784' : 'var(--text-dim)',
                           }}>
                           {ft.icon} {ft.label}
                         </button>
@@ -423,28 +423,28 @@ export default function ProfilePage() {
             <div className="grid grid-cols-3 gap-4 text-center">
               <div>
                 <div className="text-2xl font-black" style={{ color: '#4CAF50' }}>{profile.total_wins}</div>
-                <div className="text-xs" style={{ color: '#B0BEC5' }}>Galibiyet</div>
+                <div className="text-xs" style={{ color: 'var(--text-dim)' }}>Galibiyet</div>
               </div>
               <div>
                 <div className="text-2xl font-black" style={{ color: '#F44336' }}>{profile.total_losses}</div>
-                <div className="text-xs" style={{ color: '#B0BEC5' }}>Mağlubiyet</div>
+                <div className="text-xs" style={{ color: 'var(--text-dim)' }}>Mağlubiyet</div>
               </div>
               <div>
-                <div className="text-2xl font-black" style={{ color: '#B0BEC5' }}>
+                <div className="text-2xl font-black" style={{ color: 'var(--text-dim)' }}>
                   {profile.total_matches - profile.total_wins - profile.total_losses}
                 </div>
-                <div className="text-xs" style={{ color: '#B0BEC5' }}>Beraberlik</div>
+                <div className="text-xs" style={{ color: 'var(--text-dim)' }}>Beraberlik</div>
               </div>
             </div>
             {/* Galibiyet bar */}
-            <div className="mt-4 h-3 rounded-full overflow-hidden flex" style={{ background: 'rgba(255,255,255,0.1)' }}>
+            <div className="mt-4 h-3 rounded-full overflow-hidden flex" style={{ background: 'var(--surface-2)' }}>
               <div style={{ width: `${profile.win_rate}%`, background: '#4CAF50' }} />
               <div style={{
                 width: `${profile.total_matches > 0 ? (profile.total_losses / profile.total_matches * 100) : 0}%`,
                 background: '#F44336'
               }} />
             </div>
-            <div className="flex justify-between text-xs mt-1" style={{ color: '#B0BEC5' }}>
+            <div className="flex justify-between text-xs mt-1" style={{ color: 'var(--text-dim)' }}>
               <span style={{ color: '#4CAF50' }}>%{profile.win_rate} Galibiyet</span>
               <span style={{ color: '#F44336' }}>%{profile.total_matches > 0 ? Math.round(profile.total_losses / profile.total_matches * 100) : 0} Mağlubiyet</span>
             </div>
@@ -463,11 +463,11 @@ export default function ProfilePage() {
                         <span>{cat.category}</span>
                         <span style={{ color: '#4CAF50' }}>%{cat.accuracy}</span>
                       </div>
-                      <div className="h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.1)' }}>
+                      <div className="h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--surface-2)' }}>
                         <div style={{ width: `${cat.accuracy}%`, background: '#4CAF50', height: '100%', borderRadius: 999 }} />
                       </div>
                     </div>
-                    <span className="text-xs" style={{ color: '#B0BEC5' }}>{cat.total} soru</span>
+                    <span className="text-xs" style={{ color: 'var(--text-dim)' }}>{cat.total} soru</span>
                   </div>
                 ))}
               </div>
@@ -487,11 +487,11 @@ export default function ProfilePage() {
                         <span>{cat.category}</span>
                         <span style={{ color: '#FF7043' }}>%{cat.accuracy}</span>
                       </div>
-                      <div className="h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.1)' }}>
+                      <div className="h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--surface-2)' }}>
                         <div style={{ width: `${cat.accuracy}%`, background: '#FF7043', height: '100%', borderRadius: 999 }} />
                       </div>
                     </div>
-                    <span className="text-xs" style={{ color: '#B0BEC5' }}>{cat.total} soru</span>
+                    <span className="text-xs" style={{ color: 'var(--text-dim)' }}>{cat.total} soru</span>
                   </div>
                 ))}
               </div>
@@ -517,7 +517,7 @@ export default function ProfilePage() {
                         %{cat.accuracy}
                       </span>
                     </div>
-                    <div className="h-2 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.1)' }}>
+                    <div className="h-2 rounded-full overflow-hidden" style={{ background: 'var(--surface-2)' }}>
                       <div style={{
                         width: `${cat.accuracy}%`,
                         height: '100%',
@@ -527,7 +527,7 @@ export default function ProfilePage() {
                       }} />
                     </div>
                   </div>
-                  <span className="text-xs w-20 text-right" style={{ color: '#B0BEC5' }}>
+                  <span className="text-xs w-20 text-right" style={{ color: 'var(--text-dim)' }}>
                     {cat.correct}/{cat.total}
                   </span>
                 </div>
@@ -544,7 +544,7 @@ export default function ProfilePage() {
                   style={{ background: DIFF_COLORS[d.difficulty] + '15', border: `1px solid ${DIFF_COLORS[d.difficulty]}44` }}>
                   <div className="font-bold mb-1" style={{ color: DIFF_COLORS[d.difficulty] }}>{d.label}</div>
                   <div className="text-2xl font-black">%{d.accuracy}</div>
-                  <div className="text-xs mt-1" style={{ color: '#B0BEC5' }}>{d.correct}/{d.total} doğru</div>
+                  <div className="text-xs mt-1" style={{ color: 'var(--text-dim)' }}>{d.correct}/{d.total} doğru</div>
                 </div>
               ))}
             </div>
@@ -560,15 +560,15 @@ export default function ProfilePage() {
           <div className="flex gap-2">
             {[
               { key: 'trophy', label: '🏆 Kupalar', color: '#FFD700', count: achievements?.summary.trophies ?? 0 },
-              { key: 'medal', label: '🥈 Madalyalar', color: '#B0BEC5', count: achievements?.summary.medals ?? 0 },
+              { key: 'medal', label: '🥈 Madalyalar', color: 'var(--text-dim)', count: achievements?.summary.medals ?? 0 },
               { key: 'badge', label: '🎖️ Rozetler', color: '#4FC3F7', count: achievements?.summary.badges ?? 0 },
             ].map(t => (
               <button key={t.key} onClick={() => setAchTab(t.key as any)}
                 className="flex-1 px-3 py-2 rounded-xl text-sm font-bold transition-all"
                 style={{
-                  background: achTab === t.key ? t.color + '22' : 'rgba(255,255,255,0.05)',
-                  border: achTab === t.key ? `1px solid ${t.color}` : '1px solid rgba(255,255,255,0.1)',
-                  color: achTab === t.key ? t.color : '#B0BEC5',
+                  background: achTab === t.key ? t.color + '22' : 'var(--surface-2)',
+                  border: achTab === t.key ? `1px solid ${t.color}` : '1px solid var(--border)',
+                  color: achTab === t.key ? t.color : 'var(--text-dim)',
                 }}>
                 {t.label} <span style={{ opacity: 0.8 }}>({t.count})</span>
               </button>
@@ -582,7 +582,7 @@ export default function ProfilePage() {
                 {(achievements?.trophies || []).map((t: any, i: number) => (
                   <div key={i} className="glass p-3 flex items-center gap-3"
                     style={{ opacity: t.earned ? 1 : 0.28,
-                             border: t.earned ? '1px solid rgba(255,215,0,0.4)' : '1px solid rgba(255,255,255,0.06)' }}>
+                             border: t.earned ? '1px solid rgba(255,215,0,0.4)' : '1px solid var(--border)' }}>
                     <span className="text-2xl">{t.earned ? t.icon : '🔒'}</span>
                     <div className="min-w-0">
                       <div className="font-bold text-sm truncate">{t.title}</div>
@@ -603,12 +603,12 @@ export default function ProfilePage() {
                 {(achievements?.medals || []).map((m: any, i: number) => (
                   <div key={i} className="glass p-3 flex items-center gap-3"
                     style={{ opacity: m.earned ? 1 : 0.28,
-                             border: m.earned ? '1px solid rgba(176,190,197,0.4)' : '1px solid rgba(255,255,255,0.06)' }}>
+                             border: m.earned ? '1px solid rgba(176,190,197,0.4)' : '1px solid var(--border)' }}>
                     <span className="text-2xl">{m.earned ? m.icon : '🔒'}</span>
                     <div className="min-w-0">
                       <div className="font-bold text-sm truncate">{m.title}</div>
                       {m.earned && m.count > 1 && (
-                        <div className="text-xs font-black" style={{ color: '#B0BEC5' }}>×{m.count}</div>
+                        <div className="text-xs font-black" style={{ color: 'var(--text-dim)' }}>×{m.count}</div>
                       )}
                     </div>
                   </div>
@@ -627,7 +627,7 @@ export default function ProfilePage() {
                     <span className="text-2xl">{b.earned ? b.icon : '🔒'}</span>
                     <div className="min-w-0">
                       <div className="font-bold text-sm">{b.name}</div>
-                      <div className="text-xs" style={{ color: '#B0BEC5' }}>{b.description}</div>
+                      <div className="text-xs" style={{ color: 'var(--text-dim)' }}>{b.description}</div>
                       {b.earned && <div className="text-xs" style={{ color: '#4CAF50' }}>✓ Kazanıldı</div>}
                     </div>
                   </div>
@@ -643,19 +643,19 @@ export default function ProfilePage() {
           <div className="glass p-5">
             <h3 className="font-bold mb-4" style={{ color: '#FFD700' }}>Son Maçlar</h3>
             {matches.length === 0 ? (
-              <p style={{ color: '#B0BEC5' }}>Henüz maç oynanmamış.</p>
+              <p style={{ color: 'var(--text-dim)' }}>Henüz maç oynanmamış.</p>
             ) : (
               <div className="space-y-3">
                 {matches.map(m => (
                   <div key={m.match_id} className="flex items-center justify-between p-3 rounded-xl"
-                    style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                    style={{ background: 'var(--surface-2)', border: '1px solid var(--border)' }}>
                     <div className="flex items-center gap-3">
                       <div className="flex flex-col items-center" style={{ minWidth: 48 }}>
                         <span className="text-xl">
                           {m.won === true ? '🏆' : m.won === false ? '😔' : '🤝'}
                         </span>
                         <span className="text-xs font-bold" style={{
-                          color: m.won === true ? '#4CAF50' : m.won === false ? '#F44336' : '#B0BEC5'
+                          color: m.won === true ? '#4CAF50' : m.won === false ? '#F44336' : 'var(--text-dim)'
                         }}>
                           {m.won === true ? 'Kazandın' : m.won === false ? 'Kaybettin' : 'Berabere'}
                         </span>
@@ -663,11 +663,11 @@ export default function ProfilePage() {
                       <div>
                         <div className="font-bold text-sm">
                           <span style={{ color: '#4FC3F7' }}>{m.my_score > 0 ? '+' : ''}{m.my_score}</span>
-                          <span style={{ color: '#B0BEC5' }}> vs </span>
+                          <span style={{ color: 'var(--text-dim)' }}> vs </span>
                           <span style={{ color: '#FF7043' }}>{m.opponent_score > 0 ? '+' : ''}{m.opponent_score}</span>
-                          <span className="ml-2" style={{ color: '#B0BEC5' }}>— {m.opponent_username}</span>
+                          <span className="ml-2" style={{ color: 'var(--text-dim)' }}>— {m.opponent_username}</span>
                         </div>
-                        <div className="text-xs" style={{ color: '#B0BEC5' }}>{m.finished_at}</div>
+                        <div className="text-xs" style={{ color: 'var(--text-dim)' }}>{m.finished_at}</div>
                       </div>
                     </div>
                     <div className="text-sm font-bold" style={{ color: m.elo_change >= 0 ? '#4CAF50' : '#F44336' }}>

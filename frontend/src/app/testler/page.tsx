@@ -94,17 +94,17 @@ export default function TestlerPage() {
             <h3 className="font-black mb-4" style={{ color: '#FFD700' }}>✏️ Test Düzenle</h3>
             <div className="space-y-3">
               <div>
-                <label className="text-xs block mb-1" style={{ color: '#B0BEC5' }}>Test Adı</label>
+                <label className="text-xs block mb-1" style={{ color: 'var(--text-dim)' }}>Test Adı</label>
                 <input className="input-field w-full" value={editForm.title || ''}
                   onChange={e => setEditForm((p: any) => ({ ...p, title: e.target.value }))} />
               </div>
               <div>
-                <label className="text-xs block mb-1" style={{ color: '#B0BEC5' }}>Açıklama</label>
+                <label className="text-xs block mb-1" style={{ color: 'var(--text-dim)' }}>Açıklama</label>
                 <textarea className="input-field w-full" rows={2} value={editForm.description || ''}
                   onChange={e => setEditForm((p: any) => ({ ...p, description: e.target.value }))} />
               </div>
               <div>
-                <label className="text-xs block mb-1" style={{ color: '#B0BEC5' }}>Görünürlük</label>
+                <label className="text-xs block mb-1" style={{ color: 'var(--text-dim)' }}>Görünürlük</label>
                 <select className="input-field w-full" value={editForm.visibility || 'public'}
                   onChange={e => setEditForm((p: any) => ({ ...p, visibility: e.target.value }))}>
                   <option value="public">🌐 Genel</option>
@@ -114,7 +114,7 @@ export default function TestlerPage() {
               </div>
               {editForm.visibility === 'private' && (
                 <div>
-                  <label className="text-xs block mb-1" style={{ color: '#B0BEC5' }}>Yeni Şifre</label>
+                  <label className="text-xs block mb-1" style={{ color: 'var(--text-dim)' }}>Yeni Şifre</label>
                   <input className="input-field w-full" placeholder="Boş bırakırsan değişmez"
                     onChange={e => setEditForm((p: any) => ({ ...p, password: e.target.value }))} />
                 </div>
@@ -124,7 +124,7 @@ export default function TestlerPage() {
               <button onClick={saveEdit} disabled={actionLoading} className="btn-gold flex-1">
                 {actionLoading ? 'Kaydediliyor...' : '💾 Kaydet'}
               </button>
-              <button onClick={() => setEditingEvent(null)} className="flex-1 glass p-3 text-sm" style={{ color: '#B0BEC5' }}>
+              <button onClick={() => setEditingEvent(null)} className="flex-1 glass p-3 text-sm" style={{ color: 'var(--text-dim)' }}>
                 İptal
               </button>
             </div>
@@ -134,7 +134,7 @@ export default function TestlerPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-black" style={{ color: '#FFD700' }}>📝 Testler</h1>
-          <p className="text-sm" style={{ color: '#B0BEC5' }}>Testleri çöz veya kendi testini oluştur</p>
+          <p className="text-sm" style={{ color: 'var(--text-dim)' }}>Testleri çöz veya kendi testini oluştur</p>
         </div>
         {user && (
           <Link href="/testler/olustur" className="btn-gold">+ Test Oluştur</Link>
@@ -150,9 +150,9 @@ export default function TestlerPage() {
           <button key={t.key} onClick={() => setTab(t.key as any)}
             className="px-4 py-2 rounded-lg text-sm font-bold transition-all"
             style={{
-              background: tab === t.key ? 'rgba(79,195,247,0.2)' : 'rgba(255,255,255,0.05)',
-              border: tab === t.key ? '1px solid #4FC3F7' : '1px solid rgba(255,255,255,0.1)',
-              color: tab === t.key ? '#4FC3F7' : '#B0BEC5',
+              background: tab === t.key ? 'rgba(79,195,247,0.2)' : 'var(--surface-2)',
+              border: tab === t.key ? '1px solid #4FC3F7' : '1px solid var(--border)',
+              color: tab === t.key ? '#4FC3F7' : 'var(--text-dim)',
             }}>
             {t.label}
           </button>
@@ -169,9 +169,9 @@ export default function TestlerPage() {
 
       {/* Liste */}
       {loading ? (
-        <div className="text-center py-8" style={{ color: '#B0BEC5' }}>Yükleniyor...</div>
+        <div className="text-center py-8" style={{ color: 'var(--text-dim)' }}>Yükleniyor...</div>
       ) : filtered.length === 0 ? (
-        <div className="glass p-8 text-center" style={{ color: '#B0BEC5' }}>
+        <div className="glass p-8 text-center" style={{ color: 'var(--text-dim)' }}>
           {tab === 'benim' ? (
             <>Henüz test oluşturmadınız. <Link href="/testler/olustur" style={{ color: '#4FC3F7' }}>Test Oluştur →</Link></>
           ) : 'Test bulunamadı.'}
@@ -184,16 +184,16 @@ export default function TestlerPage() {
               <div className="flex-1 min-w-0">
                 <div className="font-bold truncate">{e.title}</div>
                 <div className="flex items-center gap-3 mt-1 flex-wrap">
-                  <span className="text-xs" style={{ color: '#B0BEC5' }}>
+                  <span className="text-xs" style={{ color: 'var(--text-dim)' }}>
                     {VISIBILITY_LABELS[e.visibility]}
                   </span>
                   <span className="text-xs" style={{ color: '#4FC3F7' }}>
                     📊 {SCOREBOARD_LABELS[e.scoreboard_type]}
                   </span>
-                  <span className="text-xs" style={{ color: '#B0BEC5' }}>
+                  <span className="text-xs" style={{ color: 'var(--text-dim)' }}>
                     ❓ {e.question_count} soru
                   </span>
-                  <span className="text-xs" style={{ color: '#B0BEC5' }}>
+                  <span className="text-xs" style={{ color: 'var(--text-dim)' }}>
                     👥 {e.participant_count} çözüm
                   </span>
                   <span className="text-xs" style={{ color: '#555' }}>
@@ -201,7 +201,7 @@ export default function TestlerPage() {
                   </span>
                 </div>
                 {e.creator && (
-                  <div className="text-xs mt-1" style={{ color: '#B0BEC5' }}>
+                  <div className="text-xs mt-1" style={{ color: 'var(--text-dim)' }}>
                     Oluşturan:{' '}
                     <span onClick={ev => { ev.preventDefault(); ev.stopPropagation(); router.push(`/p/${e.creator}`) }}
                       className="font-bold" style={{ color: '#4FC3F7', cursor: 'pointer' }}>

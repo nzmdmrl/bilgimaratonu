@@ -28,6 +28,7 @@ DEFAULT_SETTINGS = {
     # ─ Arayüz
     "ui": {
         "mobile_match_header": False,  # Mobilde maç ekranlarında üst menü görünsün mü (varsayılan: hayır)
+        "default_theme": "dark",       # Varsayılan tema: dark(gece) | light(gündüz) | auto
     },
 
     # ─ Maç Ayarları

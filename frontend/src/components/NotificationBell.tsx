@@ -48,8 +48,8 @@ export default function NotificationBell() {
         position: 'relative',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         width: 34, height: 34, borderRadius: 8,
-        background: 'rgba(255,255,255,0.05)',
-        color: '#B0BEC5', fontSize: 18, lineHeight: 1,
+        background: 'var(--surface-2)',
+        color: 'var(--text-dim)', fontSize: 18, lineHeight: 1,
         textDecoration: 'none',
       }}>
       🔔
@@ -58,7 +58,7 @@ export default function NotificationBell() {
           position: 'absolute', top: -4, right: -4,
           minWidth: 17, height: 17, padding: '0 4px',
           borderRadius: 9,
-          background: '#E91E63', color: '#fff',
+          background: '#E91E63', color: 'var(--text)',
           fontSize: 10, fontWeight: 700,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           lineHeight: 1,

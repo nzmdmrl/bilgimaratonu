@@ -16,7 +16,7 @@ export default function KategorilerPage() {
   return (
     <div className="min-h-screen p-4" style={{ maxWidth: 800, margin: '0 auto' }}>
       <h1 className="text-3xl font-black mb-2">🗂 Kategoriler</h1>
-      <p className="mb-8" style={{ color: '#B0BEC5' }}>Tüm bilgi kategorileri ve özel maçlar</p>
+      <p className="mb-8" style={{ color: 'var(--text-dim)' }}>Tüm bilgi kategorileri ve özel maçlar</p>
 
       {specialCats.length > 0 && (
         <div className="mb-8">
@@ -39,7 +39,7 @@ export default function KategorilerPage() {
       )}
 
       <div>
-        <h2 className="text-xl font-bold mb-4" style={{ color: '#B0BEC5' }}>📚 Genel Maç Kategorileri</h2>
+        <h2 className="text-xl font-bold mb-4" style={{ color: 'var(--text-dim)' }}>📚 Genel Maç Kategorileri</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           {generalCats.map(cat => (
             <div key={cat.id} className="glass p-4 rounded-2xl text-center opacity-70">

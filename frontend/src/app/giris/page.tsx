@@ -62,7 +62,7 @@ export default function GirisPage() {
             <span style={{ color: '#FFD700' }}>Bilgi</span>
             <span style={{ color: '#4FC3F7' }}> Maratonu</span>
           </h1>
-          <p style={{ color: '#B0BEC5' }}>Bil, Kazan, Şampiyon Ol!</p>
+          <p style={{ color: 'var(--text-dim)' }}>Bil, Kazan, Şampiyon Ol!</p>
         </div>
 
         {/* Form */}
@@ -77,7 +77,7 @@ export default function GirisPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm mb-2" style={{ color: '#B0BEC5' }}>E-posta</label>
+              <label className="block text-sm mb-2" style={{ color: 'var(--text-dim)' }}>E-posta</label>
               <input
                 type="email"
                 className="input-field"
@@ -89,7 +89,7 @@ export default function GirisPage() {
             </div>
 
             <div>
-              <label className="block text-sm mb-2" style={{ color: '#B0BEC5' }}>Şifre</label>
+              <label className="block text-sm mb-2" style={{ color: 'var(--text-dim)' }}>Şifre</label>
               <input
                 type="password"
                 className="input-field"
@@ -112,7 +112,7 @@ export default function GirisPage() {
           <div className="mt-4">
             <div className="relative flex items-center my-4">
               <div className="flex-grow border-t border-gray-700"></div>
-              <span className="mx-3 text-sm" style={{ color: '#B0BEC5' }}>veya</span>
+              <span className="mx-3 text-sm" style={{ color: 'var(--text-dim)' }}>veya</span>
               <div className="flex-grow border-t border-gray-700"></div>
             </div>
             <div
@@ -133,7 +133,7 @@ export default function GirisPage() {
             ></div>
           </div>
 
-          <p className="text-center mt-6" style={{ color: '#B0BEC5' }}>
+          <p className="text-center mt-6" style={{ color: 'var(--text-dim)' }}>
             Hesabın yok mu?{' '}
             <Link href="/kayit" style={{ color: '#4FC3F7' }} className="font-semibold hover:underline">
               Kayıt Ol

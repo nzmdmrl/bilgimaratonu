@@ -115,12 +115,12 @@ export default function OlusturPage() {
         <div className="text-center">
           <div className="text-5xl mb-2">{type === 'duel' ? '⚔️' : '🎯'}</div>
           <h2 className="text-2xl font-black mb-1" style={{ color: '#FF7043' }}>{type === 'duel' ? 'Düello Hazır!' : 'Arena Hazır!'}</h2>
-          <p className="mb-4 text-sm" style={{ color: '#B0BEC5' }}>{created.question_count} soru · {maxParticipants} kişilik</p>
+          <p className="mb-4 text-sm" style={{ color: 'var(--text-dim)' }}>{created.question_count} soru · {maxParticipants} kişilik</p>
         </div>
 
         {/* Paylaşım linki — link ile de katılabilirler */}
         <div className="glass p-3 mb-3">
-          <p className="text-xs mb-1" style={{ color: '#B0BEC5' }}>Katılım linki (link ile de girebilirler):</p>
+          <p className="text-xs mb-1" style={{ color: 'var(--text-dim)' }}>Katılım linki (link ile de girebilirler):</p>
           <div className="font-mono text-xs break-all mb-2" style={{ color: '#4FC3F7' }}>{shareLink()}</div>
           <button onClick={() => { navigator.clipboard.writeText(shareLink()); alert('Link kopyalandı!') }}
             className="text-xs font-bold" style={{ color: '#FF7043' }}>📋 Linki Kopyala</button>
@@ -139,7 +139,7 @@ export default function OlusturPage() {
         ) : sending ? (
           <div className="text-center py-6">
             <div className="text-lg font-black" style={{ color: '#4CAF50' }}>✓ Davet gönderildi</div>
-            <div className="text-sm mt-1" style={{ color: '#B0BEC5' }}>{type === 'duel' ? 'Düelloya' : 'Arenaya'} geçiliyor…</div>
+            <div className="text-sm mt-1" style={{ color: 'var(--text-dim)' }}>{type === 'duel' ? 'Düelloya' : 'Arenaya'} geçiliyor…</div>
           </div>
         ) : (
           <>
@@ -147,7 +147,7 @@ export default function OlusturPage() {
               🔒 Bu test sadece arkadaşlarınızın katılacağı şekilde ayarlandı.
             </div>
             {friends.length === 0 ? (
-              <div className="text-center text-sm py-4" style={{ color: '#B0BEC5' }}>Henüz arkadaşın yok. Profillerden arkadaş ekleyebilirsin.</div>
+              <div className="text-center text-sm py-4" style={{ color: 'var(--text-dim)' }}>Henüz arkadaşın yok. Profillerden arkadaş ekleyebilirsin.</div>
             ) : (
               <>
               {/* Grup filtreleri */}
@@ -158,9 +158,9 @@ export default function OlusturPage() {
                     <button key={ff.key} onClick={() => setFriendFilter(ff.key)}
                       className="text-xs px-2 py-1 rounded-full font-bold transition-all"
                       style={{
-                        background: active ? 'rgba(255,112,67,0.2)' : 'rgba(255,255,255,0.05)',
-                        border: active ? '1px solid #FF7043' : '1px solid rgba(255,255,255,0.1)',
-                        color: active ? '#FF7043' : '#B0BEC5',
+                        background: active ? 'rgba(255,112,67,0.2)' : 'var(--surface-2)',
+                        border: active ? '1px solid #FF7043' : '1px solid var(--border)',
+                        color: active ? '#FF7043' : 'var(--text-dim)',
                       }}>
                       {ff.icon} {ff.label}
                     </button>
@@ -182,7 +182,7 @@ export default function OlusturPage() {
                   return (
                     <button key={f.user_id} onClick={() => setSelectedFriends(prev => sel ? prev.filter(x => x !== f.user_id) : [...prev, f.user_id])}
                       className="glass w-full flex items-center gap-3 p-2 transition-all"
-                      style={{ border: sel ? '2px solid #4CAF50' : '1px solid rgba(255,255,255,0.1)' }}>
+                      style={{ border: sel ? '2px solid #4CAF50' : '1px solid var(--border)' }}>
                       <img src={avatarSrc(f.avatar_url, f.username)} alt="" style={{ width: 34, height: 34, borderRadius: '50%', objectFit: 'cover' }} />
                       <span className="font-bold text-sm flex-1 text-left">{f.username}</span>
                       {sel && <span style={{ color: '#4CAF50' }}>✓</span>}
@@ -208,10 +208,10 @@ export default function OlusturPage() {
       <div className="glass p-8 max-w-md w-full text-center animate-fade-in">
         <div className="text-5xl mb-4">🎉</div>
         <h2 className="text-2xl font-black mb-2" style={{ color: '#FFD700' }}>Test Oluşturuldu!</h2>
-        <p className="mb-4 text-sm" style={{ color: '#B0BEC5' }}>{created.question_count} soru hazır.</p>
+        <p className="mb-4 text-sm" style={{ color: 'var(--text-dim)' }}>{created.question_count} soru hazır.</p>
 
         <div className="glass p-4 mb-4">
-          <p className="text-xs mb-2" style={{ color: '#B0BEC5' }}>Test Linki:</p>
+          <p className="text-xs mb-2" style={{ color: 'var(--text-dim)' }}>Test Linki:</p>
           <div className="font-mono text-sm break-all" style={{ color: '#4FC3F7' }}>
             {typeof window !== 'undefined' ? `${window.location.origin}/testler/${created.slug}` : ''}
           </div>
@@ -270,10 +270,10 @@ export default function OlusturPage() {
               }}
                 className="glass p-3 text-left transition-all"
                 style={{
-                  border: type === t.key ? '2px solid #FFD700' : '1px solid rgba(255,255,255,0.1)',
+                  border: type === t.key ? '2px solid #FFD700' : '1px solid var(--border)',
                 }}>
                 <div className="font-bold text-sm">{t.label}</div>
-                <div className="text-xs" style={{ color: '#B0BEC5' }}>{t.desc}</div>
+                <div className="text-xs" style={{ color: 'var(--text-dim)' }}>{t.desc}</div>
               </button>
             ))}
           </div>
@@ -284,12 +284,12 @@ export default function OlusturPage() {
                 {(type === 'arena' ? [2, 3, 4, 5] : [2, 3, 4]).map(n => (
                   <button key={n} onClick={() => setMaxParticipants(n)}
                     className="glass p-3 text-center font-black transition-all"
-                    style={{ border: maxParticipants === n ? '2px solid #FF7043' : '1px solid rgba(255,255,255,0.1)', color: maxParticipants === n ? '#FF7043' : '#fff' }}>
+                    style={{ border: maxParticipants === n ? '2px solid #FF7043' : '1px solid var(--border)', color: maxParticipants === n ? '#FF7043' : '#fff' }}>
                     {n}
                   </button>
                 ))}
               </div>
-              <div className="text-xs mt-2" style={{ color: '#B0BEC5' }}>
+              <div className="text-xs mt-2" style={{ color: 'var(--text-dim)' }}>
                 {type === 'arena'
                   ? 'Otomatik: Kolay 5 · Orta 2 soru · soru başına 10 sn. Ev sahibi 2 kişi olunca bile başlatabilir.'
                   : 'Otomatik gizli olarak işaretlendi. Görünürlükten “Genel” yaparak herkese açabilirsin.'}
@@ -310,10 +310,10 @@ export default function OlusturPage() {
               <button key={v.key} onClick={() => setVisibility(v.key)}
                 className="glass p-3 text-center transition-all"
                 style={{
-                  border: visibility === v.key ? '2px solid #FFD700' : '1px solid rgba(255,255,255,0.1)',
+                  border: visibility === v.key ? '2px solid #FFD700' : '1px solid var(--border)',
                 }}>
                 <div className="font-bold text-sm">{v.label}</div>
-                <div className="text-xs mt-0.5" style={{ color: '#B0BEC5' }}>{v.desc}</div>
+                <div className="text-xs mt-0.5" style={{ color: 'var(--text-dim)' }}>{v.desc}</div>
               </button>
             ))}
           </div>
@@ -335,10 +335,10 @@ export default function OlusturPage() {
               <button key={s.key} onClick={() => setMatchType(s.key)}
                 className="glass p-3 text-left transition-all"
                 style={{
-                  border: matchType === s.key ? '2px solid #4FC3F7' : '1px solid rgba(255,255,255,0.1)',
+                  border: matchType === s.key ? '2px solid #4FC3F7' : '1px solid var(--border)',
                 }}>
                 <div className="font-bold text-sm">{s.label}</div>
-                <div className="text-xs" style={{ color: '#B0BEC5' }}>{s.desc}</div>
+                <div className="text-xs" style={{ color: 'var(--text-dim)' }}>{s.desc}</div>
               </button>
             ))}
           </div>
@@ -348,7 +348,7 @@ export default function OlusturPage() {
         {/* Skor Tablosu */}
         {type !== 'arena' && (
         <div className="mb-5">
-          <label className="font-bold text-sm block mb-2">Skor Tablosu <span style={{ color: '#B0BEC5', fontWeight: 400 }}>(çoklu seçim)</span></label>
+          <label className="font-bold text-sm block mb-2">Skor Tablosu <span style={{ color: 'var(--text-dim)', fontWeight: 400 }}>(çoklu seçim)</span></label>
           <div className="grid grid-cols-2 gap-2">
             {[
               { key: 'all', label: '📊 Tüm Zamanlar', desc: 'Genel sıralama' },
@@ -363,11 +363,11 @@ export default function OlusturPage() {
                 )}
                   className="glass p-3 text-left transition-all"
                   style={{
-                    border: selected ? '2px solid #FFD700' : '1px solid rgba(255,255,255,0.1)',
+                    border: selected ? '2px solid #FFD700' : '1px solid var(--border)',
                     background: selected ? 'rgba(255,215,0,0.08)' : '',
                   }}>
                   <div className="font-bold text-sm">{s.label}</div>
-                  <div className="text-xs" style={{ color: '#B0BEC5' }}>{s.desc}</div>
+                  <div className="text-xs" style={{ color: 'var(--text-dim)' }}>{s.desc}</div>
                   {selected && <span className="text-xs" style={{ color: '#FFD700' }}>✓ Seçildi</span>}
                 </button>
               )
@@ -378,13 +378,13 @@ export default function OlusturPage() {
 
         {/* Kategoriler */}
         <div className="mb-5">
-          <label className="font-bold text-sm block mb-2">Kategoriler <span style={{ color: '#B0BEC5', fontWeight: 400 }}>(boş = tümü)</span></label>
+          <label className="font-bold text-sm block mb-2">Kategoriler <span style={{ color: 'var(--text-dim)', fontWeight: 400 }}>(boş = tümü)</span></label>
           <div className="grid grid-cols-2 gap-2">
             {categories.map(c => (
               <button key={c.id} onClick={() => toggleCat(c.id)}
                 className="glass p-2 flex items-center gap-2 text-sm transition-all"
                 style={{
-                  border: selectedCats.includes(c.id) ? '2px solid #4FC3F7' : '1px solid rgba(255,255,255,0.1)',
+                  border: selectedCats.includes(c.id) ? '2px solid #4FC3F7' : '1px solid var(--border)',
                   background: selectedCats.includes(c.id) ? 'rgba(79,195,247,0.15)' : '',
                 }}>
                 <span>{c.icon}</span><span>{c.name}</span>
@@ -405,7 +405,7 @@ export default function OlusturPage() {
               { key: 'very_hard', label: 'Çok Zor' },
             ].map(d => (
               <div key={d.key}>
-                <label className="text-xs block mb-1" style={{ color: '#B0BEC5' }}>{d.label}</label>
+                <label className="text-xs block mb-1" style={{ color: 'var(--text-dim)' }}>{d.label}</label>
                 <input type="number" min={0} className="input-field w-full"
                   value={distribution[d.key as keyof typeof distribution]}
                   onChange={e => setDistribution(prev => ({ ...prev, [d.key]: parseInt(e.target.value) || 0 }))}
@@ -413,7 +413,7 @@ export default function OlusturPage() {
               </div>
             ))}
           </div>
-          <div className="text-xs mt-1" style={{ color: '#B0BEC5' }}>
+          <div className="text-xs mt-1" style={{ color: 'var(--text-dim)' }}>
             Toplam: {Object.values(distribution).reduce((a, b) => a + b, 0)} soru
           </div>
         </div>
@@ -435,7 +435,7 @@ export default function OlusturPage() {
             <div className="glass p-3 flex items-center justify-center">
               <div className="text-center">
                 <div className="font-black text-2xl" style={{ color: '#FFD700' }}>{maxParticipants}</div>
-                <div className="text-xs" style={{ color: '#B0BEC5' }}>Max Katılımcı</div>
+                <div className="text-xs" style={{ color: 'var(--text-dim)' }}>Max Katılımcı</div>
               </div>
             </div>
           )}
@@ -445,7 +445,7 @@ export default function OlusturPage() {
           {loading ? 'Oluşturuluyor...' : '🚀 Test Oluştur'}
         </button>
         {(type === 'arena' || type === 'duel') && (
-          <p className="text-xs text-center mt-3" style={{ color: '#B0BEC5' }}>
+          <p className="text-xs text-center mt-3" style={{ color: 'var(--text-dim)' }}>
             ℹ️ Oluşturduktan sonraki ekranda arkadaşlarınızı davet edebilir veya test paylaşım çeşitlerini görebilirsiniz.
           </p>
         )}

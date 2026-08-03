@@ -120,7 +120,7 @@ export default function ProfileEdit() {
   }
 
   if (!user) return (
-    <div className="min-h-screen flex items-center justify-center" style={{ color: '#B0BEC5' }}>Yükleniyor...</div>
+    <div className="min-h-screen flex items-center justify-center" style={{ color: 'var(--text-dim)' }}>Yükleniyor...</div>
   )
 
   return (
@@ -139,15 +139,15 @@ export default function ProfileEdit() {
 
       {/* Profil Fotoğrafı */}
       <div className="glass p-6 mb-4">
-        <h3 className="font-bold mb-4" style={{ color: '#B0BEC5' }}>📸 Profil Fotoğrafı</h3>
+        <h3 className="font-bold mb-4" style={{ color: 'var(--text-dim)' }}>📸 Profil Fotoğrafı</h3>
         <div className="flex items-center gap-6">
           <div className="w-20 h-20 rounded-full overflow-hidden flex items-center justify-center flex-shrink-0"
-            style={{ background: 'rgba(255,255,255,0.08)', border: '2px solid rgba(255,255,255,0.15)' }}>
+            style={{ background: 'var(--surface-2)', border: '2px solid var(--border)' }}>
             <img src={avatarSrc(avatarUrl, user?.username)} alt="avatar"
               className="w-full h-full rounded-full object-cover" />
           </div>
           <div className="flex-1">
-            <p className="text-sm mb-3" style={{ color: '#B0BEC5' }}>
+            <p className="text-sm mb-3" style={{ color: 'var(--text-dim)' }}>
               Fotoğraf yükle (JPG/PNG/WebP, max 2MB — otomatik sıkıştırılır) ya da aşağıdan hazır bir avatar seç.
             </p>
             <label className="btn-gold cursor-pointer inline-block text-sm px-4 py-2">
@@ -160,7 +160,7 @@ export default function ProfileEdit() {
 
         {/* Hazır avatarlar (DiceBear) */}
         <div className="mt-5">
-          <div className="text-sm font-bold mb-2" style={{ color: '#B0BEC5' }}>🎨 Hazır Avatarlar</div>
+          <div className="text-sm font-bold mb-2" style={{ color: 'var(--text-dim)' }}>🎨 Hazır Avatarlar</div>
           <AvatarPicker currentUrl={avatarUrl} onSelect={pickAvatar} saving={uploadingAvatar} />
         </div>
       </div>
@@ -175,8 +175,8 @@ export default function ProfileEdit() {
           <button key={t.key} onClick={() => setTab(t.key as any)}
             className="glass px-4 py-2 text-sm font-bold flex-1 transition-all"
             style={{
-              border: tab === t.key ? '1px solid #FFD700' : '1px solid rgba(255,255,255,0.08)',
-              color: tab === t.key ? '#FFD700' : '#B0BEC5'
+              border: tab === t.key ? '1px solid #FFD700' : '1px solid var(--border)',
+              color: tab === t.key ? '#FFD700' : 'var(--text-dim)'
             }}>
             {t.label}
           </button>

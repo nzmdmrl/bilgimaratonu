@@ -63,8 +63,8 @@ export default function Header() {
           style={{
             position: 'fixed', top: 6, left: 6, zIndex: 120,
             width: 34, height: 34, borderRadius: '50%',
-            background: 'rgba(15,20,40,0.75)', border: '1px solid rgba(255,255,255,0.12)',
-            color: '#fff', fontSize: 18, lineHeight: 1, cursor: 'pointer',
+            background: 'rgba(15,20,40,0.75)', border: '1px solid var(--border)',
+            color: 'var(--text)', fontSize: 18, lineHeight: 1, cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             backdropFilter: 'blur(6px)',
           }}>
@@ -72,8 +72,8 @@ export default function Header() {
         </button>
       )}
       <header className={hideOnMobile ? 'hidden md:block' : ''} style={{
-        background: 'rgba(15,20,40,0.95)',
-        borderBottom: '1px solid rgba(255,255,255,0.08)',
+        background: 'var(--header-bg)',
+        borderBottom: '1px solid var(--border)',
         backdropFilter: 'blur(10px)',
         position: 'sticky', top: 0, zIndex: 100,
       }}>
@@ -92,7 +92,7 @@ export default function Header() {
               <Link key={link.href} href={link.href}
                 className="px-3 py-1.5 rounded-lg text-sm font-bold transition-all"
                 style={{
-                  color: pathname === link.href ? link.color : '#B0BEC5',
+                  color: pathname === link.href ? link.color : 'var(--text-dim)',
                   background: pathname === link.href ? link.color + '20' : 'transparent',
                 }}>
                 {link.label}
@@ -116,12 +116,12 @@ export default function Header() {
                 {user.role === 'admin' && (
                   <Link href="/admin" className="hidden md:block text-sm font-bold" style={{ color: '#E91E63' }}>⚙️</Link>
                 )}
-                <button onClick={logout} className="hidden md:block text-sm" style={{ color: '#B0BEC5' }}>Çıkış</button>
+                <button onClick={logout} className="hidden md:block text-sm" style={{ color: 'var(--text-dim)' }}>Çıkış</button>
               </>
             ) : (
               <>
                 <Link href="/giris" className="text-sm font-bold px-2 py-1.5 rounded-lg hidden sm:block"
-                  style={{ color: '#B0BEC5', background: 'rgba(255,255,255,0.05)' }}>Giriş</Link>
+                  style={{ color: 'var(--text-dim)', background: 'var(--surface-2)' }}>Giriş</Link>
                 <Link href="/kayit" className="btn-gold text-sm hidden sm:block" style={{ padding: '5px 10px' }}>Kayıt</Link>
               </>
             )}
@@ -130,10 +130,10 @@ export default function Header() {
             <button onClick={() => setMenuOpen(!menuOpen)}
               className="md:hidden"
               style={{
-                background: 'rgba(255,255,255,0.05)',
-                border: '1px solid rgba(255,255,255,0.1)',
+                background: 'var(--surface-2)',
+                border: '1px solid var(--border)',
                 borderRadius: 8, padding: '5px 10px',
-                color: '#B0BEC5', cursor: 'pointer', fontSize: 18, lineHeight: 1,
+                color: 'var(--text-dim)', cursor: 'pointer', fontSize: 18, lineHeight: 1,
               }}>
               {menuOpen ? '✕' : '☰'}
             </button>
@@ -150,16 +150,16 @@ export default function Header() {
           <div style={{
             position: 'absolute', top: 0, right: 0,
             width: 260, height: '100%',
-            background: 'rgba(15,20,40,0.98)',
-            borderLeft: '1px solid rgba(255,255,255,0.08)',
+            background: 'var(--header-bg)',
+            borderLeft: '1px solid var(--border)',
             backdropFilter: 'blur(20px)',
             display: 'flex', flexDirection: 'column',
           }} onClick={e => e.stopPropagation()}>
 
             {user && (
-              <div style={{ padding: '16px 20px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+              <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)' }}>
                 <Link href={`/p/${user.username}`} onClick={() => setMenuOpen(false)}
-                  style={{ display: 'flex', alignItems: 'center', gap: 10, color: '#fff', textDecoration: 'none' }}>
+                  style={{ display: 'flex', alignItems: 'center', gap: 10, color: 'var(--text)', textDecoration: 'none' }}>
                   <div style={{ width: 36, height: 36, borderRadius: '50%', overflow: 'hidden', flexShrink: 0 }}>
                     <img src={avatarSrc((user as any).avatar_url, user.username)} alt=""
                       style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -177,7 +177,7 @@ export default function Header() {
                 <Link href="/bildirimler" onClick={() => setMenuOpen(false)}
                   style={{
                     display: 'block', padding: '13px 20px',
-                    color: pathname === '/bildirimler' ? '#4FC3F7' : '#B0BEC5',
+                    color: pathname === '/bildirimler' ? '#4FC3F7' : 'var(--text-dim)',
                     background: pathname === '/bildirimler' ? '#4FC3F720' : 'transparent',
                     fontWeight: pathname === '/bildirimler' ? 700 : 500,
                     fontSize: 15, textDecoration: 'none',
@@ -190,7 +190,7 @@ export default function Header() {
                 <Link key={link.href} href={link.href} onClick={() => setMenuOpen(false)}
                   style={{
                     display: 'block', padding: '13px 20px',
-                    color: pathname === link.href ? link.color : '#B0BEC5',
+                    color: pathname === link.href ? link.color : 'var(--text-dim)',
                     background: pathname === link.href ? link.color + '15' : 'transparent',
                     fontWeight: pathname === link.href ? 700 : 500,
                     fontSize: 15, textDecoration: 'none',
@@ -201,7 +201,7 @@ export default function Header() {
               ))}
             </div>
 
-            <div style={{ padding: '12px 20px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+            <div style={{ padding: '12px 20px', borderTop: '1px solid var(--border)' }}>
               {user ? (
                 <>
                   {user.role === 'admin' && (
@@ -211,14 +211,14 @@ export default function Header() {
                     </Link>
                   )}
                   <button onClick={() => { logout(); setMenuOpen(false) }}
-                    style={{ color: '#B0BEC5', fontSize: 14, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                    style={{ color: 'var(--text-dim)', fontSize: 14, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
                     🚪 Çıkış Yap
                   </button>
                 </>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   <Link href="/giris" onClick={() => setMenuOpen(false)}
-                    style={{ textAlign: 'center', padding: '10px', borderRadius: 8, background: 'rgba(255,255,255,0.05)', color: '#B0BEC5', fontWeight: 600, textDecoration: 'none' }}>
+                    style={{ textAlign: 'center', padding: '10px', borderRadius: 8, background: 'var(--surface-2)', color: 'var(--text-dim)', fontWeight: 600, textDecoration: 'none' }}>
                     Giriş Yap
                   </Link>
                   <Link href="/kayit" onClick={() => setMenuOpen(false)}

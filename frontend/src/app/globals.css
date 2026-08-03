@@ -2,29 +2,65 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --bg-primary: #0A0E27;
-  --bg-secondary: #1A1B4B;
+/* ─── TEMA: gece (varsayılan) ─── */
+:root, html[data-theme="dark"] {
+  --bg: #0A0E27;
+  --bg2: #1A1B4B;
+  --bg-gradient: linear-gradient(135deg, #0A0E27 0%, #1A1B4B 100%);
+  --text: #FFFFFF;
+  --text-dim: #B0BEC5;
+  --text-dimmer: #607D8B;
+  --surface: rgba(255, 255, 255, 0.07);
+  --surface-2: rgba(255, 255, 255, 0.05);
+  --border: rgba(255, 255, 255, 0.10);
+  --card-shadow: none;
+  --header-bg: rgba(15, 20, 40, 0.95);
+  --input-bg: rgba(255, 255, 255, 0.08);
+  --input-border: rgba(255, 255, 255, 0.15);
+  --placeholder: rgba(255, 255, 255, 0.4);
+  /* eski isimler (geri uyumluluk) */
+  --bg-primary: var(--bg);
+  --bg-secondary: var(--bg2);
   --accent-blue: #4FC3F7;
   --accent-gold: #FFD700;
-  --text-primary: #FFFFFF;
-  --text-secondary: #B0BEC5;
+  --text-primary: var(--text);
+  --text-secondary: var(--text-dim);
+}
+
+/* ─── TEMA: gündüz ─── */
+html[data-theme="light"] {
+  --bg: #EEF2F8;
+  --bg2: #DCE4F0;
+  --bg-gradient: linear-gradient(135deg, #F4F7FC 0%, #DFE7F3 100%);
+  --text: #14213D;
+  --text-dim: #51617B;
+  --text-dimmer: #8593A8;
+  --surface: rgba(255, 255, 255, 0.92);
+  --surface-2: rgba(20, 33, 61, 0.045);
+  --border: rgba(20, 33, 61, 0.12);
+  --card-shadow: 0 4px 18px rgba(20, 33, 61, 0.08);
+  --header-bg: rgba(255, 255, 255, 0.92);
+  --input-bg: #FFFFFF;
+  --input-border: rgba(20, 33, 61, 0.18);
+  --placeholder: rgba(20, 33, 61, 0.4);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  background: linear-gradient(135deg, #0A0E27 0%, #1A1B4B 100%);
+  background: var(--bg-gradient);
   min-height: 100vh;
-  color: white;
+  color: var(--text);
   font-family: var(--font-sans);
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
 .glass {
-  background: rgba(255, 255, 255, 0.07);
+  background: var(--surface);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border);
   border-radius: 16px;
+  box-shadow: var(--card-shadow);
 }
 
 .btn-primary {
@@ -70,10 +106,10 @@ body {
 .input-field {
   width: 100%;
   padding: 14px 18px;
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.15);
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
   border-radius: 12px;
-  color: white;
+  color: var(--text);
   font-size: 16px;
   outline: none;
   transition: border-color 0.2s;
@@ -85,7 +121,7 @@ body {
 }
 
 .input-field::placeholder {
-  color: rgba(255,255,255,0.4);
+  color: var(--placeholder);
 }
 
 @keyframes pulse-glow {
@@ -100,6 +136,13 @@ body {
 
 .animate-fade-in {
   animation: fadeIn 0.4s ease forwards;
+}
+
+/* Anasayfa oyun butonları */
+.play-card { transition: transform .15s ease, box-shadow .15s ease; }
+.play-card:active { transform: scale(.96); }
+@media (hover: hover) {
+  .play-card:hover { transform: translateY(-3px); }
 }
 
 /* Mobil alt navigasyon için içerik boşluğu (nav ~66px) */

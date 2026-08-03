@@ -29,7 +29,7 @@ export default function BottomNav() {
   return (
     <nav className="md:hidden flex items-end justify-around" style={{
       position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 200,
-      background: 'rgba(15,20,40,0.98)', borderTop: '1px solid rgba(255,255,255,0.08)',
+      background: 'var(--header-bg)', borderTop: '1px solid var(--border)',
       backdropFilter: 'blur(10px)',
       padding: '6px 4px 8px', paddingBottom: 'calc(8px + env(safe-area-inset-bottom))',
     }}>
@@ -44,7 +44,7 @@ export default function BottomNav() {
                 background: 'linear-gradient(135deg,#4FC3F7,#1565C0)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: 24, boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
-                border: '3px solid rgba(15,20,40,0.98)',
+                border: '3px solid var(--header-bg)',
               }}>{it.icon}</div>
               <span style={{ fontSize: 10, marginTop: 2, color: active ? '#4FC3F7' : '#78909C', fontWeight: 700 }}>{it.label}</span>
             </Link>

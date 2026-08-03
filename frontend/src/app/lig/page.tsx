@@ -93,7 +93,7 @@ export default function LigPage() {
 
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <Link href="/" style={{ color: '#B0BEC5', fontSize: 14 }}>← Ana Sayfa</Link>
+        <Link href="/" style={{ color: 'var(--text-dim)', fontSize: 14 }}>← Ana Sayfa</Link>
         <h1 className="text-2xl font-black">
           <span style={{ color: '#FFD700' }}>Lig</span>
           <span style={{ color: '#4FC3F7' }}> Tablosu</span>
@@ -113,9 +113,9 @@ export default function LigPage() {
             <button key={c.slug} onClick={() => setCategory(c.slug)}
               className="py-2 px-4 rounded-xl font-bold transition-all flex-shrink-0 whitespace-nowrap"
               style={{
-                background: active ? 'rgba(79,195,247,0.15)' : 'rgba(255,255,255,0.05)',
-                border: active ? '1px solid #4FC3F7' : '1px solid rgba(255,255,255,0.1)',
-                color: active ? '#4FC3F7' : '#B0BEC5',
+                background: active ? 'rgba(79,195,247,0.15)' : 'var(--surface-2)',
+                border: active ? '1px solid #4FC3F7' : '1px solid var(--border)',
+                color: active ? '#4FC3F7' : 'var(--text-dim)',
                 fontSize: 14,
               }}>
               {c.name}
@@ -134,9 +134,9 @@ export default function LigPage() {
           <button key={t.key} onClick={() => setTab(t.key as any)}
             className="flex-1 py-3 rounded-xl font-bold transition-all"
             style={{
-              background: tab === t.key ? 'rgba(255,215,0,0.15)' : 'rgba(255,255,255,0.05)',
-              border: tab === t.key ? '1px solid #FFD700' : '1px solid rgba(255,255,255,0.1)',
-              color: tab === t.key ? '#FFD700' : '#B0BEC5',
+              background: tab === t.key ? 'rgba(255,215,0,0.15)' : 'var(--surface-2)',
+              border: tab === t.key ? '1px solid #FFD700' : '1px solid var(--border)',
+              color: tab === t.key ? '#FFD700' : 'var(--text-dim)',
             }}>
             {t.label}
           </button>
@@ -154,21 +154,21 @@ export default function LigPage() {
               </span>
               <div>
                 <div className="font-bold">{myRank.username} <span style={{ color: '#4FC3F7', fontSize: 12 }}>(Sen)</span></div>
-                <div className="text-xs" style={{ color: '#B0BEC5' }}>{myRank.days_played} gün oynadı</div>
+                <div className="text-xs" style={{ color: 'var(--text-dim)' }}>{myRank.days_played} gün oynadı</div>
               </div>
             </div>
             <div className="text-right">
               <div className="text-xl font-black" style={{ color: '#FFD700' }}>
                 {typeof myRank.total_score === "number" ? myRank.total_score.toFixed(2) : myRank.total_score}
               </div>
-              <div className="text-xs" style={{ color: '#B0BEC5' }}>puan</div>
+              <div className="text-xs" style={{ color: 'var(--text-dim)' }}>puan</div>
             </div>
           </div>
         </div>
       )}
 
       {/* Kural açıklaması */}
-      <div className="glass p-3 mb-4 text-xs" style={{ color: '#B0BEC5' }}>
+      <div className="glass p-3 mb-4 text-xs" style={{ color: 'var(--text-dim)' }}>
         {category === 'genel'
           ? '💡 Her gün oynadığın en yüksek genel maç puanı lig tablosuna eklenir. Her gün oyna, her gün puan kazan!'
           : '💡 Bu kategoride her gün oynadığın en yüksek maç puanı bu kategori ligine eklenir.'}
@@ -176,12 +176,12 @@ export default function LigPage() {
 
       {/* Lig tablosu */}
       {loading ? (
-        <div className="text-center py-10" style={{ color: '#B0BEC5' }}>Yükleniyor...</div>
+        <div className="text-center py-10" style={{ color: 'var(--text-dim)' }}>Yükleniyor...</div>
       ) : (
         <div className="glass overflow-hidden">
           {/* Başlık */}
           <div className="flex items-center px-4 py-3 text-xs font-bold"
-            style={{ color: '#B0BEC5', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+            style={{ color: 'var(--text-dim)', borderBottom: '1px solid var(--border)' }}>
             <span style={{ width: 40 }}>Sıra</span>
             <span className="flex-1">Kullanıcı</span>
             <span style={{ width: 80, textAlign: 'right' }}>Gün</span>
@@ -189,7 +189,7 @@ export default function LigPage() {
           </div>
 
           {data?.table.length === 0 ? (
-            <div className="text-center py-10" style={{ color: '#B0BEC5' }}>
+            <div className="text-center py-10" style={{ color: 'var(--text-dim)' }}>
               Henüz bu dönemde maç oynanmamış.
             </div>
           ) : (
@@ -199,11 +199,11 @@ export default function LigPage() {
                 <div key={row.username}
                   className="flex items-center px-4 py-3 transition-all"
                   style={{
-                    borderBottom: '1px solid rgba(255,255,255,0.05)',
-                    background: isMe ? 'rgba(255,215,0,0.05)' : i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.02)',
+                    borderBottom: '1px solid var(--border)',
+                    background: isMe ? 'rgba(255,215,0,0.05)' : i % 2 === 0 ? 'transparent' : 'var(--surface-2)',
                   }}>
                   {/* Sıra */}
-                  <span style={{ width: 40, fontSize: row.rank <= 3 ? 20 : 14, color: '#B0BEC5' }}>
+                  <span style={{ width: 40, fontSize: row.rank <= 3 ? 20 : 14, color: 'var(--text-dim)' }}>
                     {rankEmoji(row.rank)}
                   </span>
 
@@ -215,11 +215,11 @@ export default function LigPage() {
                       {row.username}
                       {isMe && <span className="ml-1 text-xs" style={{ color: '#4FC3F7' }}>(Sen)</span>}
                     </Link>
-                    <div className="text-xs" style={{ color: '#B0BEC5' }}>{row.elo_rating} ELO</div>
+                    <div className="text-xs" style={{ color: 'var(--text-dim)' }}>{row.elo_rating} ELO</div>
                   </div>
 
                   {/* Gün */}
-                  <span style={{ width: 80, textAlign: 'right', color: '#B0BEC5', fontSize: 13 }}>
+                  <span style={{ width: 80, textAlign: 'right', color: 'var(--text-dim)', fontSize: 13 }}>
                     {row.days_played} gün
                   </span>
 
@@ -229,7 +229,7 @@ export default function LigPage() {
                     textAlign: 'right',
                     fontSize: 18,
                     fontWeight: 900,
-                    color: row.rank === 1 ? '#FFD700' : row.rank === 2 ? '#B0BEC5' : row.rank === 3 ? '#CD7F32' : 'white',
+                    color: row.rank === 1 ? '#FFD700' : row.rank === 2 ? 'var(--text-dim)' : row.rank === 3 ? '#CD7F32' : 'white',
                   }}>
                     {typeof row.total_score === "number" ? row.total_score.toFixed(2) : row.total_score}
                   </span>
@@ -249,7 +249,7 @@ export default function LigPage() {
           </Link>
         </div>
         {pastWinners.length === 0 ? (
-          <div className="glass p-4 text-center text-sm" style={{ color: '#B0BEC5' }}>
+          <div className="glass p-4 text-center text-sm" style={{ color: 'var(--text-dim)' }}>
             Bu lig için henüz geçmiş dönem kaydı yok.
           </div>
         ) : (
@@ -258,13 +258,13 @@ export default function LigPage() {
               <div key={p.period_key} className="glass p-4">
                 <div className="text-sm font-bold mb-2" style={{ color: '#4FC3F7' }}>{p.label}</div>
                 {(!p.winners || p.winners.length === 0) ? (
-                  <div className="text-xs" style={{ color: '#B0BEC5' }}>—</div>
+                  <div className="text-xs" style={{ color: 'var(--text-dim)' }}>—</div>
                 ) : (
                   p.winners.map((w: any) => (
                     <div key={w.rank} className="flex items-center gap-2 py-1">
                       <span style={{ width: 24, fontSize: 16, textAlign: 'center' }}>{rankEmoji(w.rank)}</span>
                       <Link href={`/p/${w.username}`} className="font-bold hover:underline text-sm"
-                        style={{ color: w.rank === 1 ? '#FFD700' : w.rank === 2 ? '#B0BEC5' : '#CD7F32' }}>
+                        style={{ color: w.rank === 1 ? '#FFD700' : w.rank === 2 ? 'var(--text-dim)' : '#CD7F32' }}>
                         {w.username}
                       </Link>
                     </div>

@@ -66,7 +66,7 @@ export default function KayitPage() {
             <span style={{ color: '#FFD700' }}>Bilgi</span>
             <span style={{ color: '#4FC3F7' }}> Maratonu</span>
           </h1>
-          <p style={{ color: '#B0BEC5' }}>Aramıza katıl!</p>
+          <p style={{ color: 'var(--text-dim)' }}>Aramıza katıl!</p>
         </div>
 
         <div className="glass p-8">
@@ -80,7 +80,7 @@ export default function KayitPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm mb-2" style={{ color: '#B0BEC5' }}>Kullanıcı Adı</label>
+              <label className="block text-sm mb-2" style={{ color: 'var(--text-dim)' }}>Kullanıcı Adı</label>
               <input
                 type="text"
                 className="input-field"
@@ -94,7 +94,7 @@ export default function KayitPage() {
             </div>
 
             <div>
-              <label className="block text-sm mb-2" style={{ color: '#B0BEC5' }}>E-posta</label>
+              <label className="block text-sm mb-2" style={{ color: 'var(--text-dim)' }}>E-posta</label>
               <input
                 type="email"
                 className="input-field"
@@ -106,7 +106,7 @@ export default function KayitPage() {
             </div>
 
             <div>
-              <label className="block text-sm mb-2" style={{ color: '#B0BEC5' }}>Şifre</label>
+              <label className="block text-sm mb-2" style={{ color: 'var(--text-dim)' }}>Şifre</label>
               <input
                 type="password"
                 className="input-field"
@@ -130,7 +130,7 @@ export default function KayitPage() {
           <div className="mt-4">
             <div className="relative flex items-center my-4">
               <div className="flex-grow border-t border-gray-700"></div>
-              <span className="mx-3 text-sm" style={{ color: '#B0BEC5' }}>veya</span>
+              <span className="mx-3 text-sm" style={{ color: 'var(--text-dim)' }}>veya</span>
               <div className="flex-grow border-t border-gray-700"></div>
             </div>
             <div id="g_id_onload"
@@ -149,7 +149,7 @@ export default function KayitPage() {
             </div>
           </div>
 
-          <p className="text-center mt-6" style={{ color: '#B0BEC5' }}>
+          <p className="text-center mt-6" style={{ color: 'var(--text-dim)' }}>
             Zaten hesabın var mı?{' '}
             <Link href="/giris" style={{ color: '#4FC3F7' }} className="font-semibold hover:underline">
               Giriş Yap

@@ -125,7 +125,7 @@ export default function Bracket({ data, me }: { data: BracketData; me?: string }
 
       <div ref={scrollRef} style={{
         overflow: 'auto', maxHeight: '72vh', borderRadius: 12,
-        background: 'rgba(10,14,39,0.5)', border: '1px solid rgba(255,255,255,0.08)',
+        background: 'rgba(10,14,39,0.5)', border: '1px solid var(--border)',
         WebkitOverflowScrolling: 'touch',
       }}>
         {/* @ts-ignore CSS zoom (WebKit/Blink) */}
@@ -143,7 +143,7 @@ export default function Bracket({ data, me }: { data: BracketData; me?: string }
               position: 'absolute', left: (R - 1) * COL_W, top: height / 2 - BOX_H - 34,
               width: BOX_W, textAlign: 'center', color: '#FFD700', fontWeight: 900, fontSize: 13, letterSpacing: 1,
             }}>🏆 Şampiyon{data.champion ? `` : ''}
-              {data.champion && <div style={{ fontSize: 12, color: '#fff', fontWeight: 700 }}>{data.champion}</div>}
+              {data.champion && <div style={{ fontSize: 12, color: 'var(--text)', fontWeight: 700 }}>{data.champion}</div>}
             </div>
 
             {/* maç kutuları */}
@@ -159,19 +159,19 @@ export default function Bracket({ data, me }: { data: BracketData; me?: string }
                     position: 'absolute', left: node.x, top: node.y - BOX_H / 2,
                     width: BOX_W, height: BOX_H,
                     borderRadius: 8, overflow: 'hidden',
-                    border: isMine ? '2px solid #FFD700' : '1px solid rgba(255,255,255,0.12)',
+                    border: isMine ? '2px solid #FFD700' : '1px solid var(--border)',
                     boxShadow: isMine ? '0 0 12px rgba(255,215,0,0.5)' : 'none',
                     background: 'rgba(20,26,54,0.95)',
                   }}>
                   {showLabelTop && (
                     <div style={{
                       position: 'absolute', top: -17, left: 0, width: BOX_W, textAlign: 'center',
-                      fontSize: 10, color: '#607D8B', fontWeight: 700, whiteSpace: 'nowrap',
+                      fontSize: 10, color: 'var(--text-dimmer)', fontWeight: 700, whiteSpace: 'nowrap',
                     }}>{ROUND_LABEL(rowsFromEnd)}</div>
                   )}
                   <PlayerRow p={m?.p1 || null} winner={!!m?.winner_username && m?.winner_username === m?.p1?.username}
                     loser={!!m?.winner_username && m?.winner_username !== m?.p1?.username} me={me} />
-                  <div style={{ height: 1, background: 'rgba(255,255,255,0.08)' }} />
+                  <div style={{ height: 1, background: 'var(--surface-2)' }} />
                   <PlayerRow p={m?.p2 || null} winner={!!m?.winner_username && m?.winner_username === m?.p2?.username}
                     loser={!!m?.winner_username && m?.winner_username !== m?.p2?.username} me={me} />
                 </div>
@@ -210,6 +210,6 @@ function PlayerRow({ p, winner, loser, me }: { p: Player | null; winner: boolean
 }
 
 const zBtn: React.CSSProperties = {
-  width: 32, height: 32, borderRadius: 8, background: 'rgba(255,255,255,0.1)',
-  border: '1px solid rgba(255,255,255,0.15)', color: '#fff', fontWeight: 900, cursor: 'pointer',
+  width: 32, height: 32, borderRadius: 8, background: 'var(--surface-2)',
+  border: '1px solid var(--border)', color: 'var(--text)', fontWeight: 900, cursor: 'pointer',
 }

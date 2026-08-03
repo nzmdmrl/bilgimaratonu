@@ -175,14 +175,14 @@ export default function TestPage() {
     ...(q.option_d ? [{ label: 'D', text: q.option_d }] : []),
   ] : []
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center" style={{ color: '#B0BEC5' }}>Yükleniyor...</div>
+  if (loading) return <div className="min-h-screen flex items-center justify-center" style={{ color: 'var(--text-dim)' }}>Yükleniyor...</div>
   if (error) return <div className="min-h-screen flex items-center justify-center"><div className="glass p-8 text-center"><p style={{ color: '#F44336' }}>{error}</p><Link href="/testler" className="btn-gold mt-4 inline-block">← Testler</Link></div></div>
   if (event?.type === 'duel') return <DuelRoom slug={slug} event={event} />
   if (event && !event.is_active) return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="glass p-8 max-w-md w-full text-center">
         <div className="text-5xl mb-4">📦</div>
-        <h2 className="text-xl font-black mb-2" style={{ color: '#B0BEC5' }}>Test Arşivlendi</h2>
+        <h2 className="text-xl font-black mb-2" style={{ color: 'var(--text-dim)' }}>Test Arşivlendi</h2>
         <p className="text-sm mb-4" style={{ color: '#555' }}>Bu test şu an aktif değil.</p>
         <Link href="/testler" className="btn-gold inline-block">← Testler</Link>
       </div>
@@ -194,30 +194,30 @@ export default function TestPage() {
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="glass p-8 max-w-md w-full animate-fade-in">
         <h1 className="text-2xl font-black mb-2" style={{ color: '#FFD700' }}>{event.title}</h1>
-        {event.description && <p className="text-sm mb-4" style={{ color: '#B0BEC5' }}>{event.description}</p>}
+        {event.description && <p className="text-sm mb-4" style={{ color: 'var(--text-dim)' }}>{event.description}</p>}
         <div className="grid grid-cols-2 gap-3 mb-6">
           <div className="glass p-3 text-center">
             <div className="font-bold">{event.question_count}</div>
-            <div className="text-xs" style={{ color: '#B0BEC5' }}>Soru</div>
+            <div className="text-xs" style={{ color: 'var(--text-dim)' }}>Soru</div>
           </div>
           <div className="glass p-3 text-center">
             <div className="font-bold">{event.participant_count}</div>
-            <div className="text-xs" style={{ color: '#B0BEC5' }}>Çözüm</div>
+            <div className="text-xs" style={{ color: 'var(--text-dim)' }}>Çözüm</div>
           </div>
           <div className="glass p-3 text-center">
             <div className="font-bold text-sm">{SCOREBOARD_LABELS[event.scoreboard_type]}</div>
-            <div className="text-xs" style={{ color: '#B0BEC5' }}>Skor Tablosu</div>
+            <div className="text-xs" style={{ color: 'var(--text-dim)' }}>Skor Tablosu</div>
           </div>
           <div className="glass p-3 text-center">
             <div className="font-bold">{event.time_limit_per_question}sn</div>
-            <div className="text-xs" style={{ color: '#B0BEC5' }}>Soru Süresi</div>
+            <div className="text-xs" style={{ color: 'var(--text-dim)' }}>Soru Süresi</div>
           </div>
         </div>
         <button onClick={handleJoin} className="btn-gold w-full mb-3">▶ Teste Başla</button>
         <button onClick={() => loadScoreboard()} className="w-full glass p-3 text-sm font-bold" style={{ color: '#4FC3F7' }}>
           🏆 Skor Tablosunu Gör
         </button>
-        <Link href="/testler" className="block text-center mt-4 text-sm" style={{ color: '#B0BEC5' }}>← Testler</Link>
+        <Link href="/testler" className="block text-center mt-4 text-sm" style={{ color: 'var(--text-dim)' }}>← Testler</Link>
       </div>
     </div>
   )
@@ -256,7 +256,7 @@ export default function TestPage() {
     <div className="min-h-screen flex items-center justify-center">
       <div className="text-center">
         <div className="text-9xl font-black mb-4" style={{ color: '#FFD700' }}>{countdown || '▶'}</div>
-        <p style={{ color: '#B0BEC5' }}>{questions.length} soru</p>
+        <p style={{ color: 'var(--text-dim)' }}>{questions.length} soru</p>
       </div>
     </div>
   )
@@ -266,13 +266,13 @@ export default function TestPage() {
     <div className="min-h-screen p-4" style={{ maxWidth: 700, margin: '0 auto' }}>
       <div className="glass p-5 animate-fade-in">
         <div className="flex items-center justify-between mb-3">
-          <div className="text-sm font-bold" style={{ color: '#B0BEC5' }}>{q.index + 1} / {q.total}</div>
+          <div className="text-sm font-bold" style={{ color: 'var(--text-dim)' }}>{q.index + 1} / {q.total}</div>
           <div className="text-3xl font-black" style={{
             color: timeLeft <= 5 ? '#F44336' : timeLeft <= 10 ? '#FF7043' : '#FFD700'
           }}>{timeLeft}</div>
-          <div className="text-sm" style={{ color: '#B0BEC5' }}>{q.category_name}</div>
+          <div className="text-sm" style={{ color: 'var(--text-dim)' }}>{q.category_name}</div>
         </div>
-        <div className="h-1.5 rounded-full mb-4 overflow-hidden" style={{ background: 'rgba(255,255,255,0.1)' }}>
+        <div className="h-1.5 rounded-full mb-4 overflow-hidden" style={{ background: 'var(--surface-2)' }}>
           <div className="h-full rounded-full" style={{
             width: `${(q.index / q.total) * 100}%`,
             background: 'linear-gradient(90deg,#4FC3F7,#FFD700)',
@@ -292,8 +292,8 @@ export default function TestPage() {
             const isMine = myAnswer === label
             const isCorrect = correctAnswer === label
             const isWrong = isMine && correctAnswer && label !== correctAnswer
-            let bg = 'rgba(255,255,255,0.08)'
-            let border = '1px solid rgba(255,255,255,0.12)'
+            let bg = 'var(--surface-2)'
+            let border = '1px solid var(--border)'
             if (isCorrect) { bg = 'rgba(76,175,80,0.4)'; border = '2px solid #4CAF50' }
             else if (isWrong) { bg = 'rgba(244,67,54,0.35)'; border = '2px solid #F44336' }
             else if (isMine) { bg = 'rgba(79,195,247,0.25)'; border = '2px solid #4FC3F7' }
@@ -301,7 +301,7 @@ export default function TestPage() {
               <button key={label} onClick={() => !myAnswer && handleAnswer(label)}
                 disabled={!!myAnswer}
                 style={{ background: bg, border, borderRadius: 12, padding: '14px 16px',
-                  color: 'white', cursor: myAnswer ? 'not-allowed' : 'pointer',
+                  color: 'var(--text)', cursor: myAnswer ? 'not-allowed' : 'pointer',
                   textAlign: 'left', fontSize: 14, transition: 'all 0.2s' }}>
                 <span className="font-bold mr-2" style={{
                   color: isCorrect ? '#4CAF50' : isWrong ? '#F44336' : '#4FC3F7'
@@ -312,7 +312,7 @@ export default function TestPage() {
         </div>
         {!myAnswer && (
           <button onClick={() => handleAnswer(null)} className="w-full mt-3 text-sm py-2 rounded-lg"
-            style={{ background: 'rgba(255,255,255,0.05)', color: '#555' }}>⏭ Geç</button>
+            style={{ background: 'var(--surface-2)', color: '#555' }}>⏭ Geç</button>
         )}
       </div>
     </div>
@@ -323,7 +323,7 @@ export default function TestPage() {
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="glass p-8 max-w-md w-full text-center animate-fade-in">
         {!result ? (
-          <p style={{ color: '#B0BEC5' }}>Sonuç kaydediliyor...</p>
+          <p style={{ color: 'var(--text-dim)' }}>Sonuç kaydediliyor...</p>
         ) : result.error ? (
           <p style={{ color: '#F44336' }}>{result.error}</p>
         ) : (
@@ -335,25 +335,25 @@ export default function TestPage() {
             <div className="grid grid-cols-3 gap-3 mb-6">
               <div className="glass p-4">
                 <div className="text-3xl font-black" style={{ color: '#4CAF50' }}>{result.correct}</div>
-                <div className="text-xs" style={{ color: '#B0BEC5' }}>Doğru</div>
+                <div className="text-xs" style={{ color: 'var(--text-dim)' }}>Doğru</div>
               </div>
               <div className="glass p-4">
                 <div className="text-3xl font-black" style={{ color: '#F44336' }}>{result.total - result.correct}</div>
-                <div className="text-xs" style={{ color: '#B0BEC5' }}>Yanlış</div>
+                <div className="text-xs" style={{ color: 'var(--text-dim)' }}>Yanlış</div>
               </div>
               <div className="glass p-4">
                 <div className="text-3xl font-black" style={{ color: '#4FC3F7' }}>%{result.accuracy}</div>
-                <div className="text-xs" style={{ color: '#B0BEC5' }}>Başarı</div>
+                <div className="text-xs" style={{ color: 'var(--text-dim)' }}>Başarı</div>
               </div>
             </div>
             <div className="glass p-3 mb-4">
               <div className="font-black text-2xl" style={{ color: '#FFD700' }}>{result.score} puan</div>
-              <div className="text-xs" style={{ color: '#B0BEC5' }}>⏱ {result.total_time_seconds} saniye</div>
+              <div className="text-xs" style={{ color: 'var(--text-dim)' }}>⏱ {result.total_time_seconds} saniye</div>
             </div>
             <button onClick={() => loadScoreboard()} className="btn-gold w-full mb-3">
               🏆 Skor Tablosunu Gör
             </button>
-            <Link href="/testler" className="block text-sm" style={{ color: '#B0BEC5' }}>← Testler</Link>
+            <Link href="/testler" className="block text-sm" style={{ color: 'var(--text-dim)' }}>← Testler</Link>
           </>
         )}
       </div>
@@ -379,9 +379,9 @@ export default function TestPage() {
             <button key={p.key} onClick={() => loadScoreboard(p.key)}
               className="px-3 py-1.5 rounded-lg text-sm font-bold"
               style={{
-                background: scoreboardPeriod === p.key ? 'rgba(255,215,0,0.2)' : 'rgba(255,255,255,0.05)',
-                border: scoreboardPeriod === p.key ? '1px solid #FFD700' : '1px solid rgba(255,255,255,0.1)',
-                color: scoreboardPeriod === p.key ? '#FFD700' : '#B0BEC5',
+                background: scoreboardPeriod === p.key ? 'rgba(255,215,0,0.2)' : 'var(--surface-2)',
+                border: scoreboardPeriod === p.key ? '1px solid #FFD700' : '1px solid var(--border)',
+                color: scoreboardPeriod === p.key ? '#FFD700' : 'var(--text-dim)',
               }}>
               {p.label}
             </button>
@@ -389,11 +389,11 @@ export default function TestPage() {
         </div>
 
         {scoreboard.length === 0 ? (
-          <div className="text-center py-8" style={{ color: '#B0BEC5' }}>Henüz sonuç yok.</div>
+          <div className="text-center py-8" style={{ color: 'var(--text-dim)' }}>Henüz sonuç yok.</div>
         ) : event.type === 'duel' ? (
           // Düello istatistikleri
           <div className="space-y-2">
-            <div className="grid grid-cols-3 gap-2 mb-3 text-xs font-bold px-3" style={{ color: '#B0BEC5' }}>
+            <div className="grid grid-cols-3 gap-2 mb-3 text-xs font-bold px-3" style={{ color: 'var(--text-dim)' }}>
               <span>Oyuncu</span>
               <span className="text-center">Galibiyet</span>
               <span className="text-center">En İyi Skor</span>
@@ -405,17 +405,17 @@ export default function TestPage() {
                 </span>
                 <div className="flex-1">
                   <div className="font-bold">{entry.name}</div>
-                  <div className="text-xs" style={{ color: '#B0BEC5' }}>
+                  <div className="text-xs" style={{ color: 'var(--text-dim)' }}>
                     {entry.total} maç oynadı
                   </div>
                 </div>
                 <div className="text-center">
                   <div className="font-black" style={{ color: '#4CAF50' }}>{entry.wins}</div>
-                  <div className="text-xs" style={{ color: '#B0BEC5' }}>galibiyet</div>
+                  <div className="text-xs" style={{ color: 'var(--text-dim)' }}>galibiyet</div>
                 </div>
                 <div className="text-center">
                   <div className="font-black" style={{ color: '#FFD700' }}>{entry.best_score}p</div>
-                  <div className="text-xs" style={{ color: '#B0BEC5' }}>rekor</div>
+                  <div className="text-xs" style={{ color: 'var(--text-dim)' }}>rekor</div>
                 </div>
               </div>
             ))}
@@ -425,13 +425,13 @@ export default function TestPage() {
             {scoreboard.map((entry, i) => (
               <div key={i} className="glass p-3 flex items-center gap-3">
                 <span className="text-2xl font-black w-8 text-center" style={{
-                  color: i === 0 ? '#FFD700' : i === 1 ? '#C0C0C0' : i === 2 ? '#CD7F32' : '#B0BEC5'
+                  color: i === 0 ? '#FFD700' : i === 1 ? '#C0C0C0' : i === 2 ? '#CD7F32' : 'var(--text-dim)'
                 }}>
                   {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1}
                 </span>
                 <div className="flex-1">
                   <div className="font-bold">{entry.name}</div>
-                  <div className="text-xs" style={{ color: '#B0BEC5' }}>
+                  <div className="text-xs" style={{ color: 'var(--text-dim)' }}>
                     {entry.correct}/{event.question_count} doğru • {entry.time_seconds}sn
                   </div>
                 </div>
@@ -445,7 +445,7 @@ export default function TestPage() {
           <button onClick={() => setScreen('info')} className="flex-1 glass p-3 text-sm font-bold" style={{ color: '#4FC3F7' }}>
             ← Teste Dön
           </button>
-          <Link href="/testler" className="flex-1 glass p-3 text-sm font-bold text-center" style={{ color: '#B0BEC5' }}>
+          <Link href="/testler" className="flex-1 glass p-3 text-sm font-bold text-center" style={{ color: 'var(--text-dim)' }}>
             Testler
           </Link>
         </div>

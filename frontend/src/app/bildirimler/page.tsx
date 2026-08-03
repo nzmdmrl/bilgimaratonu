@@ -83,21 +83,21 @@ export default function BildirimlerPage() {
 
   return (
     <div className="animate-fade-in" style={{ maxWidth: 700, margin: '0 auto', padding: '24px 16px' }}>
-      <h1 className="font-black text-2xl" style={{ color: '#fff', marginBottom: 4 }}>
+      <h1 className="font-black text-2xl" style={{ color: 'var(--text)', marginBottom: 4 }}>
         🔔 Bildirimler
       </h1>
-      <p style={{ color: '#B0BEC5', fontSize: 14, marginBottom: 20 }}>
+      <p style={{ color: 'var(--text-dim)', fontSize: 14, marginBottom: 20 }}>
         Kazandığın kupa ve madalyalar
       </p>
 
       {loading ? (
-        <div className="text-center py-10" style={{ color: '#B0BEC5' }}>Yükleniyor...</div>
+        <div className="text-center py-10" style={{ color: 'var(--text-dim)' }}>Yükleniyor...</div>
       ) : !user ? (
-        <div className="glass text-center" style={{ padding: 32, color: '#B0BEC5', borderRadius: 12 }}>
+        <div className="glass text-center" style={{ padding: 32, color: 'var(--text-dim)', borderRadius: 12 }}>
           Bildirimleri görmek için giriş yapmalısın.
         </div>
       ) : notifs.length === 0 ? (
-        <div className="glass text-center" style={{ padding: 32, color: '#B0BEC5', borderRadius: 12 }}>
+        <div className="glass text-center" style={{ padding: 32, color: 'var(--text-dim)', borderRadius: 12 }}>
           Henüz bildiriminiz yok.
         </div>
       ) : (
@@ -106,17 +106,17 @@ export default function BildirimlerPage() {
             <div key={n.id}
               className="flex items-start gap-3 px-4 py-3"
               style={{
-                borderBottom: i < notifs.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none',
+                borderBottom: i < notifs.length - 1 ? '1px solid var(--border)' : 'none',
                 background: n.is_read ? 'transparent' : 'rgba(79,195,247,0.06)',
               }}>
               <div style={{ fontSize: 26, lineHeight: 1, marginTop: 2 }}>{iconFor(n)}</div>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ color: '#fff', fontWeight: 700, fontSize: 15 }}>{n.title}</div>
-                <div style={{ color: '#B0BEC5', fontSize: 13, marginTop: 2 }}>{n.message}</div>
-                <div style={{ color: '#607D8B', fontSize: 11, marginTop: 6 }}>{formatDate(n.created_at)}</div>
+                <div style={{ color: 'var(--text)', fontWeight: 700, fontSize: 15 }}>{n.title}</div>
+                <div style={{ color: 'var(--text-dim)', fontSize: 13, marginTop: 2 }}>{n.message}</div>
+                <div style={{ color: 'var(--text-dimmer)', fontSize: 11, marginTop: 6 }}>{formatDate(n.created_at)}</div>
                 {n.type === 'friend_request' && (
                   acted[n.id] ? (
-                    <div style={{ fontSize: 13, fontWeight: 700, marginTop: 8, color: acted[n.id] === 'accepted' ? '#4CAF50' : '#B0BEC5' }}>
+                    <div style={{ fontSize: 13, fontWeight: 700, marginTop: 8, color: acted[n.id] === 'accepted' ? '#4CAF50' : 'var(--text-dim)' }}>
                       {acted[n.id] === 'accepted' ? '✓ Kabul edildi' : 'Reddedildi'}
                     </div>
                   ) : (
@@ -134,7 +134,7 @@ export default function BildirimlerPage() {
                 )}
                 {(n.type === 'arena_invite' || n.type === 'duel_invite') && (
                   acted[n.id] === 'rejected' ? (
-                    <div style={{ fontSize: 13, fontWeight: 700, marginTop: 8, color: '#B0BEC5' }}>Reddedildi</div>
+                    <div style={{ fontSize: 13, fontWeight: 700, marginTop: 8, color: 'var(--text-dim)' }}>Reddedildi</div>
                   ) : (
                     <div className="flex gap-2" style={{ marginTop: 10 }}>
                       <button onClick={() => handleInvite(n, 'accept')} disabled={busy === n.id}

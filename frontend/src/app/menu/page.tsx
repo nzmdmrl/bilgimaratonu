@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/lib/store'
 import { isMuted, toggleMuted } from '@/lib/sound'
+import { getMode, setMode, type ThemeMode } from '@/lib/theme'
 
 type Tab = 'ayarlar' | 'oyun' | 'gizlilik' | 'hesap'
 
@@ -21,9 +22,11 @@ export default function MenuPage() {
   const router = useRouter()
   const [tab, setTab] = useState<Tab>('ayarlar')
   const [muted, setMuted] = useState(false)
+  const [theme, setTheme] = useState<ThemeMode>('dark')
 
   useEffect(() => {
     setMuted(isMuted())
+    setTheme(getMode('dark'))
     fetchMe().then(() => { if (!useAuthStore.getState().user) router.push('/giris') })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -39,7 +42,7 @@ export default function MenuPage() {
     <div className="min-h-screen px-3 pt-4" style={{ paddingBottom: 96, maxWidth: 700, margin: '0 auto' }}>
       <div className="text-center mb-4">
         <h1 className="text-2xl font-black"><span style={{ color: '#FFD700' }}>Bilgi</span> <span style={{ color: '#4FC3F7' }}>Maratonu</span></h1>
-        <div className="text-xs" style={{ color: '#607D8B' }}>Menü</div>
+        <div className="text-xs" style={{ color: 'var(--text-dimmer)' }}>Menü</div>
       </div>
 
       {/* Sekmeler */}
@@ -48,9 +51,9 @@ export default function MenuPage() {
           <button key={t.key} onClick={() => setTab(t.key)}
             className="flex-1 py-2 rounded-xl text-xs font-bold"
             style={{
-              background: tab === t.key ? 'rgba(79,195,247,0.2)' : 'rgba(255,255,255,0.05)',
-              border: tab === t.key ? '1px solid #4FC3F7' : '1px solid rgba(255,255,255,0.1)',
-              color: tab === t.key ? '#4FC3F7' : '#B0BEC5',
+              background: tab === t.key ? 'rgba(79,195,247,0.2)' : 'var(--surface-2)',
+              border: tab === t.key ? '1px solid #4FC3F7' : '1px solid var(--border)',
+              color: tab === t.key ? '#4FC3F7' : 'var(--text-dim)',
             }}>
             {t.icon}<br />{t.label}
           </button>
@@ -58,17 +61,46 @@ export default function MenuPage() {
       </div>
 
       {tab === 'ayarlar' && (
-        <div className="grid grid-cols-2 gap-3">
-          {/* Ses toggle */}
-          <button onClick={() => setMuted(toggleMuted())}
-            className="glass p-5 relative flex flex-col justify-between text-left"
-            style={{ borderRadius: 16, minHeight: 96, border: '1px solid #4FC3F733' }}>
-            <span className="absolute text-2xl" style={{ top: 12, right: 12 }}>{muted ? '🔇' : '🔊'}</span>
-            <span className="font-black text-sm mt-auto" style={{ color: '#4FC3F7' }}>Ses {muted ? '(Kapalı)' : '(Açık)'}</span>
-          </button>
-          <LinkCard href="/bildirimler" icon="🔔" label="Bildirimler" color="#E91E63" />
-          <LinkCard href="/profil-duzenle" icon="✏️" label="Profili Düzenle" color="#81C784" />
-        </div>
+        <>
+          {/* Tema seçici */}
+          <div className="glass p-4 mb-3" style={{ borderRadius: 16 }}>
+            <div className="font-black text-sm mb-1" style={{ color: '#FFD700' }}>🎨 Tema</div>
+            <div className="text-xs mb-3" style={{ color: 'var(--text-dim)' }}>Otomatik: cihaz saatine göre (07:00–19:00 gündüz).</div>
+            <div className="grid grid-cols-3 gap-2">
+              {([
+                { key: 'dark', label: 'Gece', icon: '🌙' },
+                { key: 'light', label: 'Gündüz', icon: '☀️' },
+                { key: 'auto', label: 'Otomatik', icon: '🌗' },
+              ] as { key: ThemeMode; label: string; icon: string }[]).map(t => {
+                const active = theme === t.key
+                return (
+                  <button key={t.key} onClick={() => { setMode(t.key); setTheme(t.key) }}
+                    className="py-3 rounded-xl font-bold text-sm transition-all"
+                    style={{
+                      background: active ? 'rgba(255,215,0,0.15)' : 'var(--surface-2)',
+                      border: active ? '2px solid #FFD700' : '1px solid var(--border)',
+                      color: active ? '#FFD700' : 'var(--text-dim)',
+                    }}>
+                    <div className="text-2xl mb-1">{t.icon}</div>
+                    {t.label}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            {/* Ses toggle */}
+            <button onClick={() => setMuted(toggleMuted())}
+              className="glass p-5 relative flex flex-col justify-between text-left"
+              style={{ borderRadius: 16, minHeight: 96, border: '1px solid #4FC3F733' }}>
+              <span className="absolute text-2xl" style={{ top: 12, right: 12 }}>{muted ? '🔇' : '🔊'}</span>
+              <span className="font-black text-sm mt-auto" style={{ color: '#4FC3F7' }}>Ses {muted ? '(Kapalı)' : '(Açık)'}</span>
+            </button>
+            <LinkCard href="/bildirimler" icon="🔔" label="Bildirimler" color="#E91E63" />
+            <LinkCard href="/profil-duzenle" icon="✏️" label="Profili Düzenle" color="#81C784" />
+          </div>
+        </>
       )}
 
       {tab === 'oyun' && (

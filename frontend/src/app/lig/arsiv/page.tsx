@@ -66,7 +66,7 @@ function ArchiveInner() {
   return (
     <div className="min-h-screen p-4" style={{ maxWidth: 900, margin: '0 auto' }}>
       <div className="flex items-center justify-between mb-6">
-        <Link href="/lig" style={{ color: '#B0BEC5', fontSize: 14 }}>← Lig</Link>
+        <Link href="/lig" style={{ color: 'var(--text-dim)', fontSize: 14 }}>← Lig</Link>
         <h1 className="text-2xl font-black">
           <span style={{ color: '#FFD700' }}>Lig</span>
           <span style={{ color: '#4FC3F7' }}> Arşivi</span>
@@ -80,9 +80,9 @@ function ArchiveInner() {
           <button key={p} onClick={() => setTab(p)}
             className="flex-1 py-2 rounded-lg text-sm font-bold transition-all"
             style={{
-              background: tab === p ? 'rgba(79,195,247,0.2)' : 'rgba(255,255,255,0.05)',
-              border: tab === p ? '1px solid #4FC3F7' : '1px solid rgba(255,255,255,0.1)',
-              color: tab === p ? '#4FC3F7' : '#B0BEC5',
+              background: tab === p ? 'rgba(79,195,247,0.2)' : 'var(--surface-2)',
+              border: tab === p ? '1px solid #4FC3F7' : '1px solid var(--border)',
+              color: tab === p ? '#4FC3F7' : 'var(--text-dim)',
             }}>
             {PERIOD_LABELS[p]}
           </button>
@@ -95,9 +95,9 @@ function ArchiveInner() {
           <button key={c.slug} onClick={() => setCategory(c.slug)}
             className="px-3 py-1.5 rounded-lg text-sm font-bold transition-all"
             style={{
-              background: category === c.slug ? 'rgba(255,215,0,0.15)' : 'rgba(255,255,255,0.05)',
-              border: category === c.slug ? '1px solid #FFD700' : '1px solid rgba(255,255,255,0.1)',
-              color: category === c.slug ? '#FFD700' : '#B0BEC5',
+              background: category === c.slug ? 'rgba(255,215,0,0.15)' : 'var(--surface-2)',
+              border: category === c.slug ? '1px solid #FFD700' : '1px solid var(--border)',
+              color: category === c.slug ? '#FFD700' : 'var(--text-dim)',
             }}>
             {c.name}
           </button>
@@ -105,7 +105,7 @@ function ArchiveInner() {
       </div>
 
       {periods.length === 0 && !loading ? (
-        <div className="glass p-6 text-center text-sm" style={{ color: '#B0BEC5' }}>
+        <div className="glass p-6 text-center text-sm" style={{ color: 'var(--text-dim)' }}>
           Bu lig için geçmiş dönem kaydı yok.
         </div>
       ) : (
@@ -114,13 +114,13 @@ function ArchiveInner() {
             <div key={p.period_key} className="glass p-4">
               <div className="text-sm font-bold mb-2" style={{ color: '#4FC3F7' }}>{p.label}</div>
               {(!p.winners || p.winners.length === 0) ? (
-                <div className="text-xs" style={{ color: '#B0BEC5' }}>—</div>
+                <div className="text-xs" style={{ color: 'var(--text-dim)' }}>—</div>
               ) : (
                 p.winners.map(w => (
                   <div key={w.rank} className="flex items-center gap-2 py-1">
                     <span style={{ width: 24, fontSize: 16, textAlign: 'center' }}>{rankEmoji(w.rank)}</span>
                     <Link href={`/p/${w.username}`} className="font-bold hover:underline text-sm"
-                      style={{ color: w.rank === 1 ? '#FFD700' : w.rank === 2 ? '#B0BEC5' : '#CD7F32' }}>
+                      style={{ color: w.rank === 1 ? '#FFD700' : w.rank === 2 ? 'var(--text-dim)' : '#CD7F32' }}>
                       {w.username}
                     </Link>
                   </div>
@@ -145,7 +145,7 @@ function ArchiveInner() {
 
 export default function LeagueArchivePage() {
   return (
-    <Suspense fallback={<div className="min-h-screen p-4 text-center" style={{ color: '#B0BEC5' }}>Yükleniyor...</div>}>
+    <Suspense fallback={<div className="min-h-screen p-4 text-center" style={{ color: 'var(--text-dim)' }}>Yükleniyor...</div>}>
       <ArchiveInner />
     </Suspense>
   )

@@ -370,8 +370,8 @@ export default function MacPage() {
     const isCorrect = correctAnswer === label
     const isMyWrong = isMine && !isCorrect && !!correctAnswer  // Benim yanlış şıkkım
 
-    let bg = 'rgba(255,255,255,0.08)'
-    let border = '1px solid rgba(255,255,255,0.15)'
+    let bg = 'var(--surface-2)'
+    let border = '1px solid var(--border)'
     let opacity = 1
     let transform = 'scale(1)'
 
@@ -408,7 +408,7 @@ export default function MacPage() {
       transform,
       borderRadius: 12,
       padding: '16px 20px',
-      color: 'white',
+      color: 'var(--text)',
       textDecoration: isEliminated ? 'line-through' : 'none',
       cursor: disabled ? 'not-allowed' : 'pointer',
       transition: 'all 0.3s ease',
@@ -454,7 +454,7 @@ export default function MacPage() {
                 ⭐ +{matchResult.xp_gained} XP kazandın!
               </div>
               {matchResult.xp_breakdown.map((b, i) => (
-                <div key={i} className="flex justify-between text-sm" style={{ color: '#B0BEC5' }}>
+                <div key={i} className="flex justify-between text-sm" style={{ color: 'var(--text-dim)' }}>
                   <span>{b.reason}</span>
                   <span style={{ color: '#FFD700' }}>+{b.xp} XP</span>
                 </div>
@@ -465,14 +465,14 @@ export default function MacPage() {
                 </div>
               )}
               {matchResult.new_badges?.length > 0 && (
-                <div className="mt-3 pt-3" style={{ borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+                <div className="mt-3 pt-3" style={{ borderTop: '1px solid var(--border)' }}>
                   <div className="font-bold text-sm mb-2" style={{ color: '#FFD700' }}>🏅 Yeni Rozetler!</div>
                   {matchResult.new_badges.map(b => (
                     <div key={b.code} className="flex items-center gap-2 mb-1">
                       <span className="text-xl">{b.icon}</span>
                       <div>
                         <span className="font-bold text-sm">{b.name}</span>
-                        <span className="text-xs ml-2" style={{ color: '#B0BEC5' }}>{b.description}</span>
+                        <span className="text-xs ml-2" style={{ color: 'var(--text-dim)' }}>{b.description}</span>
                       </div>
                     </div>
                   ))}
@@ -559,7 +559,7 @@ export default function MacPage() {
             </div>
           )}
           {gameState === 'starting' && (
-            <p className="text-sm" style={{ color: '#B0BEC5' }}>Hazır ol...</p>
+            <p className="text-sm" style={{ color: 'var(--text-dim)' }}>Hazır ol...</p>
           )}
         </div>
       </div>
@@ -591,9 +591,9 @@ export default function MacPage() {
         </div>
         <div className="text-center px-4">
           {/* Soru sayacı — büyük ve belirgin */}
-          <div className="font-black mb-1" style={{ color: '#FFFFFF', fontSize: 22 }}>
+          <div className="font-black mb-1" style={{ color: 'var(--text)', fontSize: 22 }}>
             <span style={{ color: '#4FC3F7' }}>{(question?.index ?? 0) + 1}</span>
-            <span style={{ color: '#B0BEC5', fontSize: 16 }}>/{question?.total ?? QUESTIONS_PER_MATCH}</span>
+            <span style={{ color: 'var(--text-dim)', fontSize: 16 }}>/{question?.total ?? QUESTIONS_PER_MATCH}</span>
           </div>
           {/* Soru ilerleme çubuğu */}
           <div className="flex gap-1 justify-center mb-1">
@@ -624,7 +624,7 @@ export default function MacPage() {
                 {DIFFICULTY_LABELS[question.difficulty]}
                 {' '}(+{(question as any).points_correct ?? DIFFICULTY_POINTS[question.difficulty]?.correct}/{(question as any).points_wrong ?? DIFFICULTY_POINTS[question.difficulty]?.wrong})
               </span>
-              <span className="text-xs" style={{ color: '#B0BEC5' }}>
+              <span className="text-xs" style={{ color: 'var(--text-dim)' }}>
                 {question.category_name}
               </span>
             </div>
@@ -643,7 +643,7 @@ export default function MacPage() {
       </div>
 
       {/* Süre çubuğu */}
-      <div className="h-2 rounded-full mb-3 overflow-hidden" style={{ background: 'rgba(255,255,255,0.1)' }}>
+      <div className="h-2 rounded-full mb-3 overflow-hidden" style={{ background: 'var(--surface-2)' }}>
         <div className="h-full rounded-full transition-all duration-1000" style={{
           width: `${maxTime > 0 ? (timeLeft / maxTime) * 100 : 0}%`,
           background: timeLeft <= 5 ? '#F44336' : timeLeft <= 10 ? '#FF7043' : '#4FC3F7',
@@ -709,7 +709,7 @@ export default function MacPage() {
         <button onClick={sendJoker}
           disabled={jokers <= 0 || !!myAnswer || !canAnswer || !!opponentWrongAnswer}
           style={{
-            background: 'rgba(255,255,255,0.07)',
+            background: 'var(--surface-2)',
             border: '1px solid rgba(255,215,0,0.3)',
             borderRadius: 12,
             padding: '10px 20px',
@@ -725,11 +725,11 @@ export default function MacPage() {
         <button onClick={sendPass}
           disabled={passes <= 0 || !!myAnswer || !canAnswer || !opponentWrongAnswer}
           style={{
-            background: 'rgba(255,255,255,0.07)',
-            border: '1px solid rgba(255,255,255,0.15)',
+            background: 'var(--surface-2)',
+            border: '1px solid var(--border)',
             borderRadius: 12,
             padding: '10px 20px',
-            color: '#B0BEC5',
+            color: 'var(--text-dim)',
             fontWeight: 700,
             fontSize: 14,
             cursor: passes <= 0 || myAnswer || !canAnswer || !opponentWrongAnswer ? 'not-allowed' : 'pointer',
@@ -743,15 +743,15 @@ export default function MacPage() {
         <div style={{ position: 'relative' }}>
           <button onClick={() => setShowEmojiPicker(v => !v)} disabled={emojiSent >= 2}
             style={{
-              background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(79,195,247,0.3)',
+              background: 'var(--surface-2)', border: '1px solid rgba(79,195,247,0.3)',
               borderRadius: 12, padding: '10px 16px', color: '#4FC3F7', fontWeight: 700, fontSize: 18,
               cursor: emojiSent >= 2 ? 'not-allowed' : 'pointer', opacity: emojiSent >= 2 ? 0.35 : 1,
             }} title={emojiSent >= 2 ? 'Emoji hakkın bitti' : 'Emoji gönder'}>😊</button>
           {showEmojiPicker && emojiSent < 2 && (
             <div style={{
               position: 'absolute', bottom: '115%', right: 0,
-              display: 'flex', gap: 2, background: 'rgba(15,20,40,0.98)',
-              border: '1px solid rgba(255,255,255,0.12)', borderRadius: 12, padding: '6px 6px',
+              display: 'flex', gap: 2, background: 'var(--header-bg)',
+              border: '1px solid var(--border)', borderRadius: 12, padding: '6px 6px',
               zIndex: 50, boxShadow: '0 4px 16px rgba(0,0,0,0.5)',
             }}>
               {MATCH_EMOJIS.map(e => (

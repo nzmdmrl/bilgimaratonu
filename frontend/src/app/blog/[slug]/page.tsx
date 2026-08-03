@@ -14,7 +14,7 @@ export default function BlogPost() {
   }, [slug])
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center" style={{ color: '#B0BEC5' }}>Yükleniyor...</div>
+    <div className="min-h-screen flex items-center justify-center" style={{ color: 'var(--text-dim)' }}>Yükleniyor...</div>
   )
 
   if (!post) return (
@@ -36,11 +36,11 @@ export default function BlogPost() {
           <span>👁 {post.view_count} görüntülenme</span>
         </div>
         {post.summary && (
-          <p className="text-base mb-6 p-4 rounded-xl" style={{ background: 'rgba(255,215,0,0.05)', color: '#B0BEC5', borderLeft: '3px solid #FFD700' }}>
+          <p className="text-base mb-6 p-4 rounded-xl" style={{ background: 'rgba(255,215,0,0.05)', color: 'var(--text-dim)', borderLeft: '3px solid #FFD700' }}>
             {post.summary}
           </p>
         )}
-        <div style={{ color: '#B0BEC5', lineHeight: 1.9, whiteSpace: 'pre-wrap' }}>
+        <div style={{ color: 'var(--text-dim)', lineHeight: 1.9, whiteSpace: 'pre-wrap' }}>
           {post.content}
         </div>
       </div>

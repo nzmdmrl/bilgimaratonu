@@ -67,7 +67,7 @@ export default function MarketPage() {
   const colorItems = items.filter(i => i.type === 'card_color')
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center" style={{ color: '#B0BEC5' }}>Yükleniyor...</div>
+    <div className="min-h-screen flex items-center justify-center" style={{ color: 'var(--text-dim)' }}>Yükleniyor...</div>
   )
 
   return (
@@ -91,7 +91,7 @@ export default function MarketPage() {
         <h2 className="font-black text-lg mb-1" style={{ color: '#FFD700' }}>💡 Ekstra Joker</h2>
         <p className="text-sm mb-4" style={{ color: '#555' }}>Her maçta +1 joker hakkı — tekrar tekrar satın alınabilir</p>
         <div className="flex items-center gap-3 mb-3">
-          <div className="glass px-4 py-2 text-sm font-bold" style={{ color: '#B0BEC5' }}>
+          <div className="glass px-4 py-2 text-sm font-bold" style={{ color: 'var(--text-dim)' }}>
             Şu anki ekstra joker: <span style={{ color: '#FFD700' }}>{myItems.extra_jokers || 0}</span>
           </div>
         </div>
@@ -100,7 +100,7 @@ export default function MarketPage() {
             <div className="text-3xl">💡</div>
             <div className="flex-1">
               <div className="font-bold">{item.name}</div>
-              <div className="text-sm" style={{ color: '#B0BEC5' }}>{item.description}</div>
+              <div className="text-sm" style={{ color: 'var(--text-dim)' }}>{item.description}</div>
               <div className="text-sm mt-1" style={{ color: '#FFD700' }}>⭐ {item.price_xp} XP</div>
             </div>
             <button onClick={() => buy(item.id)}
@@ -123,7 +123,7 @@ export default function MarketPage() {
             const isActive = myItems.card_color === item.value
             return (
               <div key={item.id} className="glass p-4 flex items-center gap-3"
-                style={{ border: isActive ? '2px solid #FFD700' : '1px solid rgba(255,255,255,0.08)' }}>
+                style={{ border: isActive ? '2px solid #FFD700' : '1px solid var(--border)' }}>
                 <div className="w-10 h-10 rounded-xl flex-shrink-0"
                   style={{ background: item.value }} />
                 <div className="flex-1 min-w-0">
@@ -143,7 +143,7 @@ export default function MarketPage() {
                     disabled={buying === item.id || (user?.xp || 0) < item.price_xp}
                     className="text-xs font-bold px-2 py-1 rounded-lg"
                     style={{
-                      background: (user?.xp || 0) >= item.price_xp ? 'rgba(255,215,0,0.2)' : 'rgba(255,255,255,0.05)',
+                      background: (user?.xp || 0) >= item.price_xp ? 'rgba(255,215,0,0.2)' : 'var(--surface-2)',
                       color: (user?.xp || 0) >= item.price_xp ? '#FFD700' : '#555',
                     }}>
                     {buying === item.id ? '...' : 'Satın Al'}

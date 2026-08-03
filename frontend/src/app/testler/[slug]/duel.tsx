@@ -147,7 +147,7 @@ export default function DuelRoom({ slug, event }: { slug: string; event: any }) 
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="glass p-8 max-w-md w-full">
         <h1 className="text-xl font-black mb-1" style={{ color: '#FFD700' }}>⚔️ {event.title}</h1>
-        <p className="text-sm mb-4" style={{ color: '#B0BEC5' }}>Düello Odası</p>
+        <p className="text-sm mb-4" style={{ color: 'var(--text-dim)' }}>Düello Odası</p>
         <div className="glass p-3 mb-4 text-center font-bold text-sm" style={{ color: connected ? '#4CAF50' : '#F44336' }}>
           {status}
         </div>
@@ -157,7 +157,7 @@ export default function DuelRoom({ slug, event }: { slug: string; event: any }) 
             const entry = entries[i]
             return (
               <div key={i} className="glass p-3 flex items-center gap-2" style={{
-                border: entry && entry[0] === myUserId ? '1px solid #FFD700' : '1px solid rgba(255,255,255,0.08)'
+                border: entry && entry[0] === myUserId ? '1px solid #FFD700' : '1px solid var(--border)'
               }}>
                 {entry ? (
                   <>
@@ -185,14 +185,14 @@ export default function DuelRoom({ slug, event }: { slug: string; event: any }) 
         {invOpen && (
           <div className="glass p-3 mb-3" style={{ borderRadius: 12 }}>
             {invFriends.length === 0 ? (
-              <div className="text-xs text-center py-3" style={{ color: '#B0BEC5' }}>Arkadaş yok.</div>
+              <div className="text-xs text-center py-3" style={{ color: 'var(--text-dim)' }}>Arkadaş yok.</div>
             ) : (
               <div className="space-y-1" style={{ maxHeight: 200, overflowY: 'auto' }}>
                 {invFriends.map(f => {
                   const sel = invSel.includes(f.user_id)
                   return (
                     <button key={f.user_id} onClick={() => setInvSel(prev => sel ? prev.filter(x => x !== f.user_id) : [...prev, f.user_id])}
-                      className="w-full flex items-center gap-2 p-2 rounded-lg" style={{ border: sel ? '2px solid #4CAF50' : '1px solid rgba(255,255,255,0.1)' }}>
+                      className="w-full flex items-center gap-2 p-2 rounded-lg" style={{ border: sel ? '2px solid #4CAF50' : '1px solid var(--border)' }}>
                       <span className="text-sm font-bold flex-1 text-left">{f.username}</span>
                       {sel && <span style={{ color: '#4CAF50' }}>✓</span>}
                     </button>
@@ -208,7 +208,7 @@ export default function DuelRoom({ slug, event }: { slug: string; event: any }) 
         {isHost ? (
           <button onClick={startDuel} className="btn-gold w-full">⚔️ Düelloyu Başlat</button>
         ) : (
-          <p className="text-center text-sm" style={{ color: '#B0BEC5' }}>Host'un başlatmasını bekleyin...</p>
+          <p className="text-center text-sm" style={{ color: 'var(--text-dim)' }}>Host'un başlatmasını bekleyin...</p>
         )}
         <Link href="/testler" className="block text-center mt-3 text-sm" style={{ color: '#555' }}>← Testler</Link>
       </div>
@@ -220,18 +220,18 @@ export default function DuelRoom({ slug, event }: { slug: string; event: any }) 
       <div className="glass p-5">
         <div className="grid gap-2 mb-3" style={{ gridTemplateColumns: `repeat(${Math.max(Object.keys(participants).length,1)}, 1fr)` }}>
           {Object.entries(participants).map(([uid, name]) => (
-            <div key={uid} className="glass p-2 text-center" style={{ border: uid===myUserId?'1px solid #FFD700':'1px solid rgba(255,255,255,0.08)' }}>
-              <div className="text-xs truncate" style={{ color: uid===myUserId?'#FFD700':'#B0BEC5' }}>{name}</div>
+            <div key={uid} className="glass p-2 text-center" style={{ border: uid===myUserId?'1px solid #FFD700':'1px solid var(--border)' }}>
+              <div className="text-xs truncate" style={{ color: uid===myUserId?'#FFD700':'var(--text-dim)' }}>{name}</div>
               <div className="text-xl font-black">{scores[uid]||0}</div>
             </div>
           ))}
         </div>
         <div className="flex items-center justify-between mb-2">
-          <div className="text-sm" style={{ color: '#B0BEC5' }}>{q?`${q.index+1}/${q.total}`:''}</div>
+          <div className="text-sm" style={{ color: 'var(--text-dim)' }}>{q?`${q.index+1}/${q.total}`:''}</div>
           <div className="text-3xl font-black" style={{ color: timeLeft<=5?'#F44336':timeLeft<=10?'#FF7043':'#FFD700' }}>{timeLeft}</div>
-          <div className="text-sm" style={{ color: '#B0BEC5' }}>{q?.category_name||''}</div>
+          <div className="text-sm" style={{ color: 'var(--text-dim)' }}>{q?.category_name||''}</div>
         </div>
-        <div className="h-1.5 rounded-full mb-3 overflow-hidden" style={{ background: 'rgba(255,255,255,0.1)' }}>
+        <div className="h-1.5 rounded-full mb-3 overflow-hidden" style={{ background: 'var(--surface-2)' }}>
           {q && <div className="h-full rounded-full" style={{ width:`${(q.index/q.total)*100}%`, background:'linear-gradient(90deg,#4FC3F7,#FFD700)' }}/>}
         </div>
         <div className="text-center text-sm font-bold mb-3" style={{ color: status.includes('✓')?'#4CAF50':status.includes('✗')?'#F44336':'#4FC3F7' }}>
@@ -245,7 +245,7 @@ export default function DuelRoom({ slug, event }: { slug: string; event: any }) 
             const isMine=myAnswer===label, isCorrect=correctAnswer===label
             const isWrong=isMine&&!!correctAnswer&&label!==correctAnswer
             const isOppWrong=Object.values(opponentWrong).includes(label) && !isMine
-            let bg='rgba(255,255,255,0.08)', border='1px solid rgba(255,255,255,0.12)'
+            let bg='var(--surface-2)', border='1px solid var(--border)'
             if(isCorrect){bg='rgba(76,175,80,0.4)';border='2px solid #4CAF50'}
             else if(isWrong){bg='rgba(244,67,54,0.35)';border='2px solid #F44336'}
             else if(isMine){bg='rgba(79,195,247,0.25)';border='2px solid #4FC3F7'}
@@ -271,7 +271,7 @@ export default function DuelRoom({ slug, event }: { slug: string; event: any }) 
       <div className="glass p-6 animate-fade-in">
         <h2 className="text-xl font-black mb-4" style={{ color: '#FFD700' }}>🏆 Skor Tablosu</h2>
         {scoreboard.length === 0 ? (
-          <p style={{ color: '#B0BEC5' }}>Henüz sonuç yok.</p>
+          <p style={{ color: 'var(--text-dim)' }}>Henüz sonuç yok.</p>
         ) : event.type === 'duel' ? (
           <div className="space-y-2">
             {scoreboard.map((entry: any, i: number) => (
@@ -279,11 +279,11 @@ export default function DuelRoom({ slug, event }: { slug: string; event: any }) 
                 <span className="text-2xl">{i===0?'🥇':i===1?'🥈':i===2?'🥉':`${i+1}.`}</span>
                 <div className="flex-1">
                   <div className="font-bold">{entry.name}</div>
-                  <div className="text-xs" style={{ color: '#B0BEC5' }}>{entry.total} maç • {entry.wins} galibiyet</div>
+                  <div className="text-xs" style={{ color: 'var(--text-dim)' }}>{entry.total} maç • {entry.wins} galibiyet</div>
                 </div>
                 <div className="text-right">
                   <div className="font-black" style={{ color: '#FFD700' }}>{entry.best_score}p</div>
-                  <div className="text-xs" style={{ color: '#B0BEC5' }}>en iyi</div>
+                  <div className="text-xs" style={{ color: 'var(--text-dim)' }}>en iyi</div>
                 </div>
               </div>
             ))}
@@ -312,7 +312,7 @@ export default function DuelRoom({ slug, event }: { slug: string; event: any }) 
         <div className="space-y-3 mb-6">
           {rankings.map(r => (
             <div key={r.user_id} className="glass p-3 flex items-center gap-3"
-              style={{ border: r.user_id===myUserId?'1px solid #FFD700':'1px solid rgba(255,255,255,0.08)' }}>
+              style={{ border: r.user_id===myUserId?'1px solid #FFD700':'1px solid var(--border)' }}>
               <span className="text-2xl">{r.rank===1?'🥇':r.rank===2?'🥈':r.rank===3?'🥉':`${r.rank}.`}</span>
               <div className="flex-1 text-left">
                 <div className="font-bold" style={{ color: r.user_id===myUserId?'#FFD700':'white' }}>
@@ -344,7 +344,7 @@ export default function DuelRoom({ slug, event }: { slug: string; event: any }) 
               }, 2000)
             }
           }} className="btn-gold w-full mb-3">🔄 Tekrar Oyna</button>
-        <Link href="/testler" className="block text-sm text-center mt-2" style={{ color: '#B0BEC5' }}>← Testler</Link>
+        <Link href="/testler" className="block text-sm text-center mt-2" style={{ color: 'var(--text-dim)' }}>← Testler</Link>
       </div>
     </div>
   )

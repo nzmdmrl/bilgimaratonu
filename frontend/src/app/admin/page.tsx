@@ -500,7 +500,7 @@ export default function AdminPage() {
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center">
-      <div style={{ color: '#B0BEC5' }}>Yükleniyor...</div>
+      <div style={{ color: 'var(--text-dim)' }}>Yükleniyor...</div>
     </div>
   )
 
@@ -533,7 +533,7 @@ export default function AdminPage() {
           <span style={{ color: '#FFD700' }}>Admin</span>
           <span style={{ color: '#4FC3F7' }}> Paneli</span>
         </h1>
-        <Link href="/" style={{ color: '#B0BEC5', fontSize: 14 }}>← Ana Sayfa</Link>
+        <Link href="/" style={{ color: 'var(--text-dim)', fontSize: 14 }}>← Ana Sayfa</Link>
       </div>
 
       {/* Sekmeler */}
@@ -542,9 +542,9 @@ export default function AdminPage() {
           <button key={t.key} onClick={() => setTab(t.key as Tab)}
             className="px-4 py-2 rounded-xl text-sm font-bold transition-all"
             style={{
-              background: tab === t.key ? 'rgba(79,195,247,0.2)' : 'rgba(255,255,255,0.05)',
-              border: tab === t.key ? '1px solid #4FC3F7' : '1px solid rgba(255,255,255,0.1)',
-              color: tab === t.key ? '#4FC3F7' : '#B0BEC5',
+              background: tab === t.key ? 'rgba(79,195,247,0.2)' : 'var(--surface-2)',
+              border: tab === t.key ? '1px solid #4FC3F7' : '1px solid var(--border)',
+              color: tab === t.key ? '#4FC3F7' : 'var(--text-dim)',
             }}>
             {t.label}
           </button>
@@ -565,7 +565,7 @@ export default function AdminPage() {
                 <div key={stat.label} className="glass p-6 text-center">
                   <div className="text-4xl mb-2">{stat.icon}</div>
                   <div className="text-3xl font-black" style={{ color: stat.color }}>{stat.value}</div>
-                  <div className="text-sm mt-1" style={{ color: '#B0BEC5' }}>{stat.label}</div>
+                  <div className="text-sm mt-1" style={{ color: 'var(--text-dim)' }}>{stat.label}</div>
                 </div>
               ))}
             </div>
@@ -577,9 +577,9 @@ export default function AdminPage() {
               <button key={k} onClick={() => setStatsPeriod(k)}
                 className="px-4 py-2 rounded-xl text-sm font-bold transition-all"
                 style={{
-                  background: statsPeriod === k ? 'rgba(79,195,247,0.2)' : 'rgba(255,255,255,0.05)',
-                  border: statsPeriod === k ? '1px solid #4FC3F7' : '1px solid rgba(255,255,255,0.1)',
-                  color: statsPeriod === k ? '#4FC3F7' : '#B0BEC5',
+                  background: statsPeriod === k ? 'rgba(79,195,247,0.2)' : 'var(--surface-2)',
+                  border: statsPeriod === k ? '1px solid #4FC3F7' : '1px solid var(--border)',
+                  color: statsPeriod === k ? '#4FC3F7' : 'var(--text-dim)',
                 }}>
                 {label}
               </button>
@@ -587,26 +587,26 @@ export default function AdminPage() {
           </div>
 
           {!stats ? (
-            <div className="glass p-8 text-center" style={{ color: '#B0BEC5' }}>Yükleniyor...</div>
+            <div className="glass p-8 text-center" style={{ color: 'var(--text-dim)' }}>Yükleniyor...</div>
           ) : statsPeriod === 'anlik' ? (
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               <div className="glass p-6 text-center">
                 <div className="text-4xl mb-2">🟢</div>
                 <div className="text-3xl font-black" style={{ color: '#4CAF50' }}>{stats.realtime.online}</div>
-                <div className="text-sm mt-1" style={{ color: '#B0BEC5' }}>Online (son 2 dk)</div>
+                <div className="text-sm mt-1" style={{ color: 'var(--text-dim)' }}>Online (son 2 dk)</div>
               </div>
               <div className="glass p-6 text-center">
                 <div className="text-4xl mb-2">⚔️</div>
                 <div className="text-3xl font-black" style={{ color: '#FFD700' }}>{stats.realtime.active_matches.total}</div>
-                <div className="text-sm mt-1" style={{ color: '#B0BEC5' }}>Aktif Maç</div>
-                <div className="text-xs mt-2" style={{ color: '#607D8B' }}>
+                <div className="text-sm mt-1" style={{ color: 'var(--text-dim)' }}>Aktif Maç</div>
+                <div className="text-xs mt-2" style={{ color: 'var(--text-dimmer)' }}>
                   👥 İ-İ {stats.realtime.active_matches.hh} · 🤖 İ-Bot {stats.realtime.active_matches.hb} · 🤖🤖 {stats.realtime.active_matches.bb}
                 </div>
               </div>
               <div className="glass p-6 text-center">
                 <div className="text-4xl mb-2">🎯</div>
                 <div className="text-3xl font-black" style={{ color: '#4FC3F7' }}>{stats.realtime.active_players}</div>
-                <div className="text-sm mt-1" style={{ color: '#B0BEC5' }}>Maçtaki Kişi</div>
+                <div className="text-sm mt-1" style={{ color: 'var(--text-dim)' }}>Maçtaki Kişi</div>
               </div>
             </div>
           ) : stats.aggregate && (
@@ -614,32 +614,32 @@ export default function AdminPage() {
               <div className="glass p-6 text-center">
                 <div className="text-4xl mb-2">🎮</div>
                 <div className="text-3xl font-black" style={{ color: '#81C784' }}>{stats.aggregate.matches.total}</div>
-                <div className="text-sm mt-1" style={{ color: '#B0BEC5' }}>Yapılan Maç</div>
-                <div className="text-xs mt-2" style={{ color: '#607D8B' }}>
+                <div className="text-sm mt-1" style={{ color: 'var(--text-dim)' }}>Yapılan Maç</div>
+                <div className="text-xs mt-2" style={{ color: 'var(--text-dimmer)' }}>
                   👥 İ-İ {stats.aggregate.matches.hh} · 🤖 İ-Bot {stats.aggregate.matches.hb} · 🤖🤖 {stats.aggregate.matches.bb}
                 </div>
               </div>
               <div className="glass p-6 text-center">
                 <div className="text-4xl mb-2">🏅</div>
                 <div className="text-3xl font-black" style={{ color: '#FFD700' }}>{stats.aggregate.maraton.users}</div>
-                <div className="text-sm mt-1" style={{ color: '#B0BEC5' }}>Maraton — İlerleyen Kişi</div>
-                <div className="text-xs mt-2" style={{ color: '#607D8B' }}>{stats.aggregate.maraton.levels} level ilerlendi</div>
+                <div className="text-sm mt-1" style={{ color: 'var(--text-dim)' }}>Maraton — İlerleyen Kişi</div>
+                <div className="text-xs mt-2" style={{ color: 'var(--text-dimmer)' }}>{stats.aggregate.maraton.levels} level ilerlendi</div>
               </div>
               <div className="glass p-6 text-center">
                 <div className="text-4xl mb-2">🏆</div>
                 <div className="text-3xl font-black" style={{ color: '#E91E63' }}>{stats.aggregate.turnuva.human_participants}</div>
-                <div className="text-sm mt-1" style={{ color: '#B0BEC5' }}>Turnuvaya Katılan (insan)</div>
+                <div className="text-sm mt-1" style={{ color: 'var(--text-dim)' }}>Turnuvaya Katılan (insan)</div>
               </div>
               <div className="glass p-6 text-center">
                 <div className="text-4xl mb-2">📝</div>
                 <div className="text-3xl font-black" style={{ color: '#4FC3F7' }}>{stats.aggregate.tests.solves}</div>
-                <div className="text-sm mt-1" style={{ color: '#B0BEC5' }}>Test Çözümü</div>
-                <div className="text-xs mt-2" style={{ color: '#607D8B' }}>{stats.aggregate.tests.solvers} farklı kişi</div>
+                <div className="text-sm mt-1" style={{ color: 'var(--text-dim)' }}>Test Çözümü</div>
+                <div className="text-xs mt-2" style={{ color: 'var(--text-dimmer)' }}>{stats.aggregate.tests.solvers} farklı kişi</div>
               </div>
               <div className="glass p-6 text-center">
                 <div className="text-4xl mb-2">✨</div>
                 <div className="text-3xl font-black" style={{ color: '#4CAF50' }}>{stats.aggregate.new_users}</div>
-                <div className="text-sm mt-1" style={{ color: '#B0BEC5' }}>Yeni Kullanıcı</div>
+                <div className="text-sm mt-1" style={{ color: 'var(--text-dim)' }}>Yeni Kullanıcı</div>
               </div>
             </div>
           )}
@@ -667,7 +667,7 @@ export default function AdminPage() {
                 <option key={c.slug} value={c.slug}>{c.name} ({c.count})</option>
               ))}
             </select>
-            <span style={{ color: '#B0BEC5', alignSelf: 'center', fontSize: 14 }}>
+            <span style={{ color: 'var(--text-dim)', alignSelf: 'center', fontSize: 14 }}>
               {qTotal} soru
             </span>
           </div>
@@ -678,9 +678,9 @@ export default function AdminPage() {
               <button key={c.slug} onClick={() => { setQCategory(qCategory === c.slug ? '' : c.slug); setQPage(1) }}
                 className="text-xs px-2 py-1 rounded-lg font-bold"
                 style={{
-                  background: qCategory === c.slug ? 'rgba(79,195,247,0.2)' : 'rgba(255,255,255,0.05)',
-                  border: qCategory === c.slug ? '1px solid #4FC3F7' : '1px solid rgba(255,255,255,0.1)',
-                  color: qCategory === c.slug ? '#4FC3F7' : '#B0BEC5',
+                  background: qCategory === c.slug ? 'rgba(79,195,247,0.2)' : 'var(--surface-2)',
+                  border: qCategory === c.slug ? '1px solid #4FC3F7' : '1px solid var(--border)',
+                  color: qCategory === c.slug ? '#4FC3F7' : 'var(--text-dim)',
                 }}>
                 {c.name} <span style={{ color: '#FFD700' }}>{c.count}</span>
               </button>
@@ -689,7 +689,7 @@ export default function AdminPage() {
 
           <div className="glass overflow-hidden">
             <div className="grid text-xs font-bold px-4 py-3"
-              style={{ gridTemplateColumns: '1fr 120px 80px 80px 120px', color: '#B0BEC5', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+              style={{ gridTemplateColumns: '1fr 120px 80px 80px 120px', color: 'var(--text-dim)', borderBottom: '1px solid var(--border)' }}>
               <span>Soru</span>
               <span>Kategori</span>
               <span>Zorluk</span>
@@ -700,11 +700,11 @@ export default function AdminPage() {
               <div key={q.id} className="grid px-4 py-3 items-center gap-2"
                 style={{
                   gridTemplateColumns: '1fr 120px 80px 80px 120px',
-                  borderBottom: '1px solid rgba(255,255,255,0.05)',
+                  borderBottom: '1px solid var(--border)',
                   opacity: q.is_active ? 1 : 0.5,
                 }}>
-                <span className="text-sm" style={{ color: 'white' }}>{q.text}</span>
-                <span className="text-xs" style={{ color: '#B0BEC5' }}>{q.category}</span>
+                <span className="text-sm" style={{ color: 'var(--text)' }}>{q.text}</span>
+                <span className="text-xs" style={{ color: 'var(--text-dim)' }}>{q.category}</span>
                 <span className="text-xs" style={{
                   color: q.difficulty === 'Kolay' ? '#4CAF50' : q.difficulty === 'Orta' ? '#FFC107' : q.difficulty === 'Zor' ? '#FF7043' : '#E91E63'
                 }}>{q.difficulty}</span>
@@ -729,15 +729,15 @@ export default function AdminPage() {
           <div className="flex gap-2 justify-center mt-4">
             <button onClick={() => setQPage(p => Math.max(1, p-1))} disabled={qPage === 1}
               className="px-4 py-2 rounded-xl text-sm"
-              style={{ background: 'rgba(255,255,255,0.05)', color: qPage === 1 ? '#555' : '#4FC3F7' }}>
+              style={{ background: 'var(--surface-2)', color: qPage === 1 ? '#555' : '#4FC3F7' }}>
               ← Önceki
             </button>
-            <span className="px-4 py-2 text-sm" style={{ color: '#B0BEC5' }}>
+            <span className="px-4 py-2 text-sm" style={{ color: 'var(--text-dim)' }}>
               {qPage} / {Math.ceil(qTotal/15)}
             </span>
             <button onClick={() => setQPage(p => p+1)} disabled={qPage >= Math.ceil(qTotal/15)}
               className="px-4 py-2 rounded-xl text-sm"
-              style={{ background: 'rgba(255,255,255,0.05)', color: qPage >= Math.ceil(qTotal/15) ? '#555' : '#4FC3F7' }}>
+              style={{ background: 'var(--surface-2)', color: qPage >= Math.ceil(qTotal/15) ? '#555' : '#4FC3F7' }}>
               Sonraki →
             </button>
           </div>
@@ -754,14 +754,14 @@ export default function AdminPage() {
               value={uSearch}
               onChange={e => { setUSearch(e.target.value); setUPage(1) }}
             />
-            <span style={{ color: '#B0BEC5', alignSelf: 'center', fontSize: 14 }}>
+            <span style={{ color: 'var(--text-dim)', alignSelf: 'center', fontSize: 14 }}>
               {uTotal} kullanıcı
             </span>
           </div>
 
           <div className="glass overflow-hidden">
             <div className="grid text-xs font-bold px-4 py-3"
-              style={{ gridTemplateColumns: '1fr 80px 80px 80px 80px 140px', color: '#B0BEC5', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+              style={{ gridTemplateColumns: '1fr 80px 80px 80px 80px 140px', color: 'var(--text-dim)', borderBottom: '1px solid var(--border)' }}>
               <span>Kullanıcı</span>
               <span>Rol</span>
               <span>ELO</span>
@@ -773,14 +773,14 @@ export default function AdminPage() {
               <div key={u.id} className="grid px-4 py-3 items-center"
                 style={{
                   gridTemplateColumns: '1fr 80px 80px 80px 80px 140px',
-                  borderBottom: '1px solid rgba(255,255,255,0.05)',
+                  borderBottom: '1px solid var(--border)',
                   opacity: u.is_active ? 1 : 0.5,
                 }}>
                 <div>
                   <div className="font-bold text-sm">{u.username}</div>
-                  <div className="text-xs" style={{ color: '#B0BEC5' }}>{u.email}</div>
+                  <div className="text-xs" style={{ color: 'var(--text-dim)' }}>{u.email}</div>
                 </div>
-                <span className="text-xs" style={{ color: u.role === 'admin' ? '#E91E63' : '#B0BEC5' }}>
+                <span className="text-xs" style={{ color: u.role === 'admin' ? '#E91E63' : 'var(--text-dim)' }}>
                   {u.role}
                 </span>
                 <span className="text-sm" style={{ color: '#4FC3F7' }}>{u.elo_rating}</span>
@@ -807,15 +807,15 @@ export default function AdminPage() {
           <div className="flex gap-2 justify-center mt-4">
             <button onClick={() => setUPage(p => Math.max(1, p-1))} disabled={uPage === 1}
               className="px-4 py-2 rounded-xl text-sm"
-              style={{ background: 'rgba(255,255,255,0.05)', color: uPage === 1 ? '#555' : '#4FC3F7' }}>
+              style={{ background: 'var(--surface-2)', color: uPage === 1 ? '#555' : '#4FC3F7' }}>
               ← Önceki
             </button>
-            <span className="px-4 py-2 text-sm" style={{ color: '#B0BEC5' }}>
+            <span className="px-4 py-2 text-sm" style={{ color: 'var(--text-dim)' }}>
               {uPage} / {Math.ceil(uTotal/15)}
             </span>
             <button onClick={() => setUPage(p => p+1)} disabled={uPage >= Math.ceil(uTotal/15)}
               className="px-4 py-2 rounded-xl text-sm"
-              style={{ background: 'rgba(255,255,255,0.05)', color: uPage >= Math.ceil(uTotal/15) ? '#555' : '#4FC3F7' }}>
+              style={{ background: 'var(--surface-2)', color: uPage >= Math.ceil(uTotal/15) ? '#555' : '#4FC3F7' }}>
               Sonraki →
             </button>
           </div>
@@ -826,7 +826,7 @@ export default function AdminPage() {
       {tab === 'kategoriler' && (
         <div className="animate-fade-in glass overflow-hidden">
           <div className="grid text-xs font-bold px-4 py-3"
-            style={{ gridTemplateColumns: '40px 1fr 70px 90px 90px 90px 70px', color: '#B0BEC5', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+            style={{ gridTemplateColumns: '40px 1fr 70px 90px 90px 90px 70px', color: 'var(--text-dim)', borderBottom: '1px solid var(--border)' }}>
             <span>İkon</span>
             <span>Kategori</span>
             <span>Sorular</span>
@@ -839,7 +839,7 @@ export default function AdminPage() {
             <div key={cat.id} className="grid px-4 py-3 items-center"
               style={{
                 gridTemplateColumns: '40px 1fr 70px 90px 90px 90px 70px',
-                borderBottom: '1px solid rgba(255,255,255,0.05)',
+                borderBottom: '1px solid var(--border)',
                 opacity: cat.is_active ? 1 : 0.5,
               }}>
               <span className="text-xl">{cat.icon}</span>
@@ -853,7 +853,7 @@ export default function AdminPage() {
               }}
                 className="text-xs px-2 py-1 rounded"
                 style={{
-                  background: cat.in_general_match ? 'rgba(76,175,80,0.2)' : 'rgba(255,255,255,0.05)',
+                  background: cat.in_general_match ? 'rgba(76,175,80,0.2)' : 'var(--surface-2)',
                   color: cat.in_general_match ? '#4CAF50' : '#666'
                 }}>
                 {cat.in_general_match ? '✓ Dahil' : '✗ Hariç'}
@@ -864,7 +864,7 @@ export default function AdminPage() {
               }}
                 className="text-xs px-2 py-1 rounded"
                 style={{
-                  background: cat.has_category_match ? 'rgba(79,195,247,0.2)' : 'rgba(255,255,255,0.05)',
+                  background: cat.has_category_match ? 'rgba(79,195,247,0.2)' : 'var(--surface-2)',
                   color: cat.has_category_match ? '#4FC3F7' : '#666'
                 }}>
                 {cat.has_category_match ? '✓ Var' : '✗ Yok'}
@@ -875,7 +875,7 @@ export default function AdminPage() {
               }}
                 className="text-xs px-2 py-1 rounded"
                 style={{
-                  background: cat.has_arena_match ? 'rgba(255,112,67,0.2)' : 'rgba(255,255,255,0.05)',
+                  background: cat.has_arena_match ? 'rgba(255,112,67,0.2)' : 'var(--surface-2)',
                   color: cat.has_arena_match ? '#FF7043' : '#666'
                 }}>
                 {cat.has_arena_match ? '✓ Var' : '✗ Yok'}
@@ -902,12 +902,12 @@ export default function AdminPage() {
             {/* CSV Format */}
             <div className="rounded-xl p-4 mb-4 text-xs font-mono"
               style={{ background: 'rgba(0,0,0,0.3)', color: '#4FC3F7' }}>
-              <div style={{ color: '#B0BEC5', marginBottom: 8 }}>CSV sütun sırası:</div>
+              <div style={{ color: 'var(--text-dim)', marginBottom: 8 }}>CSV sütun sırası:</div>
               kategori,zorluk,soru_tipi,soru_metni,sik_a,sik_b,sik_c,sik_d,dogru_cevap,aciklama<br />
               <br />
-              <div style={{ color: '#B0BEC5' }}>Zorluk değerleri: kolay / orta / zor / cok_zor</div>
-              <div style={{ color: '#B0BEC5' }}>Soru tipi: coktan_secmeli / dogru_yanlis</div>
-              <div style={{ color: '#B0BEC5' }}>Doğru cevap: A / B / C / D</div>
+              <div style={{ color: 'var(--text-dim)' }}>Zorluk değerleri: kolay / orta / zor / cok_zor</div>
+              <div style={{ color: 'var(--text-dim)' }}>Soru tipi: coktan_secmeli / dogru_yanlis</div>
+              <div style={{ color: 'var(--text-dim)' }}>Doğru cevap: A / B / C / D</div>
             </div>
 
             <div className="flex gap-3 items-center">
@@ -917,9 +917,9 @@ export default function AdminPage() {
                 onChange={e => setCsvFile(e.target.files?.[0] || null)}
                 style={{
                   flex: 1, padding: '10px', borderRadius: 12,
-                  background: 'rgba(255,255,255,0.05)',
-                  border: '1px solid rgba(255,255,255,0.15)',
-                  color: 'white',
+                  background: 'var(--surface-2)',
+                  border: '1px solid var(--border)',
+                  color: 'var(--text)',
                 }}
               />
               <button
@@ -975,7 +975,7 @@ export default function AdminPage() {
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1">
                         <div className="font-bold">{e.title}</div>
-                        {e.description && <div className="text-sm mt-1" style={{ color: '#B0BEC5' }}>{e.description}</div>}
+                        {e.description && <div className="text-sm mt-1" style={{ color: 'var(--text-dim)' }}>{e.description}</div>}
                         <div className="text-xs mt-2 px-2 py-1 rounded inline-block" style={{ background: 'rgba(244,67,54,0.2)', color: '#F44336' }}>
                           ⚠️ {e.reason}
                         </div>
@@ -1027,12 +1027,12 @@ export default function AdminPage() {
             <div className="glass p-5">
               <h3 className="font-bold mb-4" style={{ color: '#FFD700' }}>✏️ {editingPage.title}</h3>
               <div className="mb-3">
-                <label className="text-sm mb-1 block" style={{ color: '#B0BEC5' }}>Başlık</label>
+                <label className="text-sm mb-1 block" style={{ color: 'var(--text-dim)' }}>Başlık</label>
                 <input className="input-field w-full" value={editingPage.title}
                   onChange={e => setEditingPage({...editingPage, title: e.target.value})} />
               </div>
               <div className="mb-4">
-                <label className="text-sm mb-1 block" style={{ color: '#B0BEC5' }}>İçerik</label>
+                <label className="text-sm mb-1 block" style={{ color: 'var(--text-dim)' }}>İçerik</label>
                 <textarea className="input-field w-full" rows={15} value={editingPage.content}
                   onChange={e => setEditingPage({...editingPage, content: e.target.value})}
                   style={{ resize: 'vertical', fontFamily: 'monospace' }} />
@@ -1040,7 +1040,7 @@ export default function AdminPage() {
               <div className="flex gap-3">
                 <button onClick={savePage} className="btn-gold">💾 Kaydet</button>
                 <button onClick={() => setEditingPage(null)}
-                  className="glass px-4 py-2 font-bold" style={{ color: '#B0BEC5' }}>
+                  className="glass px-4 py-2 font-bold" style={{ color: 'var(--text-dim)' }}>
                   İptal
                 </button>
               </div>
@@ -1092,17 +1092,17 @@ export default function AdminPage() {
               </h3>
               <div className="space-y-3">
                 <div>
-                  <label className="text-sm mb-1 block" style={{ color: '#B0BEC5' }}>Başlık</label>
+                  <label className="text-sm mb-1 block" style={{ color: 'var(--text-dim)' }}>Başlık</label>
                   <input className="input-field w-full" value={editingPost.title}
                     onChange={e => setEditingPost({...editingPost, title: e.target.value})} />
                 </div>
                 <div>
-                  <label className="text-sm mb-1 block" style={{ color: '#B0BEC5' }}>Özet</label>
+                  <label className="text-sm mb-1 block" style={{ color: 'var(--text-dim)' }}>Özet</label>
                   <input className="input-field w-full" value={editingPost.summary || ''}
                     onChange={e => setEditingPost({...editingPost, summary: e.target.value})} />
                 </div>
                 <div>
-                  <label className="text-sm mb-1 block" style={{ color: '#B0BEC5' }}>İçerik</label>
+                  <label className="text-sm mb-1 block" style={{ color: 'var(--text-dim)' }}>İçerik</label>
                   <textarea className="input-field w-full" rows={12} value={editingPost.content}
                     onChange={e => setEditingPost({...editingPost, content: e.target.value})}
                     style={{ resize: 'vertical' }} />
@@ -1110,13 +1110,13 @@ export default function AdminPage() {
                 <div className="flex items-center gap-3">
                   <input type="checkbox" checked={editingPost.is_active}
                     onChange={e => setEditingPost({...editingPost, is_active: e.target.checked})} />
-                  <label className="text-sm" style={{ color: '#B0BEC5' }}>Yayında</label>
+                  <label className="text-sm" style={{ color: 'var(--text-dim)' }}>Yayında</label>
                 </div>
               </div>
               <div className="flex gap-3 mt-4">
                 <button onClick={saveBlogPost} className="btn-gold">💾 Kaydet</button>
                 <button onClick={() => { setEditingPost(null); setNewPost(false) }}
-                  className="glass px-4 py-2 font-bold" style={{ color: '#B0BEC5' }}>İptal</button>
+                  className="glass px-4 py-2 font-bold" style={{ color: 'var(--text-dim)' }}>İptal</button>
               </div>
             </div>
           )}
@@ -1170,24 +1170,24 @@ export default function AdminPage() {
               </h3>
               <div className="space-y-3">
                 <div>
-                  <label className="text-sm mb-1 block" style={{ color: '#B0BEC5' }}>Başlık *</label>
+                  <label className="text-sm mb-1 block" style={{ color: 'var(--text-dim)' }}>Başlık *</label>
                   <input className="input-field w-full" value={editingAnn.title}
                     onChange={e => setEditingAnn({...editingAnn, title: e.target.value})} />
                 </div>
                 <div>
-                  <label className="text-sm mb-1 block" style={{ color: '#B0BEC5' }}>Açıklama</label>
+                  <label className="text-sm mb-1 block" style={{ color: 'var(--text-dim)' }}>Açıklama</label>
                   <textarea className="input-field w-full" rows={3} value={editingAnn.content}
                     onChange={e => setEditingAnn({...editingAnn, content: e.target.value})} />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-sm mb-1 block" style={{ color: '#B0BEC5' }}>Link URL (blog veya sayfa)</label>
+                    <label className="text-sm mb-1 block" style={{ color: 'var(--text-dim)' }}>Link URL (blog veya sayfa)</label>
                     <input className="input-field w-full" value={editingAnn.link_url || ''}
                       placeholder="/blog/yazi-slug"
                       onChange={e => setEditingAnn({...editingAnn, link_url: e.target.value})} />
                   </div>
                   <div>
-                    <label className="text-sm mb-1 block" style={{ color: '#B0BEC5' }}>Link Etiketi</label>
+                    <label className="text-sm mb-1 block" style={{ color: 'var(--text-dim)' }}>Link Etiketi</label>
                     <input className="input-field w-full" value={editingAnn.link_label || ''}
                       placeholder="Daha fazla →"
                       onChange={e => setEditingAnn({...editingAnn, link_label: e.target.value})} />
@@ -1195,7 +1195,7 @@ export default function AdminPage() {
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-sm mb-1 block" style={{ color: '#B0BEC5' }}>Arka Plan Rengi</label>
+                    <label className="text-sm mb-1 block" style={{ color: 'var(--text-dim)' }}>Arka Plan Rengi</label>
                     <div className="flex gap-2 flex-wrap">
                       {['#FFD700','#4FC3F7','#4CAF50','#F44336','#FF9800','#E91E63','#9C27B0'].map(c => (
                         <button key={c} onClick={() => setEditingAnn({...editingAnn, bg_color: c})}
@@ -1205,18 +1205,18 @@ export default function AdminPage() {
                     </div>
                   </div>
                   <div>
-                    <label className="text-sm mb-1 block" style={{ color: '#B0BEC5' }}>Yazı Rengi</label>
+                    <label className="text-sm mb-1 block" style={{ color: 'var(--text-dim)' }}>Yazı Rengi</label>
                     <div className="flex gap-2">
                       {['#000000','#ffffff'].map(c => (
                         <button key={c} onClick={() => setEditingAnn({...editingAnn, text_color: c})}
                           style={{ width: 28, height: 28, borderRadius: '50%', background: c,
-                            border: editingAnn.text_color === c ? '3px solid #FFD700' : '2px solid rgba(255,255,255,0.2)' }} />
+                            border: editingAnn.text_color === c ? '3px solid #FFD700' : '2px solid var(--border)' }} />
                       ))}
                     </div>
                   </div>
                 </div>
                 <div>
-                  <label className="text-sm mb-1 block" style={{ color: '#B0BEC5' }}>Önizleme</label>
+                  <label className="text-sm mb-1 block" style={{ color: 'var(--text-dim)' }}>Önizleme</label>
                   <div className="rounded-xl p-4" style={{ background: editingAnn.bg_color, color: editingAnn.text_color }}>
                     <div className="font-black">{editingAnn.title || 'Başlık'}</div>
                     {editingAnn.content && <div className="text-sm mt-1">{editingAnn.content}</div>}
@@ -1226,13 +1226,13 @@ export default function AdminPage() {
                 <div className="flex items-center gap-3">
                   <input type="checkbox" checked={editingAnn.is_active}
                     onChange={e => setEditingAnn({...editingAnn, is_active: e.target.checked})} />
-                  <label className="text-sm" style={{ color: '#B0BEC5' }}>Yayında (tek duyuru aktif olabilir)</label>
+                  <label className="text-sm" style={{ color: 'var(--text-dim)' }}>Yayında (tek duyuru aktif olabilir)</label>
                 </div>
               </div>
               <div className="flex gap-3 mt-4">
                 <button onClick={saveAnnouncement} className="btn-gold">💾 Kaydet</button>
                 <button onClick={() => setEditingAnn(null)}
-                  className="glass px-4 py-2 font-bold" style={{ color: '#B0BEC5' }}>İptal</button>
+                  className="glass px-4 py-2 font-bold" style={{ color: 'var(--text-dim)' }}>İptal</button>
               </div>
             </div>
           )}
@@ -1252,7 +1252,7 @@ export default function AdminPage() {
                   <div key={r.id} className="glass p-4 flex items-center gap-4">
                     <img src={`https://api.bilgimaratonu.com${r.avatar_url}?t=${Date.now()}`} alt="avatar"
                       className="w-16 h-16 rounded-full object-cover flex-shrink-0"
-                      style={{ border: '2px solid rgba(255,255,255,0.1)' }} />
+                      style={{ border: '2px solid var(--border)' }} />
                     <div className="flex-1">
                       <div className="font-bold">{r.username}</div>
                       <div className="text-xs" style={{ color: '#555' }}>{r.created_at}</div>
@@ -1284,13 +1284,13 @@ export default function AdminPage() {
             <h3 className="font-bold mb-4" style={{ color: '#4FC3F7' }}>📥 URL'den Soru Import</h3>
             <div className="space-y-3">
               <div>
-                <label className="text-sm mb-1 block" style={{ color: '#B0BEC5' }}>URL</label>
+                <label className="text-sm mb-1 block" style={{ color: 'var(--text-dim)' }}>URL</label>
                 <input className="input-field w-full" value={importUrl}
                   onChange={e => setImportUrl(e.target.value)}
                   placeholder="https://..." />
               </div>
               <div>
-                <label className="text-sm mb-1 block" style={{ color: '#B0BEC5' }}>Kategori</label>
+                <label className="text-sm mb-1 block" style={{ color: 'var(--text-dim)' }}>Kategori</label>
                 <select className="input-field w-full" value={importCategoryId}
                   onChange={e => setImportCategoryId(e.target.value)}>
                   <option value="">Kategori seç</option>
@@ -1300,7 +1300,7 @@ export default function AdminPage() {
                 </select>
               </div>
               <div>
-                <label className="text-sm mb-1 block" style={{ color: '#B0BEC5' }}>Zorluk</label>
+                <label className="text-sm mb-1 block" style={{ color: 'var(--text-dim)' }}>Zorluk</label>
                 <select className="input-field w-full" value={importDifficulty}
                   onChange={e => setImportDifficulty(e.target.value)}>
                   <option value="random">🎲 Karıştır</option>
@@ -1312,7 +1312,7 @@ export default function AdminPage() {
               </div>
               <label className="flex items-center gap-2 cursor-pointer">
                 <input type="checkbox" checked={skipImages} onChange={e => setSkipImages(e.target.checked)} />
-                <span className="text-sm" style={{ color: '#B0BEC5' }}>Resimli soruları atla (sadece yazılı sorular)</span>
+                <span className="text-sm" style={{ color: 'var(--text-dim)' }}>Resimli soruları atla (sadece yazılı sorular)</span>
               </label>
               <button onClick={runImport} disabled={importing || !importUrl || !importCategoryId}
                 className="btn-gold w-full">
@@ -1325,9 +1325,9 @@ export default function AdminPage() {
                   ) : (
                     <>
                       <p style={{ color: '#4CAF50' }}>✓ Import tamamlandı</p>
-                      <p style={{ color: '#B0BEC5' }}>• Eklendi: {importResult.imported}</p>
-                      <p style={{ color: '#B0BEC5' }}>• Atlandı (duplicate): {importResult.skipped}</p>
-                      <p style={{ color: '#B0BEC5' }}>• Hata: {importResult.errors}</p>
+                      <p style={{ color: 'var(--text-dim)' }}>• Eklendi: {importResult.imported}</p>
+                      <p style={{ color: 'var(--text-dim)' }}>• Atlandı (duplicate): {importResult.skipped}</p>
+                      <p style={{ color: 'var(--text-dim)' }}>• Hata: {importResult.errors}</p>
                     </>
                   )}
                 </div>
@@ -1346,7 +1346,7 @@ export default function AdminPage() {
             {/* Dil ve Ülke */}
             <div className="grid grid-cols-2 gap-3 mb-4">
               <div>
-                <label className="text-xs mb-1 block" style={{ color: '#B0BEC5' }}>Dil</label>
+                <label className="text-xs mb-1 block" style={{ color: 'var(--text-dim)' }}>Dil</label>
                 <select className="input-field w-full" value={genLanguage} onChange={e => setGenLanguage(e.target.value)}>
                   <option value="Türkçe">🇹🇷 Türkçe</option>
                   <option value="English">🇬🇧 İngilizce</option>
@@ -1356,7 +1356,7 @@ export default function AdminPage() {
                 </select>
               </div>
               <div>
-                <label className="text-xs mb-1 block" style={{ color: '#B0BEC5' }}>Ülke Kültürü</label>
+                <label className="text-xs mb-1 block" style={{ color: 'var(--text-dim)' }}>Ülke Kültürü</label>
                 <select className="input-field w-full" value={genCountry} onChange={e => setGenCountry(e.target.value)}>
                   <option value="Türkiye">🇹🇷 Türkiye</option>
                   <option value="Dünya geneli">🌍 Dünya geneli</option>
@@ -1369,7 +1369,7 @@ export default function AdminPage() {
 
             {/* OpenAI API Key */}
             <div className="mb-4">
-              <label className="text-xs mb-1 block" style={{ color: '#B0BEC5' }}>OpenAI API Key</label>
+              <label className="text-xs mb-1 block" style={{ color: 'var(--text-dim)' }}>OpenAI API Key</label>
               <input type="password" className="input-field w-full" value={genApiKey}
                 onChange={e => { setGenApiKey(e.target.value); localStorage.setItem('openai_api_key', e.target.value) }}
                 placeholder="sk-..." />
@@ -1377,7 +1377,7 @@ export default function AdminPage() {
 
             {/* Kategoriler */}
             <div className="mb-4">
-              <label className="text-xs mb-2 block" style={{ color: '#B0BEC5' }}>Kategoriler (birden fazla seçilebilir)</label>
+              <label className="text-xs mb-2 block" style={{ color: 'var(--text-dim)' }}>Kategoriler (birden fazla seçilebilir)</label>
               <div className="grid grid-cols-2 gap-2">
                 {genCategList.map((c: any) => (
                   <label key={c.id} className="flex items-center gap-2 cursor-pointer glass p-2 rounded-lg">
@@ -1391,7 +1391,7 @@ export default function AdminPage() {
 
             {/* Zorluklar */}
             <div className="mb-4">
-              <label className="text-xs mb-2 block" style={{ color: '#B0BEC5' }}>Zorluk Seviyeleri</label>
+              <label className="text-xs mb-2 block" style={{ color: 'var(--text-dim)' }}>Zorluk Seviyeleri</label>
               <div className="flex gap-3">
                 {[['easy','Kolay'],['medium','Orta'],['hard','Zor'],['very_hard','Çok Zor']].map(([val, label]) => (
                   <label key={val} className="flex items-center gap-1 cursor-pointer">
@@ -1406,14 +1406,14 @@ export default function AdminPage() {
             {/* Model ve Soru sayısı */}
             <div className="grid grid-cols-2 gap-3 mb-4">
               <div>
-                <label className="text-xs mb-1 block" style={{ color: '#B0BEC5' }}>AI Modeli</label>
+                <label className="text-xs mb-1 block" style={{ color: 'var(--text-dim)' }}>AI Modeli</label>
                 <select className="input-field w-full" value={genModel} onChange={e => setGenModel(e.target.value)}>
                   <option value="gpt-4o-mini">⚡ GPT-4o Mini (Hızlı & Ucuz)</option>
                   <option value="gpt-4o">🧠 GPT-4o (Yüksek Kalite)</option>
                 </select>
               </div>
               <div>
-                <label className="text-xs mb-1 block" style={{ color: '#B0BEC5' }}>Her kombinasyon için soru sayısı</label>
+                <label className="text-xs mb-1 block" style={{ color: 'var(--text-dim)' }}>Her kombinasyon için soru sayısı</label>
                 <input type="number" className="input-field w-full" value={genCount} min={1} max={50}
                   onChange={e => setGenCount(parseInt(e.target.value))} />
               </div>
@@ -1421,7 +1421,7 @@ export default function AdminPage() {
 
             {/* İstekler arası bekleme */}
             <div className="mb-4">
-              <label className="text-xs mb-1 block" style={{ color: '#B0BEC5' }}>
+              <label className="text-xs mb-1 block" style={{ color: 'var(--text-dim)' }}>
                 İstekler arası bekleme süresi: <strong>{genDelay}sn</strong>
                 <span className="ml-2 text-xs" style={{ color: '#555' }}>
                   (Çok soru üretirken artır — rate limit koruması)
@@ -1448,8 +1448,8 @@ export default function AdminPage() {
                 ) : (
                   <>
                     <p style={{ color: '#4CAF50' }}>✓ Tamamlandı</p>
-                    <p style={{ color: '#B0BEC5' }}>• Eklendi: {genResult.added}</p>
-                    <p style={{ color: '#B0BEC5' }}>• Atlandı (duplicate): {genResult.skipped}</p>
+                    <p style={{ color: 'var(--text-dim)' }}>• Eklendi: {genResult.added}</p>
+                    <p style={{ color: 'var(--text-dim)' }}>• Atlandı (duplicate): {genResult.skipped}</p>
                     {genResult.errors?.length > 0 && (
                       <div className="mt-2">
                         {genResult.errors.map((e: string, i: number) => (
@@ -1480,7 +1480,7 @@ export default function AdminPage() {
                     <span className="text-sm" style={{ color: '#FFD700' }}>⭐</span>
                     <input type="number" value={item.price_xp} className="input-field w-20 text-sm py-1"
                       onChange={e => updateShopItem(item.id, { price_xp: parseInt(e.target.value) })} />
-                    <span className="text-xs" style={{ color: '#B0BEC5' }}>XP</span>
+                    <span className="text-xs" style={{ color: 'var(--text-dim)' }}>XP</span>
                   </div>
                 </div>
                 <label className="flex items-center gap-2 cursor-pointer">
@@ -1507,7 +1507,7 @@ export default function AdminPage() {
                         onChange={e => updateShopItem(item.id, { value: e.target.value })} />
                       <input type="number" value={item.price_xp} className="input-field w-20 text-sm py-1"
                         onChange={e => updateShopItem(item.id, { price_xp: parseInt(e.target.value) })} />
-                      <span className="text-xs" style={{ color: '#B0BEC5' }}>XP</span>
+                      <span className="text-xs" style={{ color: 'var(--text-dim)' }}>XP</span>
                     </div>
                   </div>
                   <div className="flex flex-col gap-1 items-end">
@@ -1542,7 +1542,7 @@ export default function AdminPage() {
               </div>
               <div className="mt-2 flex items-center gap-2">
                 <div className="w-6 h-6 rounded" style={{ background: newColorValue }} />
-                <span className="text-xs" style={{ color: '#B0BEC5' }}>Önizleme</span>
+                <span className="text-xs" style={{ color: 'var(--text-dim)' }}>Önizleme</span>
               </div>
             </div>
           </div>
@@ -1559,7 +1559,7 @@ export default function AdminPage() {
               <div className="glass p-4 flex items-center justify-between">
                 <div>
                   <div className="font-bold">Maç & İstatistik Sıfırlama</div>
-                  <div className="text-xs mt-1" style={{ color: '#B0BEC5' }}>Tüm maçlar, XP, ELO, rozetler, lig puanları sıfırlanır</div>
+                  <div className="text-xs mt-1" style={{ color: 'var(--text-dim)' }}>Tüm maçlar, XP, ELO, rozetler, lig puanları sıfırlanır</div>
                 </div>
                 <button onClick={resetStats} disabled={sistemLoading === 'stats'}
                   className="text-sm px-4 py-2 rounded-lg font-bold flex-shrink-0"
@@ -1570,7 +1570,7 @@ export default function AdminPage() {
               <div className="glass p-4 flex items-center justify-between">
                 <div>
                   <div className="font-bold">Kupa, Madalya & Rozet Sıfırlama</div>
-                  <div className="text-xs mt-1" style={{ color: '#B0BEC5' }}>Kazanılan tüm kupa, madalya ve rozetler silinir (maç/XP/ELO korunur)</div>
+                  <div className="text-xs mt-1" style={{ color: 'var(--text-dim)' }}>Kazanılan tüm kupa, madalya ve rozetler silinir (maç/XP/ELO korunur)</div>
                 </div>
                 <button onClick={resetAchievements} disabled={sistemLoading === 'achievements'}
                   className="text-sm px-4 py-2 rounded-lg font-bold flex-shrink-0"
@@ -1581,7 +1581,7 @@ export default function AdminPage() {
               <div className="glass p-4 flex items-center justify-between">
                 <div>
                   <div className="font-bold">Soru Silme</div>
-                  <div className="text-xs mt-1" style={{ color: '#B0BEC5' }}>Tüm sorular kalıcı olarak silinir</div>
+                  <div className="text-xs mt-1" style={{ color: 'var(--text-dim)' }}>Tüm sorular kalıcı olarak silinir</div>
                 </div>
                 <button onClick={resetQuestions} disabled={sistemLoading === 'questions'}
                   className="text-sm px-4 py-2 rounded-lg font-bold flex-shrink-0"
@@ -1592,7 +1592,7 @@ export default function AdminPage() {
               <div className="glass p-4 flex items-center justify-between">
                 <div>
                   <div className="font-bold">Turnuva Sıfırlama</div>
-                  <div className="text-xs mt-1" style={{ color: '#B0BEC5' }}>Aktif turnuvaları sıfırlar</div>
+                  <div className="text-xs mt-1" style={{ color: 'var(--text-dim)' }}>Aktif turnuvaları sıfırlar</div>
                 </div>
                 <button onClick={resetMarathon} disabled={sistemLoading === 'marathon'}
                   className="text-sm px-4 py-2 rounded-lg font-bold flex-shrink-0"
@@ -1603,7 +1603,7 @@ export default function AdminPage() {
               <div className="glass p-4 flex items-center justify-between">
                 <div>
                   <div className="font-bold">Test Silme</div>
-                  <div className="text-xs mt-1" style={{ color: '#B0BEC5' }}>Tüm testler kalıcı olarak silinir</div>
+                  <div className="text-xs mt-1" style={{ color: 'var(--text-dim)' }}>Tüm testler kalıcı olarak silinir</div>
                 </div>
                 <button onClick={resetTests} disabled={sistemLoading === 'tests'}
                   className="text-sm px-4 py-2 rounded-lg font-bold flex-shrink-0"
@@ -1617,12 +1617,12 @@ export default function AdminPage() {
           {/* Bot Yönetimi */}
           <div className="glass p-5">
             <h3 className="font-bold mb-1" style={{ color: '#4FC3F7' }}>🤖 Bot Yönetimi</h3>
-            <p className="text-sm mb-4" style={{ color: '#B0BEC5' }}>
+            <p className="text-sm mb-4" style={{ color: 'var(--text-dim)' }}>
               Mevcut bot sayısı: <strong style={{ color: '#FFD700' }}>{botTotal ?? '...'}</strong>
             </p>
             <div className="grid grid-cols-2 gap-3 mb-3">
               <div>
-                <label className="text-xs mb-1 block" style={{ color: '#B0BEC5' }}>Dil / Ülke</label>
+                <label className="text-xs mb-1 block" style={{ color: 'var(--text-dim)' }}>Dil / Ülke</label>
                 <select className="input-field w-full" value={botLanguage} onChange={e => setBotLanguage(e.target.value)}>
                   <option value="turkish">🇹🇷 Türkçe</option>
                   <option value="english">🇬🇧 İngilizce</option>
@@ -1632,7 +1632,7 @@ export default function AdminPage() {
                 </select>
               </div>
               <div>
-                <label className="text-xs mb-1 block" style={{ color: '#B0BEC5' }}>Bot Sayısı</label>
+                <label className="text-xs mb-1 block" style={{ color: 'var(--text-dim)' }}>Bot Sayısı</label>
                 <input type="number" className="input-field w-full" value={botCount} min={1} max={500}
                   onChange={e => setBotCount(parseInt(e.target.value))} />
               </div>
@@ -1657,7 +1657,7 @@ export default function AdminPage() {
         <div className="animate-fade-in">
           <div className="glass p-5">
             <h3 className="font-bold mb-1" style={{ color: '#FFD700' }}>🔊 Ses Efektleri</h3>
-            <p className="text-xs mb-4" style={{ color: '#B0BEC5' }}>
+            <p className="text-xs mb-4" style={{ color: 'var(--text-dim)' }}>
               Her ses için varsayılan sentetik ses çalar. Bir yuvaya MP3 yüklersen, o ses yerine yüklediğin dosya çalar.
               (MP3/WAV/OGG, en fazla 5MB.) 1v1 maç ve kategori maçlarında aynı sesler kullanılır.
             </p>
@@ -1669,8 +1669,8 @@ export default function AdminPage() {
                   <div key={slot.key} className="glass p-3 flex items-center gap-3 flex-wrap">
                     <div style={{ flex: 1, minWidth: 180 }}>
                       <div className="font-bold text-sm">{slot.label}</div>
-                      <div className="text-xs" style={{ color: '#B0BEC5' }}>{slot.desc}</div>
-                      <div className="text-xs mt-1" style={{ color: current ? '#4CAF50' : '#607D8B' }}>
+                      <div className="text-xs" style={{ color: 'var(--text-dim)' }}>{slot.desc}</div>
+                      <div className="text-xs mt-1" style={{ color: current ? '#4CAF50' : 'var(--text-dimmer)' }}>
                         {current ? '🎵 MP3 yüklü (sentetik yerine bu çalar)' : '🎹 Sentetik ses (varsayılan)'}
                       </div>
                     </div>
@@ -1719,7 +1719,7 @@ export default function AdminPage() {
                 </button>
               </div>
             </div>
-            <p className="text-xs mb-4" style={{ color: '#B0BEC5' }}>
+            <p className="text-xs mb-4" style={{ color: 'var(--text-dim)' }}>
               ☰ Satırları sürükleyerek sıralayın. Sıralama min XP'ye göre otomatik düzenlenir.
             </p>
 
@@ -1741,7 +1741,7 @@ export default function AdminPage() {
                     setTitles(newTitles)
                   }}
                   className="glass p-3 flex items-center gap-3"
-                  style={{ cursor: 'grab', border: '1px solid rgba(255,255,255,0.1)' }}>
+                  style={{ cursor: 'grab', border: '1px solid var(--border)' }}>
 
                   {/* Sürükle ikonu */}
                   <span style={{ color: '#555', fontSize: 18, cursor: 'grab' }}>☰</span>
@@ -1784,7 +1784,7 @@ export default function AdminPage() {
 
                   {/* Min XP */}
                   <div className="flex items-center gap-1">
-                    <span className="text-xs" style={{ color: '#B0BEC5' }}>XP:</span>
+                    <span className="text-xs" style={{ color: 'var(--text-dim)' }}>XP:</span>
                     <input type="number" className="input-field"
                       style={{ width: 80 }}
                       value={t.min_xp}
@@ -1849,7 +1849,7 @@ export default function AdminPage() {
             <h3 className="font-bold mb-4" style={{ color: '#4FC3F7' }}>⚡ Maç Ayarları</h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-sm mb-1 block" style={{ color: '#B0BEC5' }}>Toplam Soru Sayısı</label>
+                <label className="text-sm mb-1 block" style={{ color: 'var(--text-dim)' }}>Toplam Soru Sayısı</label>
                 <input type="number" className="input-field w-full"
                   value={siteSettings.match?.total_questions || 15}
                   onChange={e => setSiteSettings((prev: any) => ({
@@ -1858,7 +1858,7 @@ export default function AdminPage() {
                 />
               </div>
               <div>
-                <label className="text-sm mb-1 block" style={{ color: '#B0BEC5' }}>Bot Bekleme Süresi (sn)</label>
+                <label className="text-sm mb-1 block" style={{ color: 'var(--text-dim)' }}>Bot Bekleme Süresi (sn)</label>
                 <input type="number" className="input-field w-full"
                   value={siteSettings.match?.bot_wait_seconds || 10}
                   onChange={e => setSiteSettings((prev: any) => ({
@@ -1870,7 +1870,7 @@ export default function AdminPage() {
             <div className="grid grid-cols-4 gap-3 mt-3">
               {['easy', 'medium', 'hard', 'very_hard'].map((d, i) => (
                 <div key={d}>
-                  <label className="text-xs mb-1 block" style={{ color: '#B0BEC5' }}>
+                  <label className="text-xs mb-1 block" style={{ color: 'var(--text-dim)' }}>
                     {['Kolay', 'Orta', 'Zor', 'Çok Zor'][i]} Soru
                   </label>
                   <input type="number" className="input-field w-full"
@@ -1896,7 +1896,7 @@ export default function AdminPage() {
           {/* Arena Ayarları */}
           <div className="glass p-5">
             <h3 className="font-bold mb-1" style={{ color: '#FF7043' }}>🎯 Arena Ayarları</h3>
-            <p className="text-xs mb-4" style={{ color: '#B0BEC5' }}>5 kişilik eşzamanlı yarışma. Sorular "Arena" işaretli kategorilerden gelir.</p>
+            <p className="text-xs mb-4" style={{ color: 'var(--text-dim)' }}>5 kişilik eşzamanlı yarışma. Sorular "Arena" işaretli kategorilerden gelir.</p>
             <div className="flex items-center justify-between glass p-3 mb-4">
               <span className="text-sm font-bold">Arena Botları Çalışsın</span>
               <button
@@ -1912,7 +1912,7 @@ export default function AdminPage() {
             <div className="flex items-center justify-between glass p-3 mb-4">
               <div>
                 <div className="text-sm font-bold">Sadece Kolay Sorular</div>
-                <div className="text-xs" style={{ color: '#B0BEC5' }}>Arena kategorilerinden yalnızca kolay soru çeker (hızlı yarış için).</div>
+                <div className="text-xs" style={{ color: 'var(--text-dim)' }}>Arena kategorilerinden yalnızca kolay soru çeker (hızlı yarış için).</div>
               </div>
               <button
                 onClick={() => setSiteSettings((prev: any) => ({ ...prev, arena: { ...prev.arena, only_easy: !(prev.arena?.only_easy ?? true) } }))}
@@ -1926,25 +1926,25 @@ export default function AdminPage() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-sm mb-1 block" style={{ color: '#B0BEC5' }}>Soru Sayısı</label>
+                <label className="text-sm mb-1 block" style={{ color: 'var(--text-dim)' }}>Soru Sayısı</label>
                 <input type="number" className="input-field w-full"
                   value={siteSettings.arena?.questions ?? 7}
                   onChange={e => setSiteSettings((prev: any) => ({ ...prev, arena: { ...prev.arena, questions: parseInt(e.target.value) } }))} />
               </div>
               <div>
-                <label className="text-sm mb-1 block" style={{ color: '#B0BEC5' }}>Soru Süresi (sn)</label>
+                <label className="text-sm mb-1 block" style={{ color: 'var(--text-dim)' }}>Soru Süresi (sn)</label>
                 <input type="number" className="input-field w-full"
                   value={siteSettings.arena?.answer_seconds ?? 10}
                   onChange={e => setSiteSettings((prev: any) => ({ ...prev, arena: { ...prev.arena, answer_seconds: parseInt(e.target.value) } }))} />
               </div>
               <div>
-                <label className="text-sm mb-1 block" style={{ color: '#B0BEC5' }}>Bot Başlama Süresi (sn)</label>
+                <label className="text-sm mb-1 block" style={{ color: 'var(--text-dim)' }}>Bot Başlama Süresi (sn)</label>
                 <input type="number" className="input-field w-full"
                   value={siteSettings.arena?.bot_start_seconds ?? 15}
                   onChange={e => setSiteSettings((prev: any) => ({ ...prev, arena: { ...prev.arena, bot_start_seconds: parseInt(e.target.value) } }))} />
               </div>
               <div>
-                <label className="text-sm mb-1 block" style={{ color: '#B0BEC5' }}>Bot Arası Süre (sn)</label>
+                <label className="text-sm mb-1 block" style={{ color: 'var(--text-dim)' }}>Bot Arası Süre (sn)</label>
                 <input type="number" className="input-field w-full"
                   value={siteSettings.arena?.bot_interval_seconds ?? 2}
                   onChange={e => setSiteSettings((prev: any) => ({ ...prev, arena: { ...prev.arena, bot_interval_seconds: parseInt(e.target.value) } }))} />
@@ -1960,9 +1960,9 @@ export default function AdminPage() {
           {/* Arkadaşlık Ayarları */}
           <div className="glass p-5">
             <h3 className="font-bold mb-1" style={{ color: '#81C784' }}>🤝 Arkadaşlık Ayarları</h3>
-            <p className="text-xs mb-4" style={{ color: '#B0BEC5' }}>Spam önlemek için saatlik arkadaşlık isteği limiti.</p>
+            <p className="text-xs mb-4" style={{ color: 'var(--text-dim)' }}>Spam önlemek için saatlik arkadaşlık isteği limiti.</p>
             <div style={{ maxWidth: 260 }}>
-              <label className="text-sm mb-1 block" style={{ color: '#B0BEC5' }}>Saatte Maks. İstek</label>
+              <label className="text-sm mb-1 block" style={{ color: 'var(--text-dim)' }}>Saatte Maks. İstek</label>
               <input type="number" className="input-field w-full"
                 value={siteSettings.friendship?.requests_per_hour ?? 5}
                 onChange={e => setSiteSettings((prev: any) => ({ ...prev, friendship: { ...prev.friendship, requests_per_hour: parseInt(e.target.value) } }))} />
@@ -1977,11 +1977,11 @@ export default function AdminPage() {
           {/* Arayüz Ayarları */}
           <div className="glass p-5">
             <h3 className="font-bold mb-1" style={{ color: '#4FC3F7' }}>📱 Arayüz (Mobil)</h3>
-            <p className="text-xs mb-4" style={{ color: '#B0BEC5' }}>Maç ekranlarında üst menü davranışı.</p>
+            <p className="text-xs mb-4" style={{ color: 'var(--text-dim)' }}>Maç ekranlarında üst menü davranışı.</p>
             <div className="flex items-center justify-between glass p-3">
               <div>
                 <div className="text-sm font-bold">Mobilde maç ekranlarında üst menü</div>
-                <div className="text-xs" style={{ color: '#B0BEC5' }}>Kapalıyken üst menü gizlenir, sadece küçük geri oku çıkar (daha çok alan).</div>
+                <div className="text-xs" style={{ color: 'var(--text-dim)' }}>Kapalıyken üst menü gizlenir, sadece küçük geri oku çıkar (daha çok alan).</div>
               </div>
               <button
                 onClick={() => saveSettings('ui', { ...siteSettings.ui, mobile_match_header: !siteSettings.ui?.mobile_match_header })}
@@ -1993,16 +1993,41 @@ export default function AdminPage() {
                 {siteSettings.ui?.mobile_match_header ? '✓ Var' : '✗ Yok'}
               </button>
             </div>
+            <div className="mt-4">
+              <div className="text-sm font-bold mb-1">Varsayılan Tema</div>
+              <div className="text-xs mb-2" style={{ color: 'var(--text-dim)' }}>Kullanıcı seçim yapmadıysa uygulanır (kullanıcı menüden değiştirebilir).</div>
+              <div className="grid grid-cols-3 gap-2" style={{ maxWidth: 360 }}>
+                {[
+                  { key: 'dark', label: '🌙 Gece' },
+                  { key: 'light', label: '☀️ Gündüz' },
+                  { key: 'auto', label: '🌗 Otomatik' },
+                ].map(t => {
+                  const active = (siteSettings.ui?.default_theme || 'dark') === t.key
+                  return (
+                    <button key={t.key}
+                      onClick={() => saveSettings('ui', { ...siteSettings.ui, default_theme: t.key })}
+                      className="py-2 rounded-lg text-sm font-bold"
+                      style={{
+                        background: active ? 'rgba(255,215,0,0.15)' : 'var(--surface-2)',
+                        border: active ? '2px solid #FFD700' : '1px solid var(--border)',
+                        color: active ? '#FFD700' : 'var(--text-dim)',
+                      }}>
+                      {t.label}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
           </div>
 
           {/* Zorluk Puan ve Süre Ayarları */}
           <div className="glass p-5">
             <h3 className="font-bold mb-1" style={{ color: '#FFD700' }}>🎯 Zorluk Puan ve Süre Ayarları</h3>
-            <p className="text-xs mb-4" style={{ color: '#B0BEC5' }}>Tüm maç tiplerinde geçerlidir (1v1, kategori, maraton).</p>
+            <p className="text-xs mb-4" style={{ color: 'var(--text-dim)' }}>Tüm maç tiplerinde geçerlidir (1v1, kategori, maraton).</p>
             {[['easy','Kolay'],['medium','Orta'],['hard','Zor'],['very_hard','Çok Zor']].map(([d, label]) => (
               <div key={d} className="grid grid-cols-3 gap-3 mb-3 items-end">
                 <div>
-                  <label className="text-xs mb-1 block" style={{ color: '#B0BEC5' }}>{label} — Doğru Puan</label>
+                  <label className="text-xs mb-1 block" style={{ color: 'var(--text-dim)' }}>{label} — Doğru Puan</label>
                   <input type="number" className="input-field w-full"
                     value={siteSettings.difficulty_config?.[d]?.correct ?? 10}
                     onChange={e => setSiteSettings((prev: any) => ({
@@ -2014,7 +2039,7 @@ export default function AdminPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs mb-1 block" style={{ color: '#B0BEC5' }}>{label} — Yanlış Ceza</label>
+                  <label className="text-xs mb-1 block" style={{ color: 'var(--text-dim)' }}>{label} — Yanlış Ceza</label>
                   <input type="number" className="input-field w-full"
                     value={siteSettings.difficulty_config?.[d]?.wrong ?? -3}
                     onChange={e => setSiteSettings((prev: any) => ({
@@ -2026,7 +2051,7 @@ export default function AdminPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs mb-1 block" style={{ color: '#B0BEC5' }}>{label} — Süre (sn)</label>
+                  <label className="text-xs mb-1 block" style={{ color: 'var(--text-dim)' }}>{label} — Süre (sn)</label>
                   <input type="number" className="input-field w-full"
                     value={siteSettings.difficulty_config?.[d]?.time_limit ?? 20}
                     onChange={e => setSiteSettings((prev: any) => ({
@@ -2049,11 +2074,11 @@ export default function AdminPage() {
           {/* Solo Level Ayarları */}
           <div className="glass p-5">
             <h3 className="font-bold mb-1" style={{ color: '#FFD700' }}>🌟 Maraton Level Ayarları</h3>
-            <p className="text-xs mb-4" style={{ color: '#B0BEC5' }}>
+            <p className="text-xs mb-4" style={{ color: 'var(--text-dim)' }}>
               Kullanıcı bir levelde yeni yıldız kazandığında yıldız başına verilecek XP. (Sadece yeni yıldızlar için; tekrar oynayıp aynı yıldızdan XP kazanılamaz.)
             </p>
             <div style={{ maxWidth: 240 }}>
-              <label className="text-sm mb-1 block" style={{ color: '#B0BEC5' }}>Yıldız başına XP</label>
+              <label className="text-sm mb-1 block" style={{ color: 'var(--text-dim)' }}>Yıldız başına XP</label>
               <input type="number" className="input-field w-full"
                 value={siteSettings.solo?.xp_per_star ?? 20}
                 onChange={e => setSiteSettings((prev: any) => ({
@@ -2082,24 +2107,24 @@ export default function AdminPage() {
                 {siteSettings.kalabalik?.enabled ? '✓ Açık' : '✗ Kapalı'}
               </button>
             </div>
-            <p className="text-xs mb-4" style={{ color: '#B0BEC5' }}>
+            <p className="text-xs mb-4" style={{ color: 'var(--text-dim)' }}>
               Açıkken, TR saatiyle aşağıdaki aralıkta botlar kendi aralarında maç yapar ve genel + her kategori ligini doldurur. Maçlar aralığa yayılır.
             </p>
             <div className="grid grid-cols-3 gap-3 mb-3">
               <div>
-                <label className="text-xs mb-1 block" style={{ color: '#B0BEC5' }}>Başlangıç (TR saat)</label>
+                <label className="text-xs mb-1 block" style={{ color: 'var(--text-dim)' }}>Başlangıç (TR saat)</label>
                 <input type="number" min={0} max={23} className="input-field w-full"
                   value={siteSettings.kalabalik?.start_hour ?? 0}
                   onChange={e => setSiteSettings((p: any) => ({ ...p, kalabalik: { ...p.kalabalik, start_hour: parseInt(e.target.value) || 0 } }))} />
               </div>
               <div>
-                <label className="text-xs mb-1 block" style={{ color: '#B0BEC5' }}>Bitiş (TR saat)</label>
+                <label className="text-xs mb-1 block" style={{ color: 'var(--text-dim)' }}>Bitiş (TR saat)</label>
                 <input type="number" min={0} max={23} className="input-field w-full"
                   value={siteSettings.kalabalik?.end_hour ?? 8}
                   onChange={e => setSiteSettings((p: any) => ({ ...p, kalabalik: { ...p.kalabalik, end_hour: parseInt(e.target.value) || 0 } }))} />
               </div>
               <div>
-                <label className="text-xs mb-1 block" style={{ color: '#B0BEC5' }}>Lig başına maç</label>
+                <label className="text-xs mb-1 block" style={{ color: 'var(--text-dim)' }}>Lig başına maç</label>
                 <input type="number" min={0} max={500} className="input-field w-full"
                   value={siteSettings.kalabalik?.matches_per_league ?? 10}
                   onChange={e => setSiteSettings((p: any) => ({ ...p, kalabalik: { ...p.kalabalik, matches_per_league: parseInt(e.target.value) || 0 } }))} />
@@ -2127,7 +2152,7 @@ export default function AdminPage() {
             <h3 className="font-bold mb-4" style={{ color: '#FFD700' }}>🏆 Turnuva Ayarları</h3>
             <div className="grid grid-cols-3 gap-4">
               <div>
-                <label className="text-sm mb-1 block" style={{ color: '#B0BEC5' }}>Katılımcı Sayısı</label>
+                <label className="text-sm mb-1 block" style={{ color: 'var(--text-dim)' }}>Katılımcı Sayısı</label>
                 <input type="number" className="input-field w-full"
                   value={siteSettings.marathon?.max_participants || 128}
                   onChange={e => setSiteSettings((prev: any) => ({
@@ -2136,7 +2161,7 @@ export default function AdminPage() {
                 />
               </div>
               <div>
-                <label className="text-sm mb-1 block" style={{ color: '#B0BEC5' }}>Lobi Süresi (sn)</label>
+                <label className="text-sm mb-1 block" style={{ color: 'var(--text-dim)' }}>Lobi Süresi (sn)</label>
                 <input type="number" className="input-field w-full"
                   value={siteSettings.marathon?.lobby_duration_seconds || 180}
                   onChange={e => setSiteSettings((prev: any) => ({
@@ -2145,7 +2170,7 @@ export default function AdminPage() {
                 />
               </div>
               <div>
-                <label className="text-sm mb-1 block" style={{ color: '#B0BEC5' }}>Aralık (dakika)</label>
+                <label className="text-sm mb-1 block" style={{ color: 'var(--text-dim)' }}>Aralık (dakika)</label>
                 <input type="number" className="input-field w-full"
                   value={siteSettings.marathon?.interval_minutes || 15}
                   onChange={e => setSiteSettings((prev: any) => ({
@@ -2155,7 +2180,7 @@ export default function AdminPage() {
               </div>
             </div>
             <div className="mt-3">
-              <label className="text-sm mb-1 block" style={{ color: '#B0BEC5' }}>Saat Dilimi (UTC Offset)</label>
+              <label className="text-sm mb-1 block" style={{ color: 'var(--text-dim)' }}>Saat Dilimi (UTC Offset)</label>
               <select className="input-field w-full" value={siteSettings.marathon?.utc_offset || 3}
                 onChange={e => setSiteSettings((prev: any) => ({
                   ...prev, marathon: { ...prev.marathon, utc_offset: parseInt(e.target.value) }
@@ -2169,7 +2194,7 @@ export default function AdminPage() {
               </select>
             </div>
             <div className="mt-3">
-              <label className="text-sm mb-1 block" style={{ color: '#B0BEC5' }}>Tur Başına Soru</label>
+              <label className="text-sm mb-1 block" style={{ color: 'var(--text-dim)' }}>Tur Başına Soru</label>
               <input type="number" className="input-field" style={{ width: 100 }}
                 value={siteSettings.marathon?.questions_per_round || 3}
                 onChange={e => setSiteSettings((prev: any) => ({
@@ -2178,7 +2203,7 @@ export default function AdminPage() {
               />
             </div>
             <div className="mt-3">
-              <label className="text-sm mb-1 block" style={{ color: '#B0BEC5' }}>Soru Başına Süre (sn)</label>
+              <label className="text-sm mb-1 block" style={{ color: 'var(--text-dim)' }}>Soru Başına Süre (sn)</label>
               <input type="number" className="input-field" style={{ width: 100 }}
                 value={siteSettings.marathon?.time_per_question || 15}
                 onChange={e => setSiteSettings((prev: any) => ({
@@ -2198,7 +2223,7 @@ export default function AdminPage() {
             <h3 className="font-bold mb-4" style={{ color: '#81C784' }}>🤖 Bot Ayarları</h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-sm mb-1 block" style={{ color: '#B0BEC5' }}>Bot Sayısı</label>
+                <label className="text-sm mb-1 block" style={{ color: 'var(--text-dim)' }}>Bot Sayısı</label>
                 <input type="number" className="input-field w-full"
                   value={siteSettings.bots?.total_count || 500}
                   onChange={e => setSiteSettings((prev: any) => ({
@@ -2207,7 +2232,7 @@ export default function AdminPage() {
                 />
               </div>
               <div>
-                <label className="text-sm mb-1 block" style={{ color: '#B0BEC5' }}>Hız Çarpanı (1.0 = normal)</label>
+                <label className="text-sm mb-1 block" style={{ color: 'var(--text-dim)' }}>Hız Çarpanı (1.0 = normal)</label>
                 <input type="number" step="0.1" className="input-field w-full"
                   value={siteSettings.bots?.speed_multiplier || 1.0}
                   onChange={e => setSiteSettings((prev: any) => ({
@@ -2227,7 +2252,7 @@ export default function AdminPage() {
           <div className="glass p-5">
             <h3 className="font-bold mb-4" style={{ color: '#E91E63' }}>🔑 API Ayarları</h3>
             <div className="mb-3">
-              <label className="text-sm mb-1 block" style={{ color: '#B0BEC5' }}>OpenAI API Key</label>
+              <label className="text-sm mb-1 block" style={{ color: 'var(--text-dim)' }}>OpenAI API Key</label>
               <input
                 type="password"
                 className="input-field w-full"

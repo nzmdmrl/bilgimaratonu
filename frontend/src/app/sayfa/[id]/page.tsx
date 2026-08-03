@@ -17,7 +17,7 @@ export default function StaticPage() {
   }, [id])
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center" style={{ color: '#B0BEC5' }}>
+    <div className="min-h-screen flex items-center justify-center" style={{ color: 'var(--text-dim)' }}>
       Yükleniyor...
     </div>
   )
@@ -35,7 +35,7 @@ export default function StaticPage() {
     <div className="min-h-screen p-4" style={{ maxWidth: 800, margin: '0 auto' }}>
       <div className="glass p-8 animate-fade-in">
         <h1 className="text-3xl font-black mb-6" style={{ color: '#FFD700' }}>{page.title}</h1>
-        <div style={{ color: '#B0BEC5', lineHeight: 1.8, whiteSpace: 'pre-wrap' }}>
+        <div style={{ color: 'var(--text-dim)', lineHeight: 1.8, whiteSpace: 'pre-wrap' }}>
           <div dangerouslySetInnerHTML={{ __html: page.content }} className="prose prose-invert max-w-none" />
         </div>
         <Link href="/" className="btn-gold inline-block mt-8">← Ana Sayfa</Link>

@@ -217,12 +217,12 @@ export default function SoloPage() {
 
     return (
       <div className="min-h-screen" style={{
-        background: 'linear-gradient(180deg, #0A0E27 0%, #1A1B4B 100%)',
+        background: 'linear-gradient(180deg, var(--bg) 0%, #1A1B4B 100%)',
         position: 'relative', overflowX: 'hidden',
       }}>
         {/* Üst bar */}
         <div className="flex items-center justify-between px-4 py-3" style={{ position: 'sticky', top: 0, zIndex: 10, maxWidth: 500, margin: '0 auto' }}>
-          <Link href="/" style={{ color: '#B0BEC5', fontSize: 22, fontWeight: 900, textDecoration: 'none' }}>←</Link>
+          <Link href="/" style={{ color: 'var(--text-dim)', fontSize: 22, fontWeight: 900, textDecoration: 'none' }}>←</Link>
           <div className="font-black" style={{ color: '#4FC3F7' }}>🏅 Maraton Yolu</div>
           <div className="font-bold" style={{ color: '#FFD700' }}>🌟 {progress?.total_stars ?? 0}</div>
         </div>
@@ -277,7 +277,7 @@ export default function SoloPage() {
                 </button>
                 {passed && <div style={{ marginTop: 5 }}><Stars count={stars} size={19} /></div>}
                 {isCurrent && !passed && (
-                  <div style={{ marginTop: 5, fontSize: 11, color: '#fff', fontWeight: 800, background: 'rgba(2,119,189,0.85)', padding: '2px 8px', borderRadius: 999 }}>Buradan başla</div>
+                  <div style={{ marginTop: 5, fontSize: 11, color: 'var(--text)', fontWeight: 800, background: 'rgba(2,119,189,0.85)', padding: '2px 8px', borderRadius: 999 }}>Buradan başla</div>
                 )}
               </div>
             )
@@ -294,7 +294,7 @@ export default function SoloPage() {
               onClick={e => e.stopPropagation()}>
               <div style={{ fontSize: 40, marginBottom: 8 }}>🔄</div>
               <h3 className="font-black text-lg mb-2">Level {replayLevel} — Tekrar Oyna</h3>
-              <p className="text-sm mb-1" style={{ color: '#B0BEC5' }}>
+              <p className="text-sm mb-1" style={{ color: 'var(--text-dim)' }}>
                 En iyi derecen: <Stars count={levels[String(replayLevel)] ?? 0} size={14} />
               </p>
               <p className="text-sm mb-4" style={{ color: '#FFD700' }}>
@@ -302,7 +302,7 @@ export default function SoloPage() {
               </p>
               <div className="flex gap-2">
                 <button onClick={() => setReplayLevel(null)}
-                  className="flex-1 glass p-3 text-sm font-bold" style={{ color: '#B0BEC5' }}>Vazgeç</button>
+                  className="flex-1 glass p-3 text-sm font-bold" style={{ color: 'var(--text-dim)' }}>Vazgeç</button>
                 <button onClick={() => startLevel(replayLevel)} disabled={loading}
                   className="flex-1 btn-gold text-sm font-bold">{loading ? '...' : '▶ Başla'}</button>
               </div>
@@ -318,7 +318,7 @@ export default function SoloPage() {
       <div className="text-center animate-fade-in">
         <div className="text-sm font-bold mb-2" style={{ color: '#4FC3F7' }}>LEVEL {currentLevel}</div>
         <div className="text-9xl font-black mb-4" style={{ color: '#FFD700' }}>{countdown || 'Başla!'}</div>
-        <p style={{ color: '#B0BEC5' }}>{questions.length} soru hazır</p>
+        <p style={{ color: 'var(--text-dim)' }}>{questions.length} soru hazır</p>
       </div>
     </div>
   )
@@ -333,7 +333,7 @@ export default function SoloPage() {
           <div className="text-sm font-bold" style={{ color: DIFF_COLORS[q.difficulty] }}>{DIFF_LABELS[q.difficulty] || q.difficulty}</div>
         </div>
         <div className="flex items-center justify-between mb-3 gap-2">
-          <div className="text-sm font-bold min-w-0" style={{ color: '#B0BEC5' }}>
+          <div className="text-sm font-bold min-w-0" style={{ color: 'var(--text-dim)' }}>
             {q.index + 1} / {q.total} <span style={{ color: '#4FC3F7' }}>· 📁 {q.category_name}</span>
           </div>
           <div className="text-3xl font-black flex-shrink-0" style={{
@@ -341,7 +341,7 @@ export default function SoloPage() {
           }}>{timeLeft}</div>
         </div>
 
-        <div className="h-1.5 rounded-full mb-4 overflow-hidden" style={{ background: 'rgba(255,255,255,0.1)' }}>
+        <div className="h-1.5 rounded-full mb-4 overflow-hidden" style={{ background: 'var(--surface-2)' }}>
           <div className="h-full rounded-full" style={{
             width: `${(q.index / q.total) * 100}%`,
             background: 'linear-gradient(90deg,#4FC3F7,#FFD700)',
@@ -364,8 +364,8 @@ export default function SoloPage() {
             const isCorrect = correctAnswer === label
             const isWrong = isMine && correctAnswer && label !== correctAnswer
 
-            let bg = 'rgba(255,255,255,0.08)'
-            let border = '1px solid rgba(255,255,255,0.12)'
+            let bg = 'var(--surface-2)'
+            let border = '1px solid var(--border)'
             if (isCorrect) { bg = 'rgba(76,175,80,0.4)'; border = '2px solid #4CAF50' }
             else if (isWrong) { bg = 'rgba(244,67,54,0.35)'; border = '2px solid #F44336' }
             else if (isMine) { bg = 'rgba(79,195,247,0.25)'; border = '2px solid #4FC3F7' }
@@ -375,7 +375,7 @@ export default function SoloPage() {
                 disabled={!!myAnswer}
                 style={{
                   background: bg, border,
-                  borderRadius: 12, padding: '14px 16px', color: 'white',
+                  borderRadius: 12, padding: '14px 16px', color: 'var(--text)',
                   cursor: myAnswer ? 'not-allowed' : 'pointer',
                   textAlign: 'left', fontSize: 14, transition: 'all 0.2s',
                 }}>
@@ -392,7 +392,7 @@ export default function SoloPage() {
         {!myAnswer && (
           <button onClick={() => handleAnswer(null)}
             className="w-full mt-3 text-sm py-2 rounded-lg"
-            style={{ background: 'rgba(255,255,255,0.05)', color: '#555' }}>
+            style={{ background: 'var(--surface-2)', color: '#555' }}>
             ⏭ Geç
           </button>
         )}
@@ -404,7 +404,7 @@ export default function SoloPage() {
     <div className="min-h-screen p-4" style={{ maxWidth: 700, margin: '0 auto' }}>
       <div className="glass p-6 animate-fade-in">
         {!result ? (
-          <div className="text-center py-8" style={{ color: '#B0BEC5' }}>Sonuç kaydediliyor...</div>
+          <div className="text-center py-8" style={{ color: 'var(--text-dim)' }}>Sonuç kaydediliyor...</div>
         ) : result.error ? (
           <div style={{ color: '#F44336' }}>{result.error}</div>
         ) : (
@@ -419,15 +419,15 @@ export default function SoloPage() {
             <div className="grid grid-cols-3 gap-3 mb-4">
               <div className="glass p-4 text-center">
                 <div className="text-3xl font-black" style={{ color: '#4CAF50' }}>{result.correct}</div>
-                <div className="text-xs mt-1" style={{ color: '#B0BEC5' }}>Doğru</div>
+                <div className="text-xs mt-1" style={{ color: 'var(--text-dim)' }}>Doğru</div>
               </div>
               <div className="glass p-4 text-center">
                 <div className="text-3xl font-black" style={{ color: '#F44336' }}>{result.total - result.correct}</div>
-                <div className="text-xs mt-1" style={{ color: '#B0BEC5' }}>Yanlış</div>
+                <div className="text-xs mt-1" style={{ color: 'var(--text-dim)' }}>Yanlış</div>
               </div>
               <div className="glass p-4 text-center">
                 <div className="text-3xl font-black" style={{ color: '#4FC3F7' }}>%{result.accuracy}</div>
-                <div className="text-xs mt-1" style={{ color: '#B0BEC5' }}>Başarı</div>
+                <div className="text-xs mt-1" style={{ color: 'var(--text-dim)' }}>Başarı</div>
               </div>
             </div>
 
@@ -439,14 +439,14 @@ export default function SoloPage() {
                 </span>
               </div>
             ) : result.is_replay ? (
-              <div className="glass p-3 mb-4 text-center text-sm" style={{ color: '#B0BEC5' }}>
+              <div className="glass p-3 mb-4 text-center text-sm" style={{ color: 'var(--text-dim)' }}>
                 Yeni yıldız kazanmadın (en iyi derecen korunuyor). Daha fazlası için tekrar dene!
               </div>
             ) : null}
 
             <button onClick={() => setShowDetails(!showDetails)}
               className="w-full mb-3 text-sm py-2 rounded-lg"
-              style={{ background: 'rgba(255,255,255,0.05)', color: '#B0BEC5' }}>
+              style={{ background: 'var(--surface-2)', color: 'var(--text-dim)' }}>
               {showDetails ? '▲ Detayları Gizle' : '▼ Soru Detaylarını Gör'}
             </button>
             {showDetails && (
@@ -458,7 +458,7 @@ export default function SoloPage() {
                       <span className="text-xl flex-shrink-0">{r.is_correct ? '✅' : '❌'}</span>
                       <div className="flex-1 min-w-0">
                         <div className="text-sm font-semibold">{r.question_text}</div>
-                        <div className="text-xs mt-1" style={{ color: '#B0BEC5' }}>
+                        <div className="text-xs mt-1" style={{ color: 'var(--text-dim)' }}>
                           Cevabın: <span style={{ color: r.is_correct ? '#4CAF50' : '#F44336' }}>{r.selected ? optMap[r.selected] || r.selected : 'Boş'}</span>
                           {!r.is_correct && (<span> • Doğru: <span style={{ color: '#4CAF50' }}>{optMap[r.correct_answer] || r.correct_answer}</span></span>)}
                         </div>
@@ -481,7 +481,7 @@ export default function SoloPage() {
               <button onClick={() => { setScreen('map'); setResult(null); setMyAnswer(null); loadProgress() }}
                 className="flex-1 glass p-3 text-sm font-bold" style={{ color: '#4FC3F7' }}>🗺 Harita</button>
             </div>
-            <Link href="/" className="block glass p-3 text-sm font-bold text-center" style={{ color: '#B0BEC5' }}>
+            <Link href="/" className="block glass p-3 text-sm font-bold text-center" style={{ color: 'var(--text-dim)' }}>
               🏠 Ana Sayfa
             </Link>
           </>

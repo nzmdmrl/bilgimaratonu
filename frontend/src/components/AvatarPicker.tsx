@@ -37,8 +37,8 @@ export default function AvatarPicker({
             <button key={i} onClick={() => onSelect(url)} disabled={saving}
               style={{
                 aspectRatio: '1 / 1', borderRadius: 12, padding: 4,
-                background: selected ? 'rgba(79,195,247,0.2)' : 'rgba(255,255,255,0.05)',
-                border: selected ? '2px solid #4FC3F7' : '1px solid rgba(255,255,255,0.1)',
+                background: selected ? 'rgba(79,195,247,0.2)' : 'var(--surface-2)',
+                border: selected ? '2px solid #4FC3F7' : '1px solid var(--border)',
                 cursor: saving ? 'wait' : 'pointer',
               }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -49,7 +49,7 @@ export default function AvatarPicker({
       </div>
       <button onClick={regenerate} disabled={saving}
         className="w-full mt-3 text-sm py-2 rounded-lg font-bold"
-        style={{ background: 'rgba(255,255,255,0.06)', color: '#B0BEC5' }}>
+        style={{ background: 'var(--surface-2)', color: 'var(--text-dim)' }}>
         🎲 Yeni Seçenekler Üret
       </button>
     </div>
