@@ -25,6 +25,11 @@ DEFAULT_SETTINGS = {
         "requests_per_hour": 5,    # Saatte gönderilebilecek maks arkadaşlık isteği
     },
 
+    # ─ Arayüz
+    "ui": {
+        "mobile_match_header": False,  # Mobilde maç ekranlarında üst menü görünsün mü (varsayılan: hayır)
+    },
+
     # ─ Maç Ayarları
     "match": {
         "total_questions": 15,

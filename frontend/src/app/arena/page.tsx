@@ -214,8 +214,7 @@ export default function ArenaPage() {
   if (screen === 'finding' || screen === 'lobby_full') {
     const full = screen === 'lobby_full'
     return (
-      <div className="min-h-screen flex flex-col items-center px-4 pt-10" style={{ maxWidth: 500, margin: '0 auto' }}>
-        <Link href="/" className="self-start" style={{ color: '#B0BEC5', fontSize: 22 }}>←</Link>
+      <div className="min-h-screen flex flex-col items-center justify-center px-4 py-8" style={{ maxWidth: 500, margin: '0 auto' }}>
         <h1 className="text-3xl font-black mb-1" style={{ color: '#FF7043' }}>🎯 Arena</h1>
         {full ? (
           <div className="text-lg font-black mb-1 arena-pulse" style={{ color: '#4CAF50' }}>Rakipler bulundu! Başlıyor…</div>

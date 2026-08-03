@@ -1,6 +1,6 @@
 'use client'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useAuthStore } from '@/lib/store'
 import { useEffect, useState } from 'react'
 import NotificationBell from './NotificationBell'
@@ -11,9 +11,11 @@ import { avatarSrc } from '@/lib/avatar'
 export default function Header() {
   const { user, fetchMe, logout } = useAuthStore()
   const pathname = usePathname()
+  const router = useRouter()
   const [modules, setModules] = useState<any>({ match_1v1: true, marathon: true, league_monthly: true })
   const [version, setVersion] = useState('1.0')
   const [menuOpen, setMenuOpen] = useState(false)
+  const [mobileMatchHeader, setMobileMatchHeader] = useState(false)
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -24,10 +26,17 @@ export default function Header() {
         .then(d => {
           if (d.modules) setModules(d.modules)
           if (d.version) setVersion(d.version)
+          if (d.ui) setMobileMatchHeader(!!d.ui.mobile_match_header)
         })
         .catch(() => {})
     }
   }, [])
+
+  // Maç ekranları — mobilde üst menü gizlenir (ayar kapalıysa)
+  const MATCH_PREFIXES = ['/mac', '/kategori-mac', '/arena', '/turnuva', '/maraton']
+  const isMatchScreen = MATCH_PREFIXES.some(p => pathname.startsWith(p))
+    || (pathname.startsWith('/testler/') && pathname !== '/testler' && pathname !== '/testler/olustur')
+  const hideOnMobile = isMatchScreen && !mobileMatchHeader
 
   useEffect(() => { setMenuOpen(false) }, [pathname])
 
@@ -46,7 +55,23 @@ export default function Header() {
 
   return (
     <>
-      <header style={{
+      {/* Mobil maç ekranı: header gizli — küçük geri oku (az yer kaplar) */}
+      {hideOnMobile && (
+        <button onClick={() => { try { router.back() } catch { router.push('/') } }}
+          className="md:hidden"
+          aria-label="Geri"
+          style={{
+            position: 'fixed', top: 6, left: 6, zIndex: 120,
+            width: 34, height: 34, borderRadius: '50%',
+            background: 'rgba(15,20,40,0.75)', border: '1px solid rgba(255,255,255,0.12)',
+            color: '#fff', fontSize: 18, lineHeight: 1, cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            backdropFilter: 'blur(6px)',
+          }}>
+          ←
+        </button>
+      )}
+      <header className={hideOnMobile ? 'hidden md:block' : ''} style={{
         background: 'rgba(15,20,40,0.95)',
         borderBottom: '1px solid rgba(255,255,255,0.08)',
         backdropFilter: 'blur(10px)',

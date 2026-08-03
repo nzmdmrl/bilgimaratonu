@@ -1959,6 +1959,27 @@ export default function AdminPage() {
             </button>
           </div>
 
+          {/* Arayüz Ayarları */}
+          <div className="glass p-5">
+            <h3 className="font-bold mb-1" style={{ color: '#4FC3F7' }}>📱 Arayüz (Mobil)</h3>
+            <p className="text-xs mb-4" style={{ color: '#B0BEC5' }}>Maç ekranlarında üst menü davranışı.</p>
+            <div className="flex items-center justify-between glass p-3">
+              <div>
+                <div className="text-sm font-bold">Mobilde maç ekranlarında üst menü</div>
+                <div className="text-xs" style={{ color: '#B0BEC5' }}>Kapalıyken üst menü gizlenir, sadece küçük geri oku çıkar (daha çok alan).</div>
+              </div>
+              <button
+                onClick={() => saveSettings('ui', { ...siteSettings.ui, mobile_match_header: !siteSettings.ui?.mobile_match_header })}
+                className="px-3 py-1 rounded-lg text-sm font-bold flex-shrink-0 ml-3"
+                style={{
+                  background: siteSettings.ui?.mobile_match_header ? 'rgba(76,175,80,0.2)' : 'rgba(244,67,54,0.2)',
+                  color: siteSettings.ui?.mobile_match_header ? '#4CAF50' : '#F44336',
+                }}>
+                {siteSettings.ui?.mobile_match_header ? '✓ Var' : '✗ Yok'}
+              </button>
+            </div>
+          </div>
+
           {/* Zorluk Puan ve Süre Ayarları */}
           <div className="glass p-5">
             <h3 className="font-bold mb-1" style={{ color: '#FFD700' }}>🎯 Zorluk Puan ve Süre Ayarları</h3>
