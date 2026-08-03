@@ -4,6 +4,7 @@ import './globals.css'
 import HeaderWrapper from '@/components/HeaderWrapper'
 import Footer from '@/components/Footer'
 import BottomNav from '@/components/BottomNav'
+import ClickSound from '@/components/ClickSound'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -20,6 +21,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {children}
         <Footer />
         <BottomNav />
+        <ClickSound />
       </body>
     </html>
   )

@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useAuthStore } from '@/lib/store'
 import api from '@/lib/api'
 import { avatarSrc } from '@/lib/avatar'
-import { initSounds, playSound, playCountdownTick, playCountdownBeep } from '@/lib/sound'
+import { initSounds, playSound, playCountdownTick, playCountdownBeep, startRadar, stopRadar } from '@/lib/sound'
 
 interface Player { user_id: string; username: string; avatar_url: string; is_bot: boolean }
 type Screen = 'finding' | 'lobby_full' | 'countdown' | 'question' | 'result' | 'grid' | 'end'
@@ -86,6 +86,7 @@ export default function ArenaPage() {
       wsRef.current?.close()
       if (timerRef.current) clearInterval(timerRef.current)
       if (resultTimerRef.current) clearTimeout(resultTimerRef.current)
+      stopRadar()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -129,6 +130,7 @@ export default function ArenaPage() {
         setIsPrivate(!!msg.private); setIsHost(!!msg.is_host)
         if (msg.min_start) setMinStart(msg.min_start)
         setScreen('finding')
+        startRadar()
         break
       case 'lobby':
         setTarget(msg.target || 5)
@@ -139,11 +141,13 @@ export default function ArenaPage() {
         setTimeout(() => setDeclineMsg(null), 5000)
         break
       case 'lobby_full':
+        stopRadar()
         setPlayersState(msg.players || [])
         setScreen('lobby_full')
         playSound('match_found')
         break
       case 'starting': {
+        stopRadar()
         setPlayersState(msg.players || [])
         setQTotal(msg.questions || 7)
         setHistory({})
@@ -503,7 +507,7 @@ export default function ArenaPage() {
       {/* üst bar */}
       <div className="px-4 pt-3">
         <div className="flex items-center justify-between text-sm mb-1">
-          <span className="font-bold" style={{ color: '#FF7043' }}>Arena {qIndex + 1}/{qTotal}</span>
+          <span className="font-bold ml-10 md:ml-0" style={{ color: '#FF7043' }}>Arena {qIndex + 1}/{qTotal}</span>
           <span className="font-black text-2xl" style={{ color: timeLeft <= 3 ? '#F44336' : '#FFD700' }}>{screen === 'question' ? timeLeft : ''}</span>
           <span className="text-xs" style={{ color: '#B0BEC5' }}>{q?.category_name}</span>
         </div>

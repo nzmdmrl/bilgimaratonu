@@ -19,6 +19,7 @@ export type SoundKey =
   | 'lose'
   | 'badge'
   | 'notification'
+  | 'click'
 
 // Admin panelinde gösterilecek insan-okunur etiketler (sıra bu listeye göre)
 export const SOUND_SLOTS: { key: SoundKey; label: string; desc: string }[] = [
@@ -35,6 +36,7 @@ export const SOUND_SLOTS: { key: SoundKey; label: string; desc: string }[] = [
   { key: 'lose', label: '💔 Kaybettin', desc: 'Maç kaybedildiğinde' },
   { key: 'badge', label: '🎖 Rozet Kazanıldı', desc: 'Maç sonunda rozet kazanıldığında' },
   { key: 'notification', label: '🔔 Bildirim', desc: 'Yeni bildirim geldiğinde' },
+  { key: 'click', label: '🖱 Buton Tık', desc: 'Butonlara tıklarken çalan kısa tık sesi' },
 ]
 
 let ctx: AudioContext | null = null
@@ -221,6 +223,11 @@ const SYNTH: Record<SoundKey, (arg?: any) => void> = {
   notification: () => {
     tone(880, 0.14, { type: 'sine', gain: 0.26 })
     tone(1174.66, 0.2, { type: 'sine', gain: 0.26, delay: 0.13 })
+  },
+  click: () => {
+    // kısa, yumuşak tık
+    tone(1300, 0.03, { type: 'triangle', gain: 0.13 })
+    tone(2600, 0.02, { type: 'sine', gain: 0.05, delay: 0.008 })
   },
 }
 
