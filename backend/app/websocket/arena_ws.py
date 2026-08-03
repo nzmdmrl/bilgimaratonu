@@ -87,7 +87,7 @@ async def _cfg(db):
         "bot_interval_seconds": max(1, int(c.get("bot_interval_seconds", 2))),
         "answer_seconds": int(c.get("answer_seconds", 10)),
         "questions": int(c.get("questions", 7)),
-        "only_easy_medium": bool(c.get("only_easy_medium", True)),
+        "only_easy": bool(c.get("only_easy", True)),
     }
 
 
@@ -112,12 +112,12 @@ async def _broadcast(room, data):
             await _send(p, data)
 
 
-async def _arena_questions(db, count, only_easy_medium=True):
-    # Arena işaretli kategorilerden çek; ayar açıksa sadece kolay + orta
+async def _arena_questions(db, count, only_easy=True):
+    # Arena işaretli kategorilerden çek; ayar açıksa sadece KOLAY
     conds = [Question.is_active == True, Question.is_approved == True, Category.has_arena_match == True]
-    if only_easy_medium:
+    if only_easy:
         from app.models.question import DifficultyLevel
-        conds.append(Question.difficulty.in_([DifficultyLevel.easy, DifficultyLevel.medium]))
+        conds.append(Question.difficulty == DifficultyLevel.easy)
     rows = (await db.execute(
         select(Question).options()
         .join(Question.category)
@@ -354,7 +354,7 @@ async def _start(room):
     cfg = room.cfg
 
     async with AsyncSessionLocal() as db:
-        questions = await _arena_questions(db, cfg["questions"], cfg.get("only_easy_medium", True))
+        questions = await _arena_questions(db, cfg["questions"], cfg.get("only_easy", True))
         qlist = [_q_dict(q) for q in questions]
     if not qlist:
         await _broadcast(room, {"type": "error", "message": "Yeterli arena sorusu yok."})

@@ -95,7 +95,7 @@ DEFAULT_SETTINGS = {
         "bot_enabled": True,
         "bot_start_seconds": 15,   # üye gelmezse bu kadar sonra botlar girmeye başlar
         "bot_interval_seconds": 2,
-        "only_easy_medium": True,   # Arena kategorilerinden sadece kolay+orta soru çek
+        "only_easy": True,          # Arena kategorilerinden sadece KOLAY soru çek
     },
 
     # ─ Kalabalık (bot maçlarıyla ligleri doldurma)
