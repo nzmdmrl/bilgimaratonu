@@ -18,7 +18,7 @@ export default function BlogPage() {
   return (
     <div className="min-h-screen p-4" style={{ maxWidth: 800, margin: '0 auto' }}>
       <div className="mb-8">
-        <h1 className="text-3xl font-black" style={{ color: '#FFD700' }}>📝 Blog</h1>
+        <h1 className="text-3xl font-black" style={{ color: 'var(--gold)' }}>📝 Blog</h1>
         <p className="text-sm mt-1" style={{ color: 'var(--text-dim)' }}>Bilgi Maratonu'ndan haberler ve yazılar</p>
       </div>
       {posts.length === 0 ? (
@@ -29,7 +29,7 @@ export default function BlogPage() {
             <Link key={p.id} href={`/blog/${p.slug}`} className="glass p-6 block hover:scale-[1.01] transition-transform">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1">
-                  <h2 className="text-xl font-black mb-2" style={{ color: '#FFD700' }}>{p.title}</h2>
+                  <h2 className="text-xl font-black mb-2" style={{ color: 'var(--gold)' }}>{p.title}</h2>
                   {p.summary && <p className="text-sm" style={{ color: 'var(--text-dim)' }}>{p.summary}</p>}
                   <div className="flex gap-4 mt-3 text-xs" style={{ color: '#555' }}>
                     <span>📅 {p.created_at}</span>

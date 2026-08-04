@@ -141,7 +141,7 @@ export default function Bracket({ data, me }: { data: BracketData; me?: string }
             {/* CHAMPION etiketi (merkez, final üstünde) */}
             <div style={{
               position: 'absolute', left: (R - 1) * COL_W, top: height / 2 - BOX_H - 34,
-              width: BOX_W, textAlign: 'center', color: '#FFD700', fontWeight: 900, fontSize: 13, letterSpacing: 1,
+              width: BOX_W, textAlign: 'center', color: 'var(--gold)', fontWeight: 900, fontSize: 13, letterSpacing: 1,
             }}>🏆 Şampiyon{data.champion ? `` : ''}
               {data.champion && <div style={{ fontSize: 12, color: 'var(--text)', fontWeight: 700 }}>{data.champion}</div>}
             </div>

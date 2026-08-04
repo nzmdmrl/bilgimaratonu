@@ -15,6 +15,8 @@
   --border: rgba(255, 255, 255, 0.10);
   --card-shadow: none;
   --header-bg: rgba(15, 20, 40, 0.95);
+  --gold: #FFD700;
+  --blue: #4FC3F7;
   --input-bg: rgba(255, 255, 255, 0.08);
   --input-border: rgba(255, 255, 255, 0.15);
   --placeholder: rgba(255, 255, 255, 0.4);
@@ -33,13 +35,15 @@ html[data-theme="light"] {
   --bg2: #DCE4F0;
   --bg-gradient: linear-gradient(135deg, #F4F7FC 0%, #DFE7F3 100%);
   --text: #14213D;
-  --text-dim: #51617B;
-  --text-dimmer: #8593A8;
+  --text-dim: #4A5A72;
+  --text-dimmer: #647388;
   --surface: rgba(255, 255, 255, 0.92);
   --surface-2: rgba(20, 33, 61, 0.045);
   --border: rgba(20, 33, 61, 0.12);
   --card-shadow: 0 4px 18px rgba(20, 33, 61, 0.08);
   --header-bg: rgba(255, 255, 255, 0.92);
+  --gold: #B8860B;
+  --blue: #1976D2;
   --input-bg: #FFFFFF;
   --input-border: rgba(20, 33, 61, 0.18);
   --placeholder: rgba(20, 33, 61, 0.4);

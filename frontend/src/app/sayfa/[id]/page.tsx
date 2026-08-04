@@ -34,7 +34,7 @@ export default function StaticPage() {
   return (
     <div className="min-h-screen p-4" style={{ maxWidth: 800, margin: '0 auto' }}>
       <div className="glass p-8 animate-fade-in">
-        <h1 className="text-3xl font-black mb-6" style={{ color: '#FFD700' }}>{page.title}</h1>
+        <h1 className="text-3xl font-black mb-6" style={{ color: 'var(--gold)' }}>{page.title}</h1>
         <div style={{ color: 'var(--text-dim)', lineHeight: 1.8, whiteSpace: 'pre-wrap' }}>
           <div dangerouslySetInnerHTML={{ __html: page.content }} className="prose prose-invert max-w-none" />
         </div>

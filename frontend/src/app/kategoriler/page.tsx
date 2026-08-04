@@ -20,7 +20,7 @@ export default function KategorilerPage() {
 
       {specialCats.length > 0 && (
         <div className="mb-8">
-          <h2 className="text-xl font-bold mb-4" style={{ color: '#FFD700' }}>⚡ Özel Kategori Maçları</h2>
+          <h2 className="text-xl font-bold mb-4" style={{ color: 'var(--gold)' }}>⚡ Özel Kategori Maçları</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {specialCats.map(cat => (
               <Link key={cat.id} href={`/kategori-mac/${cat.slug}`}
@@ -29,7 +29,7 @@ export default function KategorilerPage() {
                 <div className="text-4xl mb-2">{cat.icon}</div>
                 <div className="font-bold text-sm">{cat.name}</div>
                 <div className="text-xs mt-1 px-2 py-0.5 rounded-full inline-block"
-                  style={{ background: 'rgba(79,195,247,0.2)', color: '#4FC3F7' }}>
+                  style={{ background: 'rgba(79,195,247,0.2)', color: 'var(--blue)' }}>
                   Maça Gir
                 </div>
               </Link>

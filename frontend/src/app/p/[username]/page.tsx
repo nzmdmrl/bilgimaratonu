@@ -190,9 +190,9 @@ export default function ProfilePage() {
   // Unvanları settings'den al
   const unvanlar = stats?.titles || [
     { min_xp: 0, title: 'Çaylak', color: 'var(--text-dim)', icon: '🌱' },
-    { min_xp: 500, title: 'Sohbetçi', color: '#4FC3F7', icon: '💬' },
+    { min_xp: 500, title: 'Sohbetçi', color: 'var(--blue)', icon: '💬' },
     { min_xp: 2000, title: 'Mahalli Ünlü', color: '#81C784', icon: '⭐' },
-    { min_xp: 5000, title: 'Şehir Efsanesi', color: '#FFD700', icon: '🏆' },
+    { min_xp: 5000, title: 'Şehir Efsanesi', color: 'var(--gold)', icon: '🏆' },
     { min_xp: 15000, title: 'Sanal Efsane', color: '#E91E63', icon: '👑' },
   ]
   const unvan = [...unvanlar].reverse().find((u: any) => profile.xp >= u.min_xp) || unvanlar[0]
@@ -231,7 +231,7 @@ export default function ProfilePage() {
                 <div className="relative w-full h-full">
                   <img src={`https://api.bilgimaratonu.com${pendingAvatar}`}
                     alt="avatar" className="w-full h-full object-cover opacity-60" />
-                  <div className="absolute inset-0 flex items-center justify-center text-xs font-bold text-white text-center" style={{ background: 'rgba(0,0,0,0.4)', fontSize: 9 }}>
+                  <div className="absolute inset-0 flex items-center justify-center text-xs font-bold  text-center" style={{ background: 'rgba(0,0,0,0.4)', fontSize: 9 }}>
                     Onay<br/>Bekliyor
                   </div>
                 </div>
@@ -282,7 +282,7 @@ export default function ProfilePage() {
                   className="flex items-center gap-1 px-3 py-1 rounded-full transition-all"
                   style={{ background: 'rgba(255,215,0,0.12)', border: '1px solid rgba(255,215,0,0.3)', fontSize: 15 }}>
                   <span style={{ fontSize: 18 }}>🏆</span>
-                  <span className="font-black" style={{ color: '#FFD700' }}>{achievements.summary.trophies}</span>
+                  <span className="font-black" style={{ color: 'var(--gold)' }}>{achievements.summary.trophies}</span>
                 </button>
                 <button onClick={() => { setTab('rozetler'); setAchTab('medal') }}
                   className="flex items-center gap-1 px-3 py-1 rounded-full transition-all"
@@ -294,7 +294,7 @@ export default function ProfilePage() {
                   className="flex items-center gap-1 px-3 py-1 rounded-full transition-all"
                   style={{ background: 'rgba(79,195,247,0.12)', border: '1px solid rgba(79,195,247,0.3)', fontSize: 15 }}>
                   <span style={{ fontSize: 18 }}>🎖️</span>
-                  <span className="font-black" style={{ color: '#4FC3F7' }}>{achievements.summary.badges}</span>
+                  <span className="font-black" style={{ color: 'var(--blue)' }}>{achievements.summary.badges}</span>
                 </button>
                 {!profile.is_bot && (
                   <div className="flex items-center gap-1 px-3 py-1 rounded-full"
@@ -345,11 +345,11 @@ export default function ProfilePage() {
       {/* Hızlı İstatistik Kartları */}
       <div className="grid grid-cols-2 gap-3 mb-4 md:grid-cols-5">
         {[
-          { label: 'Toplam Maç', value: profile.total_matches, icon: '🎮', color: '#4FC3F7' },
-          { label: 'Galibiyet %', value: `${profile.win_rate}%`, icon: '🏆', color: '#FFD700' },
+          { label: 'Toplam Maç', value: profile.total_matches, icon: '🎮', color: 'var(--blue)' },
+          { label: 'Galibiyet %', value: `${profile.win_rate}%`, icon: '🏆', color: 'var(--gold)' },
           { label: 'ELO Puanı', value: profile.elo_rating, icon: '📊', color: '#81C784' },
           { label: 'Toplam XP', value: profile.xp.toLocaleString(), icon: '💎', color: '#E91E63' },
-          { label: 'Maraton Yıldızı', value: profile.solo_stars ?? 0, icon: '🌟', color: '#FFD700' },
+          { label: 'Maraton Yıldızı', value: profile.solo_stars ?? 0, icon: '🌟', color: 'var(--gold)' },
         ].map(stat => (
           <div key={stat.label} className="glass p-4 text-center">
             <div className="text-2xl mb-1">{stat.icon}</div>
@@ -419,7 +419,7 @@ export default function ProfilePage() {
         <div className="animate-fade-in space-y-4">
           {/* Maç özeti */}
           <div className="glass p-5">
-            <h3 className="font-bold mb-4" style={{ color: '#FFD700' }}>Maç Özeti</h3>
+            <h3 className="font-bold mb-4" style={{ color: 'var(--gold)' }}>Maç Özeti</h3>
             <div className="grid grid-cols-3 gap-4 text-center">
               <div>
                 <div className="text-2xl font-black" style={{ color: '#4CAF50' }}>{profile.total_wins}</div>
@@ -505,7 +505,7 @@ export default function ProfilePage() {
         <div className="animate-fade-in space-y-4">
           {/* Kategori bazlı */}
           <div className="glass p-5">
-            <h3 className="font-bold mb-4" style={{ color: '#FFD700' }}>Kategori Performansı</h3>
+            <h3 className="font-bold mb-4" style={{ color: 'var(--gold)' }}>Kategori Performansı</h3>
             <div className="space-y-3">
               {stats.category_stats.map(cat => (
                 <div key={cat.slug} className="flex items-center gap-3">
@@ -537,7 +537,7 @@ export default function ProfilePage() {
 
           {/* Zorluk bazlı */}
           <div className="glass p-5">
-            <h3 className="font-bold mb-4" style={{ color: '#FFD700' }}>Zorluk Seviyesi Performansı</h3>
+            <h3 className="font-bold mb-4" style={{ color: 'var(--gold)' }}>Zorluk Seviyesi Performansı</h3>
             <div className="grid grid-cols-2 gap-3">
               {stats.difficulty_stats.map(d => (
                 <div key={d.difficulty} className="rounded-xl p-4 text-center"
@@ -559,9 +559,9 @@ export default function ProfilePage() {
           {/* Alt sekme: Kupa / Madalya / Rozet */}
           <div className="flex gap-2">
             {[
-              { key: 'trophy', label: '🏆 Kupalar', color: '#FFD700', count: achievements?.summary.trophies ?? 0 },
+              { key: 'trophy', label: '🏆 Kupalar', color: 'var(--gold)', count: achievements?.summary.trophies ?? 0 },
               { key: 'medal', label: '🥈 Madalyalar', color: 'var(--text-dim)', count: achievements?.summary.medals ?? 0 },
-              { key: 'badge', label: '🎖️ Rozetler', color: '#4FC3F7', count: achievements?.summary.badges ?? 0 },
+              { key: 'badge', label: '🎖️ Rozetler', color: 'var(--blue)', count: achievements?.summary.badges ?? 0 },
             ].map(t => (
               <button key={t.key} onClick={() => setAchTab(t.key as any)}
                 className="flex-1 px-3 py-2 rounded-xl text-sm font-bold transition-all"
@@ -587,7 +587,7 @@ export default function ProfilePage() {
                     <div className="min-w-0">
                       <div className="font-bold text-sm truncate">{t.title}</div>
                       {t.earned && t.count > 1 && (
-                        <div className="text-xs font-black" style={{ color: '#FFD700' }}>×{t.count}</div>
+                        <div className="text-xs font-black" style={{ color: 'var(--gold)' }}>×{t.count}</div>
                       )}
                     </div>
                   </div>
@@ -641,7 +641,7 @@ export default function ProfilePage() {
       {tab === 'maclar' && (
         <div className="animate-fade-in">
           <div className="glass p-5">
-            <h3 className="font-bold mb-4" style={{ color: '#FFD700' }}>Son Maçlar</h3>
+            <h3 className="font-bold mb-4" style={{ color: 'var(--gold)' }}>Son Maçlar</h3>
             {matches.length === 0 ? (
               <p style={{ color: 'var(--text-dim)' }}>Henüz maç oynanmamış.</p>
             ) : (
@@ -662,7 +662,7 @@ export default function ProfilePage() {
                       </div>
                       <div>
                         <div className="font-bold text-sm">
-                          <span style={{ color: '#4FC3F7' }}>{m.my_score > 0 ? '+' : ''}{m.my_score}</span>
+                          <span style={{ color: 'var(--blue)' }}>{m.my_score > 0 ? '+' : ''}{m.my_score}</span>
                           <span style={{ color: 'var(--text-dim)' }}> vs </span>
                           <span style={{ color: '#FF7043' }}>{m.opponent_score > 0 ? '+' : ''}{m.opponent_score}</span>
                           <span className="ml-2" style={{ color: 'var(--text-dim)' }}>— {m.opponent_username}</span>

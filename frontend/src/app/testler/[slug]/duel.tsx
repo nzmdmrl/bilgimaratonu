@@ -146,7 +146,7 @@ export default function DuelRoom({ slug, event }: { slug: string; event: any }) 
   if (screen === 'lobby') return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="glass p-8 max-w-md w-full">
-        <h1 className="text-xl font-black mb-1" style={{ color: '#FFD700' }}>⚔️ {event.title}</h1>
+        <h1 className="text-xl font-black mb-1" style={{ color: 'var(--gold)' }}>⚔️ {event.title}</h1>
         <p className="text-sm mb-4" style={{ color: 'var(--text-dim)' }}>Düello Odası</p>
         <div className="glass p-3 mb-4 text-center font-bold text-sm" style={{ color: connected ? '#4CAF50' : '#F44336' }}>
           {status}
@@ -178,7 +178,7 @@ export default function DuelRoom({ slug, event }: { slug: string; event: any }) 
             </button>
           )}
           <button onClick={() => { navigator.clipboard.writeText(window.location.href); alert('Link kopyalandı!') }}
-            className="flex-1 glass p-3 text-sm font-bold" style={{ color: '#4FC3F7' }}>
+            className="flex-1 glass p-3 text-sm font-bold" style={{ color: 'var(--blue)' }}>
             📋 {isHost ? 'Link' : 'Davet Linkini Kopyala'}
           </button>
         </div>
@@ -253,7 +253,7 @@ export default function DuelRoom({ slug, event }: { slug: string; event: any }) 
             const isDisabled = !!(myAnswer || correctAnswer)
             return (
               <button key={label} onClick={()=>sendAnswer(label)} disabled={isDisabled}
-                style={{background:bg,border,borderRadius:12,padding:'14px 16px',color:'white',
+                style={{background:bg,border,borderRadius:12,padding:'14px 16px',color:'var(--text)',
                   cursor:isDisabled?'not-allowed':'pointer',textAlign:'left',fontSize:14,transition:'all 0.2s'}}>
                 <span className="font-bold mr-2" style={{color:isCorrect?'#4CAF50':isWrong?'#F44336':'#4FC3F7'}}>{label})</span>
                 {text}
@@ -269,7 +269,7 @@ export default function DuelRoom({ slug, event }: { slug: string; event: any }) 
   if (showScoreboard) return (
     <div className="min-h-screen p-4" style={{ maxWidth: 600, margin: '0 auto' }}>
       <div className="glass p-6 animate-fade-in">
-        <h2 className="text-xl font-black mb-4" style={{ color: '#FFD700' }}>🏆 Skor Tablosu</h2>
+        <h2 className="text-xl font-black mb-4" style={{ color: 'var(--gold)' }}>🏆 Skor Tablosu</h2>
         {scoreboard.length === 0 ? (
           <p style={{ color: 'var(--text-dim)' }}>Henüz sonuç yok.</p>
         ) : event.type === 'duel' ? (
@@ -282,7 +282,7 @@ export default function DuelRoom({ slug, event }: { slug: string; event: any }) 
                   <div className="text-xs" style={{ color: 'var(--text-dim)' }}>{entry.total} maç • {entry.wins} galibiyet</div>
                 </div>
                 <div className="text-right">
-                  <div className="font-black" style={{ color: '#FFD700' }}>{entry.best_score}p</div>
+                  <div className="font-black" style={{ color: 'var(--gold)' }}>{entry.best_score}p</div>
                   <div className="text-xs" style={{ color: 'var(--text-dim)' }}>en iyi</div>
                 </div>
               </div>
@@ -294,7 +294,7 @@ export default function DuelRoom({ slug, event }: { slug: string; event: any }) 
               <div key={i} className="glass p-3 flex items-center gap-3">
                 <span className="text-2xl">{i===0?'🥇':i===1?'🥈':i===2?'🥉':`${i+1}.`}</span>
                 <div className="flex-1"><div className="font-bold">{entry.name}</div></div>
-                <div className="font-black" style={{ color: '#FFD700' }}>{entry.score}p</div>
+                <div className="font-black" style={{ color: 'var(--gold)' }}>{entry.score}p</div>
               </div>
             ))}
           </div>
@@ -308,7 +308,7 @@ export default function DuelRoom({ slug, event }: { slug: string; event: any }) 
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="glass p-8 max-w-md w-full text-center">
         <div className="text-5xl mb-4">🏆</div>
-        <h2 className="text-2xl font-black mb-6" style={{ color: '#FFD700' }}>Düello Bitti!</h2>
+        <h2 className="text-2xl font-black mb-6" style={{ color: 'var(--gold)' }}>Düello Bitti!</h2>
         <div className="space-y-3 mb-6">
           {rankings.map(r => (
             <div key={r.user_id} className="glass p-3 flex items-center gap-3"
@@ -318,13 +318,13 @@ export default function DuelRoom({ slug, event }: { slug: string; event: any }) 
                 <div className="font-bold" style={{ color: r.user_id===myUserId?'#FFD700':'white' }}>
                   {r.username}{r.user_id===myUserId?' (Sen)':''}
                 </div>
-                <div className="text-sm" style={{ color: '#4FC3F7' }}>{r.score} puan</div>
+                <div className="text-sm" style={{ color: 'var(--blue)' }}>{r.score} puan</div>
               </div>
             </div>
           ))}
         </div>
         <button onClick={() => window.location.href = `/testler/${slug}#scoreboard`}
-          className="w-full glass p-3 text-sm font-bold mb-3" style={{ color: '#4FC3F7' }}>
+          className="w-full glass p-3 text-sm font-bold mb-3" style={{ color: 'var(--blue)' }}>
           📊 Skorları Gör
         </button>
         <button onClick={() => {

@@ -41,7 +41,7 @@ export default function MenuPage() {
   return (
     <div className="min-h-screen px-3 pt-4" style={{ paddingBottom: 96, maxWidth: 700, margin: '0 auto' }}>
       <div className="text-center mb-4">
-        <h1 className="text-2xl font-black"><span style={{ color: '#FFD700' }}>Bilgi</span> <span style={{ color: '#4FC3F7' }}>Maratonu</span></h1>
+        <h1 className="text-2xl font-black"><span style={{ color: 'var(--gold)' }}>Bilgi</span> <span style={{ color: 'var(--blue)' }}>Maratonu</span></h1>
         <div className="text-xs" style={{ color: 'var(--text-dimmer)' }}>Menü</div>
       </div>
 
@@ -64,7 +64,7 @@ export default function MenuPage() {
         <>
           {/* Tema seçici */}
           <div className="glass p-4 mb-3" style={{ borderRadius: 16 }}>
-            <div className="font-black text-sm mb-1" style={{ color: '#FFD700' }}>🎨 Tema</div>
+            <div className="font-black text-sm mb-1" style={{ color: 'var(--gold)' }}>🎨 Tema</div>
             <div className="text-xs mb-3" style={{ color: 'var(--text-dim)' }}>Otomatik: cihaz saatine göre (07:00–19:00 gündüz).</div>
             <div className="grid grid-cols-3 gap-2">
               {([
@@ -95,7 +95,7 @@ export default function MenuPage() {
               className="glass p-5 relative flex flex-col justify-between text-left"
               style={{ borderRadius: 16, minHeight: 96, border: '1px solid #4FC3F733' }}>
               <span className="absolute text-2xl" style={{ top: 12, right: 12 }}>{muted ? '🔇' : '🔊'}</span>
-              <span className="font-black text-sm mt-auto" style={{ color: '#4FC3F7' }}>Ses {muted ? '(Kapalı)' : '(Açık)'}</span>
+              <span className="font-black text-sm mt-auto" style={{ color: 'var(--blue)' }}>Ses {muted ? '(Kapalı)' : '(Açık)'}</span>
             </button>
             <LinkCard href="/bildirimler" icon="🔔" label="Bildirimler" color="#E91E63" />
             <LinkCard href="/profil-duzenle" icon="✏️" label="Profili Düzenle" color="#81C784" />

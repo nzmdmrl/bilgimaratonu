@@ -29,8 +29,8 @@ export default function BlogPost() {
   return (
     <div className="min-h-screen p-4" style={{ maxWidth: 800, margin: '0 auto' }}>
       <div className="glass p-8 animate-fade-in">
-        <Link href="/blog" className="text-sm mb-6 inline-block" style={{ color: '#4FC3F7' }}>← Blog'a Dön</Link>
-        <h1 className="text-3xl font-black mb-3 mt-4" style={{ color: '#FFD700' }}>{post.title}</h1>
+        <Link href="/blog" className="text-sm mb-6 inline-block" style={{ color: 'var(--blue)' }}>← Blog'a Dön</Link>
+        <h1 className="text-3xl font-black mb-3 mt-4" style={{ color: 'var(--gold)' }}>{post.title}</h1>
         <div className="flex gap-4 mb-6 text-xs" style={{ color: '#555' }}>
           <span>📅 {post.created_at}</span>
           <span>👁 {post.view_count} görüntülenme</span>

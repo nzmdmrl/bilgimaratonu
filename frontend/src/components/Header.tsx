@@ -41,13 +41,13 @@ export default function Header() {
   useEffect(() => { setMenuOpen(false) }, [pathname])
 
   const allLinks = [
-    { href: '/mac', label: '⚡ Maç', color: '#4FC3F7', moduleKey: 'match_1v1' },
-    { href: '/kategoriler', label: '🗂 Kategoriler', color: '#FFD700', moduleKey: 'match_1v1' },
+    { href: '/mac', label: '⚡ Maç', color: 'var(--blue)', moduleKey: 'match_1v1' },
+    { href: '/kategoriler', label: '🗂 Kategoriler', color: 'var(--gold)', moduleKey: 'match_1v1' },
     { href: '/maraton', label: '🏅 Maraton', color: '#81C784', moduleKey: 'match_bot' },
     { href: '/testler', label: '📝 Testler', color: '#E91E63', moduleKey: 'match_1v1' },
-    { href: '/turnuva', label: '🏆 Turnuva', color: '#FFD700', moduleKey: 'marathon' },
+    { href: '/turnuva', label: '🏆 Turnuva', color: 'var(--gold)', moduleKey: 'marathon' },
     { href: '/lig', label: '🏆 Lig', color: '#81C784', moduleKey: 'league_daily' },
-    { href: '/market', label: '🛒 Market', color: '#FFD700', moduleKey: 'match_1v1' },
+    { href: '/market', label: '🛒 Market', color: 'var(--gold)', moduleKey: 'match_1v1' },
   ]
   const navLinks = allLinks.filter(l => modules[l.moduleKey] !== false)
   // Desktop üst menü: sadece Maç, Kategoriler, Lig, Market (gerisi ana sayfada buton)
@@ -63,10 +63,10 @@ export default function Header() {
           style={{
             position: 'fixed', top: 6, left: 6, zIndex: 120,
             width: 34, height: 34, borderRadius: '50%',
-            background: 'rgba(15,20,40,0.75)', border: '1px solid var(--border)',
+            background: 'var(--header-bg)', border: '1px solid var(--border)',
             color: 'var(--text)', fontSize: 18, lineHeight: 1, cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            backdropFilter: 'blur(6px)',
+            backdropFilter: 'blur(6px)', boxShadow: '0 2px 8px rgba(0,0,0,0.18)',
           }}>
           ←
         </button>
@@ -81,8 +81,8 @@ export default function Header() {
 
           {/* Logo */}
           <Link href="/" className="font-black text-lg flex items-center gap-1" style={{ textDecoration: 'none', whiteSpace: 'nowrap' }}>
-            <span style={{ color: '#FFD700' }}>Bilgi</span>
-            <span style={{ color: '#4FC3F7' }}> Maratonu</span>
+            <span style={{ color: 'var(--gold)' }}>Bilgi</span>
+            <span style={{ color: 'var(--blue)' }}> Maratonu</span>
             <span style={{ color: '#555', fontSize: 10, fontWeight: 400, marginLeft: 2 }}>v{version}</span>
           </Link>
 
@@ -104,13 +104,13 @@ export default function Header() {
           <div className="flex items-center gap-2">
             {user ? (
               <>
-                <span className="hidden sm:block text-sm" style={{ color: '#FFD700' }}>💎 {user.xp}</span>
-                <Link href="/maraton" className="hidden sm:block text-sm" style={{ color: '#FFD700', textDecoration: 'none' }} title="Maraton yıldızların">🌟 {user.solo_stars ?? 0}</Link>
+                <span className="hidden sm:block text-sm" style={{ color: 'var(--gold)' }}>💎 {user.xp}</span>
+                <Link href="/maraton" className="hidden sm:block text-sm" style={{ color: 'var(--gold)', textDecoration: 'none' }} title="Maraton yıldızların">🌟 {user.solo_stars ?? 0}</Link>
                 <SoundToggle />
                 <NotificationBell />
                 <Link href={`/p/${user.username}`}
                   className="text-sm font-bold px-2 py-1.5 rounded-lg"
-                  style={{ color: '#4FC3F7', background: 'rgba(79,195,247,0.1)' }}>
+                  style={{ color: 'var(--blue)', background: 'rgba(79,195,247,0.1)' }}>
                   👤 <span className="hidden sm:inline">{user.username}</span>
                 </Link>
                 {user.role === 'admin' && (
@@ -166,7 +166,7 @@ export default function Header() {
                   </div>
                   <div>
                     <div style={{ fontWeight: 700, fontSize: 14 }}>{user.username}</div>
-                    <div style={{ color: '#FFD700', fontSize: 12 }}>💎 {user.xp} XP · 🌟 {user.solo_stars ?? 0}</div>
+                    <div style={{ color: 'var(--gold)', fontSize: 12 }}>💎 {user.xp} XP · 🌟 {user.solo_stars ?? 0}</div>
                   </div>
                 </Link>
               </div>

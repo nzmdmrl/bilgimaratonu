@@ -95,8 +95,8 @@ export default function LigPage() {
       <div className="flex items-center justify-between mb-6">
         <Link href="/" style={{ color: 'var(--text-dim)', fontSize: 14 }}>← Ana Sayfa</Link>
         <h1 className="text-2xl font-black">
-          <span style={{ color: '#FFD700' }}>Lig</span>
-          <span style={{ color: '#4FC3F7' }}> Tablosu</span>
+          <span style={{ color: 'var(--gold)' }}>Lig</span>
+          <span style={{ color: 'var(--blue)' }}> Tablosu</span>
         </h1>
         <div style={{ width: 80 }} />
       </div>
@@ -149,16 +149,16 @@ export default function LigPage() {
           style={{ border: '1px solid rgba(255,215,0,0.3)', background: 'rgba(255,215,0,0.05)' }}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <span className="text-2xl font-black" style={{ color: '#FFD700' }}>
+              <span className="text-2xl font-black" style={{ color: 'var(--gold)' }}>
                 {rankEmoji(myRank.rank)}
               </span>
               <div>
-                <div className="font-bold">{myRank.username} <span style={{ color: '#4FC3F7', fontSize: 12 }}>(Sen)</span></div>
+                <div className="font-bold">{myRank.username} <span style={{ color: 'var(--blue)', fontSize: 12 }}>(Sen)</span></div>
                 <div className="text-xs" style={{ color: 'var(--text-dim)' }}>{myRank.days_played} gün oynadı</div>
               </div>
             </div>
             <div className="text-right">
-              <div className="text-xl font-black" style={{ color: '#FFD700' }}>
+              <div className="text-xl font-black" style={{ color: 'var(--gold)' }}>
                 {typeof myRank.total_score === "number" ? myRank.total_score.toFixed(2) : myRank.total_score}
               </div>
               <div className="text-xs" style={{ color: 'var(--text-dim)' }}>puan</div>
@@ -213,7 +213,7 @@ export default function LigPage() {
                       className="font-bold hover:underline"
                       style={{ color: isMe ? '#FFD700' : 'white' }}>
                       {row.username}
-                      {isMe && <span className="ml-1 text-xs" style={{ color: '#4FC3F7' }}>(Sen)</span>}
+                      {isMe && <span className="ml-1 text-xs" style={{ color: 'var(--blue)' }}>(Sen)</span>}
                     </Link>
                     <div className="text-xs" style={{ color: 'var(--text-dim)' }}>{row.elo_rating} ELO</div>
                   </div>
@@ -243,8 +243,8 @@ export default function LigPage() {
       {/* Önceki Dönem Kazananları */}
       <div className="mt-6">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="font-bold" style={{ color: '#FFD700' }}>🏅 Önceki Dönem Kazananları</h3>
-          <Link href={`/lig/arsiv?period=${tab}&category=${category}`} className="text-sm font-bold" style={{ color: '#4FC3F7' }}>
+          <h3 className="font-bold" style={{ color: 'var(--gold)' }}>🏅 Önceki Dönem Kazananları</h3>
+          <Link href={`/lig/arsiv?period=${tab}&category=${category}`} className="text-sm font-bold" style={{ color: 'var(--blue)' }}>
             Arşiv →
           </Link>
         </div>
@@ -256,7 +256,7 @@ export default function LigPage() {
           <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))' }}>
             {pastWinners.map((p: any) => (
               <div key={p.period_key} className="glass p-4">
-                <div className="text-sm font-bold mb-2" style={{ color: '#4FC3F7' }}>{p.label}</div>
+                <div className="text-sm font-bold mb-2" style={{ color: 'var(--blue)' }}>{p.label}</div>
                 {(!p.winners || p.winners.length === 0) ? (
                   <div className="text-xs" style={{ color: 'var(--text-dim)' }}>—</div>
                 ) : (

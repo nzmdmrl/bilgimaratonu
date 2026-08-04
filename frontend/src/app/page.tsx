@@ -72,9 +72,9 @@ export default function HomePage() {
 
   const DEFAULT_TITLES = [
     { min_xp: 0, title: 'Çaylak', color: 'var(--text-dim)', icon: '🌱' },
-    { min_xp: 500, title: 'Sohbetçi', color: '#4FC3F7', icon: '💬' },
+    { min_xp: 500, title: 'Sohbetçi', color: 'var(--blue)', icon: '💬' },
     { min_xp: 2000, title: 'Mahalli Ünlü', color: '#81C784', icon: '⭐' },
-    { min_xp: 5000, title: 'Şehir Efsanesi', color: '#FFD700', icon: '🏆' },
+    { min_xp: 5000, title: 'Şehir Efsanesi', color: 'var(--gold)', icon: '🏆' },
     { min_xp: 15000, title: 'Sanal Efsane', color: '#E91E63', icon: '👑' },
   ]
   const tlist: any[] = titles.length ? titles : DEFAULT_TITLES
@@ -139,12 +139,12 @@ export default function HomePage() {
                 <div className="flex items-center gap-3">
                   <div className="text-4xl">🏆</div>
                   <div className="flex-1 min-w-0">
-                    <div className="font-black" style={{ color: '#FFD700' }}>Turnuva</div>
+                    <div className="font-black" style={{ color: 'var(--gold)' }}>Turnuva</div>
                     <div className="text-xs" style={{ color: 'var(--text-dim)' }}>
                       {marathonInfo?.status === 'waiting' || marathonInfo?.status === 'lobby' ? 'Lobi açık — hemen katıl!' : 'Eleme usulü büyük yarış'}
                     </div>
                   </div>
-                  <div className="text-2xl" style={{ color: '#FFD700' }}>›</div>
+                  <div className="text-2xl" style={{ color: 'var(--gold)' }}>›</div>
                 </div>
               </Link>
             )}
@@ -187,7 +187,7 @@ export default function HomePage() {
             {/* Günün özeti */}
             <button onClick={() => setShowOzet(v => !v)}
               className="w-full glass p-3 mb-3 flex items-center justify-between" style={{ borderRadius: 14 }}>
-              <span className="font-bold" style={{ color: '#4FC3F7' }}>📊 Günün Özeti — Son Maçlar</span>
+              <span className="font-bold" style={{ color: 'var(--blue)' }}>📊 Günün Özeti — Son Maçlar</span>
               <span style={{ color: 'var(--text-dim)' }}>{showOzet ? '▲' : '▼'}</span>
             </button>
             {showOzet && (
@@ -214,7 +214,7 @@ export default function HomePage() {
                   <div key={i} className="flex items-center gap-2 px-1 py-1.5" style={{ fontSize: 12, borderBottom: i < 7 ? '1px solid var(--border)' : 'none' }}>
                     <img src={avatarSrc(m.avatar1, m.player1)} alt="" style={{ width: 22, height: 22, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
                     <span className="flex-1 truncate" style={{ color: m.winner === m.player1 ? '#FFD700' : '#E0E0E0' }}>{m.player1}</span>
-                    <span style={{ fontWeight: 800, color: '#4FC3F7' }}>{m.score1}-{m.score2}</span>
+                    <span style={{ fontWeight: 800, color: 'var(--blue)' }}>{m.score1}-{m.score2}</span>
                     <span className="flex-1 truncate text-right" style={{ color: m.winner === m.player2 ? '#FFD700' : '#E0E0E0' }}>{m.player2}</span>
                     <img src={avatarSrc(m.avatar2, m.player2)} alt="" style={{ width: 22, height: 22, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
                   </div>
@@ -224,7 +224,7 @@ export default function HomePage() {
           </>
         ) : (
           <div className="text-center py-12">
-            <h1 className="text-2xl font-black mb-2"><span style={{ color: '#FFD700' }}>Bilgi</span> <span style={{ color: '#4FC3F7' }}>Maratonu</span></h1>
+            <h1 className="text-2xl font-black mb-2"><span style={{ color: 'var(--gold)' }}>Bilgi</span> <span style={{ color: 'var(--blue)' }}>Maratonu</span></h1>
             <p className="text-sm mb-6" style={{ color: 'var(--text-dim)' }}>Bilginin rekabetle buluştuğu adres</p>
             <Link href="/kayit" className="btn-gold block mb-3">🚀 Hemen Başla</Link>
             <Link href="/giris" className="btn-primary block">Giriş Yap</Link>
@@ -238,7 +238,7 @@ export default function HomePage() {
         {/* Hero */}
         <div className="text-center mb-14 animate-fade-in">
           <h2 className="text-5xl font-black mb-4">
-            <span style={{ color: '#FFD700' }}>Bilginin Rekabetle</span><br />
+            <span style={{ color: 'var(--gold)' }}>Bilginin Rekabetle</span><br />
             Buluştuğu Adres
           </h2>
           <p className="text-lg mb-8" style={{ color: 'var(--text-dim)' }}>
@@ -295,7 +295,7 @@ export default function HomePage() {
             ].map(stat => (
               <div key={stat.label} className="glass p-5 text-center">
                 <div className="text-3xl mb-2">{stat.icon}</div>
-                <div className="text-2xl font-black" style={{ color: '#FFD700' }}>{stat.value}</div>
+                <div className="text-2xl font-black" style={{ color: 'var(--gold)' }}>{stat.value}</div>
                 <div className="text-sm" style={{ color: 'var(--text-dim)' }}>{stat.label}</div>
               </div>
             ))}
@@ -311,7 +311,7 @@ export default function HomePage() {
               icon: '⚡',
               title: '1v1 Maç',
               desc: 'Gerçek rakiplerle anlık bilgi yarışması. İlk doğru cevaplayan puan alır!',
-              color: '#4FC3F7',
+              color: 'var(--blue)',
               bg: 'rgba(79,195,247,0.08)',
             },
             {
@@ -342,7 +342,7 @@ export default function HomePage() {
                 <div className="flex items-center gap-4">
                   <div className="text-5xl">🏆</div>
                   <div>
-                    <h3 className="text-xl font-black" style={{ color: '#FFD700' }}>Turnuva</h3>
+                    <h3 className="text-xl font-black" style={{ color: 'var(--gold)' }}>Turnuva</h3>
                     {marathonInfo?.status === 'waiting' || marathonInfo?.status === 'lobby' ? (
                       <p className="text-sm" style={{ color: 'var(--text-dim)' }}>
                         Lobi açık — {marathonInfo.current_participants || 0}/{marathonInfo.max_participants || 32} katılımcı
@@ -397,7 +397,7 @@ export default function HomePage() {
               icon: '🏆',
               title: 'Lig',
               desc: 'Günlük, aylık ve yıllık liglerde sıralamalara gir. En iyi ol!',
-              color: '#FFD700',
+              color: 'var(--gold)',
               bg: 'rgba(255,215,0,0.08)',
             },
             {
@@ -433,8 +433,8 @@ export default function HomePage() {
         {categories.filter((c: any) => c.has_category_match).length > 0 && (
           <div className="mb-10 animate-fade-in">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-black" style={{ color: '#FFD700' }}>⚡ Kategori Maçları</h3>
-              <a href="/kategoriler" style={{ color: '#4FC3F7', fontSize: 14 }}>Tümü →</a>
+              <h3 className="text-xl font-black" style={{ color: 'var(--gold)' }}>⚡ Kategori Maçları</h3>
+              <a href="/kategoriler" style={{ color: 'var(--blue)', fontSize: 14 }}>Tümü →</a>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
               {categories.filter((c: any) => c.has_category_match).map((cat: any) => (
@@ -443,7 +443,7 @@ export default function HomePage() {
                   style={{ textDecoration: 'none' }}>
                   <div className="text-3xl mb-1">{cat.icon}</div>
                   <div className="font-bold text-sm">{cat.name}</div>
-                  <div className="text-xs mt-1" style={{ color: '#4FC3F7' }}>Maça Gir →</div>
+                  <div className="text-xs mt-1" style={{ color: 'var(--blue)' }}>Maça Gir →</div>
                 </a>
               ))}
             </div>
@@ -456,7 +456,7 @@ export default function HomePage() {
         {/* Sol: Son Maçlar */}
         {recentMatches.length > 0 && (
           <div>
-            <h3 className="text-xl font-black mb-4" style={{ color: '#4FC3F7' }}>⚡ Son Maçlar</h3>
+            <h3 className="text-xl font-black mb-4" style={{ color: 'var(--blue)' }}>⚡ Son Maçlar</h3>
             <div className="space-y-2 overflow-hidden" style={{ maxHeight: 380 }}>
               {recentMatches.map((m: any, i: number) => {
                 const p1won = m.winner === m.player1
@@ -515,8 +515,8 @@ export default function HomePage() {
         {/* Sağ: Günlük Lig */}
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xl font-black" style={{ color: '#FFD700' }}>📅 Bugünün Ligi</h3>
-            <Link href="/lig" style={{ color: '#4FC3F7', fontSize: 14 }}>Tümünü Gör →</Link>
+            <h3 className="text-xl font-black" style={{ color: 'var(--gold)' }}>📅 Bugünün Ligi</h3>
+            <Link href="/lig" style={{ color: 'var(--blue)', fontSize: 14 }}>Tümünü Gör →</Link>
           </div>
           {leagueTop.length > 0 ? (
             <div className="glass overflow-hidden">
@@ -530,7 +530,7 @@ export default function HomePage() {
                     {row.username}
                   </Link>
                   <span className="text-sm mr-4" style={{ color: 'var(--text-dim)' }}>{row.days_played} gün</span>
-                  <span className="font-black" style={{ color: '#FFD700' }}>{row.total_score}</span>
+                  <span className="font-black" style={{ color: 'var(--gold)' }}>{row.total_score}</span>
                 </div>
               ))}
             </div>

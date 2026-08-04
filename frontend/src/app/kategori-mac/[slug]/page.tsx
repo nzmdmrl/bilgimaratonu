@@ -307,7 +307,7 @@ export default function CategoryMatchPage() {
           <div className="text-7xl mb-4">{won === true ? '🏆' : won === false ? '😔' : '🤝'}</div>
           <h2 className="text-3xl font-black mb-2">{won === true ? 'Kazandın!' : won === false ? 'Kaybettin' : 'Berabere'}</h2>
           <div className="flex justify-center gap-8 mb-4">
-            <div><div className="text-3xl font-black" style={{ color: '#4FC3F7' }}>{Math.round((myFinalScore || 0) * 100) / 100}</div><div className="text-sm" style={{ color: 'var(--text-dim)' }}>Sen</div></div>
+            <div><div className="text-3xl font-black" style={{ color: 'var(--blue)' }}>{Math.round((myFinalScore || 0) * 100) / 100}</div><div className="text-sm" style={{ color: 'var(--text-dim)' }}>Sen</div></div>
             <div><div className="text-3xl font-black" style={{ color: '#FF7043' }}>{Math.round((oppFinalScore || 0) * 100) / 100}</div><div className="text-sm" style={{ color: 'var(--text-dim)' }}>{opponent?.username}</div></div>
           </div>
 
@@ -321,7 +321,7 @@ export default function CategoryMatchPage() {
           {/* XP */}
           {xpGained > 0 && (
             <div className="glass p-4 mb-3 rounded-xl">
-              <div className="font-bold mb-2" style={{ color: '#FFD700' }}>⭐ +{xpGained} XP kazandın!</div>
+              <div className="font-bold mb-2" style={{ color: 'var(--gold)' }}>⭐ +{xpGained} XP kazandın!</div>
               {xpBreakdown.map((b: any, i: number) => (
                 <div key={i} className="text-xs flex justify-between" style={{ color: 'var(--text-dim)' }}>
                   <span>{b.reason}</span><span>+{b.xp} XP</span>
@@ -333,7 +333,7 @@ export default function CategoryMatchPage() {
           {/* Yeni Rozetler */}
           {newBadges.length > 0 && (
             <div className="glass p-4 mb-3 rounded-xl">
-              <div className="font-bold mb-2" style={{ color: '#FFD700' }}>🏅 Yeni Rozetler!</div>
+              <div className="font-bold mb-2" style={{ color: 'var(--gold)' }}>🏅 Yeni Rozetler!</div>
               {newBadges.map((b: any) => (
                 <div key={b.code} className="flex items-center gap-2 mb-1">
                   <span className="text-xl">{b.icon}</span>
@@ -359,7 +359,7 @@ export default function CategoryMatchPage() {
       <div className="min-h-screen flex flex-col items-center justify-center p-6">
         <div className="glass rounded-3xl p-8 flex flex-col items-center" style={{ width: '100%', maxWidth: 640 }}>
         <div className="text-sm font-bold mb-4 px-4 py-2 rounded-full inline-block"
-          style={{ background: 'rgba(255,215,0,0.15)', color: '#FFD700' }}>
+          style={{ background: 'rgba(255,215,0,0.15)', color: 'var(--gold)' }}>
           ⚡ Rakip Bulundu!
         </div>
         <div className="flex items-center justify-center gap-6 mb-6 mt-4" style={{ width: '100%', maxWidth: 520 }}>
@@ -369,11 +369,11 @@ export default function CategoryMatchPage() {
               <img src={avatarSrc((user as any)?.avatar_url, user?.username)} alt="" className="w-full h-full object-cover" />
             </div>
             <div className="font-bold">{user?.username}</div>
-            <div className="text-sm mt-1" style={{ color: '#4FC3F7' }}>
+            <div className="text-sm mt-1" style={{ color: 'var(--blue)' }}>
               {Math.round((user as any)?.elo_rating || 0)} ELO
             </div>
           </div>
-          <div className="text-4xl font-black" style={{ color: '#FFD700' }}>VS</div>
+          <div className="text-4xl font-black" style={{ color: 'var(--gold)' }}>VS</div>
           <div className="text-center glass p-5 rounded-2xl" style={{ flex: 1 }}>
             <div className="w-16 h-16 rounded-full overflow-hidden flex items-center justify-center text-2xl font-black mx-auto mb-2"
               style={{ background: 'linear-gradient(135deg, #FF7043, #B71C1C)' }}>
@@ -386,7 +386,7 @@ export default function CategoryMatchPage() {
           </div>
         </div>
         {vsCountdown !== null ? (
-          <div className="text-9xl font-black" style={{ color: '#FFD700', lineHeight: 1 }}>{vsCountdown}</div>
+          <div className="text-9xl font-black" style={{ color: 'var(--gold)', lineHeight: 1 }}>{vsCountdown}</div>
         ) : (
           <p className="text-sm" style={{ color: 'var(--text-dim)' }}>Hazır ol...</p>
         )}
@@ -427,7 +427,7 @@ export default function CategoryMatchPage() {
               <img src={avatarSrc((user as any)?.avatar_url, user?.username)} alt="" className="w-full h-full object-cover" />
             </div>
           </div>
-          <div className="text-sm font-bold" style={{ color: '#4FC3F7' }}>{user?.username}</div>
+          <div className="text-sm font-bold" style={{ color: 'var(--blue)' }}>{user?.username}</div>
           <div className="text-3xl font-black">{Math.round(myScore * 100) / 100}</div>
           {lastPoints !== null && (
             <div className="text-xs font-bold" style={{ color: lastPoints >= 0 ? '#4CAF50' : '#F44336' }}>
@@ -438,7 +438,7 @@ export default function CategoryMatchPage() {
 
         <div className="text-center px-4">
           <div className="font-black mb-1" style={{ color: 'var(--text)', fontSize: 22 }}>
-            <span style={{ color: '#4FC3F7' }}>{question?.index !== undefined ? question.index + 1 : '-'}</span>
+            <span style={{ color: 'var(--blue)' }}>{question?.index !== undefined ? question.index + 1 : '-'}</span>
             <span style={{ color: 'var(--text-dim)', fontSize: 16 }}>/{question?.total || '-'}</span>
           </div>
           <div className="text-3xl font-black" style={{
@@ -505,10 +505,10 @@ export default function CategoryMatchPage() {
         {options.map(({ label, text }) => (
           <button key={label} onClick={() => sendAnswer(label)} style={getOptionStyle(label)}
             disabled={!canAnswer || !!myAnswer || eliminatedOptions.includes(label) || (jokerActive && !iAmJokerUser)}>
-            <span style={{ color: '#4FC3F7', fontWeight: 700 }}>{label})</span>
+            <span style={{ color: 'var(--blue)', fontWeight: 700 }}>{label})</span>
             {text}
             {opponentWrongAnswer === label && !correctAnswer && <span style={{ color: '#FF9800', fontSize: 12 }}>◀ Rakip ✗</span>}
-            {myAnswer === label && !correctAnswer && <span style={{ color: '#4FC3F7', fontSize: 12 }}>◀ Sen</span>}
+            {myAnswer === label && !correctAnswer && <span style={{ color: 'var(--blue)', fontSize: 12 }}>◀ Sen</span>}
           </button>
         ))}
       </div>
@@ -519,7 +519,7 @@ export default function CategoryMatchPage() {
           disabled={jokers <= 0 || !!myAnswer || !canAnswer || !!opponentWrongAnswer}
           style={{
             background: 'var(--surface-2)', border: '1px solid rgba(255,215,0,0.3)',
-            borderRadius: 12, padding: '10px 20px', color: '#FFD700', fontWeight: 700, fontSize: 14,
+            borderRadius: 12, padding: '10px 20px', color: 'var(--gold)', fontWeight: 700, fontSize: 14,
             cursor: jokers <= 0 || myAnswer || !canAnswer || opponentWrongAnswer ? 'not-allowed' : 'pointer',
             opacity: jokers <= 0 || myAnswer || !canAnswer || opponentWrongAnswer ? 0.35 : 1,
           }}>
@@ -541,7 +541,7 @@ export default function CategoryMatchPage() {
           <button onClick={() => setShowEmojiPicker(v => !v)} disabled={emojiSent >= 2}
             style={{
               background: 'var(--surface-2)', border: '1px solid rgba(79,195,247,0.3)',
-              borderRadius: 12, padding: '10px 16px', color: '#4FC3F7', fontWeight: 700, fontSize: 18,
+              borderRadius: 12, padding: '10px 16px', color: 'var(--blue)', fontWeight: 700, fontSize: 18,
               cursor: emojiSent >= 2 ? 'not-allowed' : 'pointer', opacity: emojiSent >= 2 ? 0.35 : 1,
             }} title={emojiSent >= 2 ? 'Emoji hakkın bitti' : 'Emoji gönder'}>😊</button>
           {showEmojiPicker && emojiSent < 2 && (

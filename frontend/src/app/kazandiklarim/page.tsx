@@ -24,7 +24,7 @@ export default function KazandiklarimPage() {
 
   return (
     <div className="min-h-screen px-3 pt-4" style={{ paddingBottom: 96, maxWidth: 700, margin: '0 auto' }}>
-      <h1 className="text-2xl font-black mb-1" style={{ color: '#FFD700' }}>🏆 Kazandıkların</h1>
+      <h1 className="text-2xl font-black mb-1" style={{ color: 'var(--gold)' }}>🏆 Kazandıkların</h1>
       <p className="text-sm mb-5" style={{ color: 'var(--text-dim)' }}>Kupaların, madalyaların ve rozetlerin</p>
 
       {!data ? (
@@ -32,7 +32,7 @@ export default function KazandiklarimPage() {
       ) : (
         <div className="space-y-5">
           <div>
-            <h3 className="font-bold mb-2" style={{ color: '#FFD700' }}>🏆 Kupalar ({trophies.length})</h3>
+            <h3 className="font-bold mb-2" style={{ color: 'var(--gold)' }}>🏆 Kupalar ({trophies.length})</h3>
             {trophies.length === 0 ? <Empty text="Henüz kupan yok" /> : (
               <div className="grid grid-cols-2 gap-2">
                 {trophies.map((t: any, i: number) => <ItemCard key={i} icon={t.icon} title={t.title} count={t.count} color="#FFD700" />)}
@@ -48,7 +48,7 @@ export default function KazandiklarimPage() {
             )}
           </div>
           <div>
-            <h3 className="font-bold mb-2" style={{ color: '#4FC3F7' }}>🎖 Rozetler ({badges.length})</h3>
+            <h3 className="font-bold mb-2" style={{ color: 'var(--blue)' }}>🎖 Rozetler ({badges.length})</h3>
             {badges.length === 0 ? <Empty text="Henüz rozetin yok" /> : (
               <div className="grid grid-cols-3 gap-2">
                 {badges.map((b: any, i: number) => (

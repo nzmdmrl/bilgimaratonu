@@ -59,8 +59,8 @@ export default function GirisPage() {
         {/* Logo */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold mb-2">
-            <span style={{ color: '#FFD700' }}>Bilgi</span>
-            <span style={{ color: '#4FC3F7' }}> Maratonu</span>
+            <span style={{ color: 'var(--gold)' }}>Bilgi</span>
+            <span style={{ color: 'var(--blue)' }}> Maratonu</span>
           </h1>
           <p style={{ color: 'var(--text-dim)' }}>Bil, Kazan, Şampiyon Ol!</p>
         </div>
@@ -135,7 +135,7 @@ export default function GirisPage() {
 
           <p className="text-center mt-6" style={{ color: 'var(--text-dim)' }}>
             Hesabın yok mu?{' '}
-            <Link href="/kayit" style={{ color: '#4FC3F7' }} className="font-semibold hover:underline">
+            <Link href="/kayit" style={{ color: 'var(--blue)' }} className="font-semibold hover:underline">
               Kayıt Ol
             </Link>
           </p>

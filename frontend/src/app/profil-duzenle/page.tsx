@@ -126,8 +126,8 @@ export default function ProfileEdit() {
   return (
     <div className="min-h-screen p-4" style={{ maxWidth: 600, margin: '0 auto' }}>
       <div className="mb-6 flex items-center gap-3">
-        <Link href={`/p/${user.username}`} className="text-sm" style={{ color: '#4FC3F7' }}>← Profilime Dön</Link>
-        <h1 className="text-2xl font-black" style={{ color: '#FFD700' }}>⚙️ Profil Düzenle</h1>
+        <Link href={`/p/${user.username}`} className="text-sm" style={{ color: 'var(--blue)' }}>← Profilime Dön</Link>
+        <h1 className="text-2xl font-black" style={{ color: 'var(--gold)' }}>⚙️ Profil Düzenle</h1>
       </div>
 
       {msg && (
@@ -186,7 +186,7 @@ export default function ProfileEdit() {
       {/* Kullanıcı Adı */}
       {tab === 'genel' && (
         <div className="glass p-6">
-          <h3 className="font-bold mb-4" style={{ color: '#FFD700' }}>👤 Kullanıcı Adı</h3>
+          <h3 className="font-bold mb-4" style={{ color: 'var(--gold)' }}>👤 Kullanıcı Adı</h3>
           <div className="mb-4">
             <input className="input-field w-full" value={username}
               onChange={e => setUsername(e.target.value)}
@@ -214,7 +214,7 @@ export default function ProfileEdit() {
       {/* E-posta */}
       {tab === 'email' && (
         <div className="glass p-6">
-          <h3 className="font-bold mb-4" style={{ color: '#FFD700' }}>📧 E-posta</h3>
+          <h3 className="font-bold mb-4" style={{ color: 'var(--gold)' }}>📧 E-posta</h3>
           <input className="input-field w-full mb-4" type="email" value={email}
             onChange={e => setEmail(e.target.value)} placeholder="E-posta adresi" />
           <button onClick={saveEmail} disabled={saving || email === user.email}
@@ -227,7 +227,7 @@ export default function ProfileEdit() {
       {/* Şifre */}
       {tab === 'sifre' && (
         <div className="glass p-6">
-          <h3 className="font-bold mb-4" style={{ color: '#FFD700' }}>🔒 Şifre Değiştir</h3>
+          <h3 className="font-bold mb-4" style={{ color: 'var(--gold)' }}>🔒 Şifre Değiştir</h3>
           <input className="input-field w-full mb-3" type="password" value={currentPassword}
             onChange={e => setCurrentPassword(e.target.value)} placeholder="Mevcut şifre" />
           <input className="input-field w-full mb-3" type="password" value={newPassword}

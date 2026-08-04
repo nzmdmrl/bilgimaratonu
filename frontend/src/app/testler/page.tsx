@@ -91,7 +91,7 @@ export default function TestlerPage() {
       {editingEvent && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.8)' }}>
           <div className="glass p-6 w-full max-w-md">
-            <h3 className="font-black mb-4" style={{ color: '#FFD700' }}>✏️ Test Düzenle</h3>
+            <h3 className="font-black mb-4" style={{ color: 'var(--gold)' }}>✏️ Test Düzenle</h3>
             <div className="space-y-3">
               <div>
                 <label className="text-xs block mb-1" style={{ color: 'var(--text-dim)' }}>Test Adı</label>
@@ -133,7 +133,7 @@ export default function TestlerPage() {
       )}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-black" style={{ color: '#FFD700' }}>📝 Testler</h1>
+          <h1 className="text-2xl font-black" style={{ color: 'var(--gold)' }}>📝 Testler</h1>
           <p className="text-sm" style={{ color: 'var(--text-dim)' }}>Testleri çöz veya kendi testini oluştur</p>
         </div>
         {user && (
@@ -173,7 +173,7 @@ export default function TestlerPage() {
       ) : filtered.length === 0 ? (
         <div className="glass p-8 text-center" style={{ color: 'var(--text-dim)' }}>
           {tab === 'benim' ? (
-            <>Henüz test oluşturmadınız. <Link href="/testler/olustur" style={{ color: '#4FC3F7' }}>Test Oluştur →</Link></>
+            <>Henüz test oluşturmadınız. <Link href="/testler/olustur" style={{ color: 'var(--blue)' }}>Test Oluştur →</Link></>
           ) : 'Test bulunamadı.'}
         </div>
       ) : (
@@ -187,7 +187,7 @@ export default function TestlerPage() {
                   <span className="text-xs" style={{ color: 'var(--text-dim)' }}>
                     {VISIBILITY_LABELS[e.visibility]}
                   </span>
-                  <span className="text-xs" style={{ color: '#4FC3F7' }}>
+                  <span className="text-xs" style={{ color: 'var(--blue)' }}>
                     📊 {SCOREBOARD_LABELS[e.scoreboard_type]}
                   </span>
                   <span className="text-xs" style={{ color: 'var(--text-dim)' }}>
@@ -204,7 +204,7 @@ export default function TestlerPage() {
                   <div className="text-xs mt-1" style={{ color: 'var(--text-dim)' }}>
                     Oluşturan:{' '}
                     <span onClick={ev => { ev.preventDefault(); ev.stopPropagation(); router.push(`/p/${e.creator}`) }}
-                      className="font-bold" style={{ color: '#4FC3F7', cursor: 'pointer' }}>
+                      className="font-bold" style={{ color: 'var(--blue)', cursor: 'pointer' }}>
                       {e.creator}
                     </span>
                   </div>
@@ -213,7 +213,7 @@ export default function TestlerPage() {
               {tab === 'benim' ? (
                 <div className="flex items-center gap-2" onClick={e => e.preventDefault()}>
                   <button onClick={() => { setEditingEvent(e); setEditForm({ title: e.title, description: '', visibility: e.visibility, scoreboard_type: e.scoreboard_type }) }}
-                    className="text-xs px-2 py-1 rounded" style={{ background: 'rgba(79,195,247,0.2)', color: '#4FC3F7' }}>
+                    className="text-xs px-2 py-1 rounded" style={{ background: 'rgba(79,195,247,0.2)', color: 'var(--blue)' }}>
                     ✏️
                   </button>
                   <button onClick={() => archiveEvent(e.slug, e.is_active)}
@@ -231,7 +231,7 @@ export default function TestlerPage() {
                   )}
                 </div>
               ) : (
-                <span style={{ color: '#4FC3F7' }}>→</span>
+                <span style={{ color: 'var(--blue)' }}>→</span>
               )}
             </Link>
           ))}

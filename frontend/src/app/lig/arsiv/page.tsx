@@ -68,8 +68,8 @@ function ArchiveInner() {
       <div className="flex items-center justify-between mb-6">
         <Link href="/lig" style={{ color: 'var(--text-dim)', fontSize: 14 }}>← Lig</Link>
         <h1 className="text-2xl font-black">
-          <span style={{ color: '#FFD700' }}>Lig</span>
-          <span style={{ color: '#4FC3F7' }}> Arşivi</span>
+          <span style={{ color: 'var(--gold)' }}>Lig</span>
+          <span style={{ color: 'var(--blue)' }}> Arşivi</span>
         </h1>
         <span style={{ width: 40 }} />
       </div>
@@ -112,7 +112,7 @@ function ArchiveInner() {
         <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))' }}>
           {periods.map(p => (
             <div key={p.period_key} className="glass p-4">
-              <div className="text-sm font-bold mb-2" style={{ color: '#4FC3F7' }}>{p.label}</div>
+              <div className="text-sm font-bold mb-2" style={{ color: 'var(--blue)' }}>{p.label}</div>
               {(!p.winners || p.winners.length === 0) ? (
                 <div className="text-xs" style={{ color: 'var(--text-dim)' }}>—</div>
               ) : (

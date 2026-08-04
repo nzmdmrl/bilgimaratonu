@@ -217,14 +217,14 @@ export default function SoloPage() {
 
     return (
       <div className="min-h-screen" style={{
-        background: 'linear-gradient(180deg, var(--bg) 0%, #1A1B4B 100%)',
+        background: 'linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%)',
         position: 'relative', overflowX: 'hidden',
       }}>
         {/* Üst bar */}
         <div className="flex items-center justify-between px-4 py-3" style={{ position: 'sticky', top: 0, zIndex: 10, maxWidth: 500, margin: '0 auto' }}>
           <Link href="/" style={{ color: 'var(--text-dim)', fontSize: 22, fontWeight: 900, textDecoration: 'none' }}>←</Link>
-          <div className="font-black" style={{ color: '#4FC3F7' }}>🏅 Maraton Yolu</div>
-          <div className="font-bold" style={{ color: '#FFD700' }}>🌟 {progress?.total_stars ?? 0}</div>
+          <div className="font-black" style={{ color: 'var(--blue)' }}>🏅 Maraton Yolu</div>
+          <div className="font-bold" style={{ color: 'var(--gold)' }}>🌟 {progress?.total_stars ?? 0}</div>
         </div>
 
         {/* Zigzag yol */}
@@ -297,7 +297,7 @@ export default function SoloPage() {
               <p className="text-sm mb-1" style={{ color: 'var(--text-dim)' }}>
                 En iyi derecen: <Stars count={levels[String(replayLevel)] ?? 0} size={14} />
               </p>
-              <p className="text-sm mb-4" style={{ color: '#FFD700' }}>
+              <p className="text-sm mb-4" style={{ color: 'var(--gold)' }}>
                 ⚠️ Bu sefer <b>sorular değişecek</b>. Daha çok yıldız kazanabilirsin!
               </p>
               <div className="flex gap-2">
@@ -316,8 +316,8 @@ export default function SoloPage() {
   if (screen === 'countdown') return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="text-center animate-fade-in">
-        <div className="text-sm font-bold mb-2" style={{ color: '#4FC3F7' }}>LEVEL {currentLevel}</div>
-        <div className="text-9xl font-black mb-4" style={{ color: '#FFD700' }}>{countdown || 'Başla!'}</div>
+        <div className="text-sm font-bold mb-2" style={{ color: 'var(--blue)' }}>LEVEL {currentLevel}</div>
+        <div className="text-9xl font-black mb-4" style={{ color: 'var(--gold)' }}>{countdown || 'Başla!'}</div>
         <p style={{ color: 'var(--text-dim)' }}>{questions.length} soru hazır</p>
       </div>
     </div>
@@ -327,14 +327,14 @@ export default function SoloPage() {
     <div className="min-h-screen p-4" style={{ maxWidth: 700, margin: '0 auto' }}>
       <div className="glass p-5 animate-fade-in">
         <div className="flex items-center justify-between mb-1">
-          <div className="text-xs font-black px-2 py-0.5 rounded" style={{ background: 'rgba(79,195,247,0.15)', color: '#4FC3F7' }}>
+          <div className="text-xs font-black px-2 py-0.5 rounded" style={{ background: 'rgba(79,195,247,0.15)', color: 'var(--blue)' }}>
             LEVEL {currentLevel}
           </div>
           <div className="text-sm font-bold" style={{ color: DIFF_COLORS[q.difficulty] }}>{DIFF_LABELS[q.difficulty] || q.difficulty}</div>
         </div>
         <div className="flex items-center justify-between mb-3 gap-2">
           <div className="text-sm font-bold min-w-0" style={{ color: 'var(--text-dim)' }}>
-            {q.index + 1} / {q.total} <span style={{ color: '#4FC3F7' }}>· 📁 {q.category_name}</span>
+            {q.index + 1} / {q.total} <span style={{ color: 'var(--blue)' }}>· 📁 {q.category_name}</span>
           </div>
           <div className="text-3xl font-black flex-shrink-0" style={{
             color: timeLeft <= 5 ? '#F44336' : timeLeft <= 10 ? '#FF7043' : '#FFD700'
@@ -409,11 +409,11 @@ export default function SoloPage() {
           <div style={{ color: '#F44336' }}>{result.error}</div>
         ) : (
           <>
-            <div className="text-center mb-2 text-sm font-black" style={{ color: '#4FC3F7' }}>LEVEL {result.level}</div>
+            <div className="text-center mb-2 text-sm font-black" style={{ color: 'var(--blue)' }}>LEVEL {result.level}</div>
             <div className="text-center mb-3">
               <Stars count={result.stars} size={44} />
             </div>
-            <h2 className="text-xl font-black mb-5 text-center" style={{ color: '#FFD700' }}>
+            <h2 className="text-xl font-black mb-5 text-center" style={{ color: 'var(--gold)' }}>
               {result.stars >= 3 ? '🎉 Mükemmel!' : result.stars === 2 ? '👍 İyi iş!' : result.stars === 1 ? '🙂 Geçtin!' : '📚 Tekrar dene!'}
             </h2>
             <div className="grid grid-cols-3 gap-3 mb-4">
@@ -426,7 +426,7 @@ export default function SoloPage() {
                 <div className="text-xs mt-1" style={{ color: 'var(--text-dim)' }}>Yanlış</div>
               </div>
               <div className="glass p-4 text-center">
-                <div className="text-3xl font-black" style={{ color: '#4FC3F7' }}>%{result.accuracy}</div>
+                <div className="text-3xl font-black" style={{ color: 'var(--blue)' }}>%{result.accuracy}</div>
                 <div className="text-xs mt-1" style={{ color: 'var(--text-dim)' }}>Başarı</div>
               </div>
             </div>
@@ -434,7 +434,7 @@ export default function SoloPage() {
             {/* XP / yıldız bilgisi */}
             {result.xp_gained > 0 ? (
               <div className="glass p-3 mb-4 text-center">
-                <span style={{ color: '#FFD700' }}>
+                <span style={{ color: 'var(--gold)' }}>
                   +{result.new_stars} yeni yıldız ⭐ × {result.xp_per_star} = <b>+{result.xp_gained} XP</b>
                 </span>
               </div>
@@ -479,7 +479,7 @@ export default function SoloPage() {
                   className="flex-1 btn-gold p-3 text-sm font-bold">🔄 Tekrar Dene</button>
               )}
               <button onClick={() => { setScreen('map'); setResult(null); setMyAnswer(null); loadProgress() }}
-                className="flex-1 glass p-3 text-sm font-bold" style={{ color: '#4FC3F7' }}>🗺 Harita</button>
+                className="flex-1 glass p-3 text-sm font-bold" style={{ color: 'var(--blue)' }}>🗺 Harita</button>
             </div>
             <Link href="/" className="block glass p-3 text-sm font-bold text-center" style={{ color: 'var(--text-dim)' }}>
               🏠 Ana Sayfa

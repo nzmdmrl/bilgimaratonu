@@ -530,8 +530,8 @@ export default function AdminPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-black">
-          <span style={{ color: '#FFD700' }}>Admin</span>
-          <span style={{ color: '#4FC3F7' }}> Paneli</span>
+          <span style={{ color: 'var(--gold)' }}>Admin</span>
+          <span style={{ color: 'var(--blue)' }}> Paneli</span>
         </h1>
         <Link href="/" style={{ color: 'var(--text-dim)', fontSize: 14 }}>← Ana Sayfa</Link>
       </div>
@@ -558,8 +558,8 @@ export default function AdminPage() {
           {dashboard && (
             <div className="grid grid-cols-3 gap-4">
               {[
-                { label: 'Toplam Kullanıcı', value: dashboard.users, icon: '👤', color: '#4FC3F7' },
-                { label: 'Aktif Soru', value: dashboard.questions, icon: '❓', color: '#FFD700' },
+                { label: 'Toplam Kullanıcı', value: dashboard.users, icon: '👤', color: 'var(--blue)' },
+                { label: 'Aktif Soru', value: dashboard.questions, icon: '❓', color: 'var(--gold)' },
                 { label: 'Toplam Maç', value: dashboard.matches, icon: '🎮', color: '#81C784' },
               ].map(stat => (
                 <div key={stat.label} className="glass p-6 text-center">
@@ -597,7 +597,7 @@ export default function AdminPage() {
               </div>
               <div className="glass p-6 text-center">
                 <div className="text-4xl mb-2">⚔️</div>
-                <div className="text-3xl font-black" style={{ color: '#FFD700' }}>{stats.realtime.active_matches.total}</div>
+                <div className="text-3xl font-black" style={{ color: 'var(--gold)' }}>{stats.realtime.active_matches.total}</div>
                 <div className="text-sm mt-1" style={{ color: 'var(--text-dim)' }}>Aktif Maç</div>
                 <div className="text-xs mt-2" style={{ color: 'var(--text-dimmer)' }}>
                   👥 İ-İ {stats.realtime.active_matches.hh} · 🤖 İ-Bot {stats.realtime.active_matches.hb} · 🤖🤖 {stats.realtime.active_matches.bb}
@@ -605,7 +605,7 @@ export default function AdminPage() {
               </div>
               <div className="glass p-6 text-center">
                 <div className="text-4xl mb-2">🎯</div>
-                <div className="text-3xl font-black" style={{ color: '#4FC3F7' }}>{stats.realtime.active_players}</div>
+                <div className="text-3xl font-black" style={{ color: 'var(--blue)' }}>{stats.realtime.active_players}</div>
                 <div className="text-sm mt-1" style={{ color: 'var(--text-dim)' }}>Maçtaki Kişi</div>
               </div>
             </div>
@@ -621,7 +621,7 @@ export default function AdminPage() {
               </div>
               <div className="glass p-6 text-center">
                 <div className="text-4xl mb-2">🏅</div>
-                <div className="text-3xl font-black" style={{ color: '#FFD700' }}>{stats.aggregate.maraton.users}</div>
+                <div className="text-3xl font-black" style={{ color: 'var(--gold)' }}>{stats.aggregate.maraton.users}</div>
                 <div className="text-sm mt-1" style={{ color: 'var(--text-dim)' }}>Maraton — İlerleyen Kişi</div>
                 <div className="text-xs mt-2" style={{ color: 'var(--text-dimmer)' }}>{stats.aggregate.maraton.levels} level ilerlendi</div>
               </div>
@@ -632,7 +632,7 @@ export default function AdminPage() {
               </div>
               <div className="glass p-6 text-center">
                 <div className="text-4xl mb-2">📝</div>
-                <div className="text-3xl font-black" style={{ color: '#4FC3F7' }}>{stats.aggregate.tests.solves}</div>
+                <div className="text-3xl font-black" style={{ color: 'var(--blue)' }}>{stats.aggregate.tests.solves}</div>
                 <div className="text-sm mt-1" style={{ color: 'var(--text-dim)' }}>Test Çözümü</div>
                 <div className="text-xs mt-2" style={{ color: 'var(--text-dimmer)' }}>{stats.aggregate.tests.solvers} farklı kişi</div>
               </div>
@@ -682,7 +682,7 @@ export default function AdminPage() {
                   border: qCategory === c.slug ? '1px solid #4FC3F7' : '1px solid var(--border)',
                   color: qCategory === c.slug ? '#4FC3F7' : 'var(--text-dim)',
                 }}>
-                {c.name} <span style={{ color: '#FFD700' }}>{c.count}</span>
+                {c.name} <span style={{ color: 'var(--gold)' }}>{c.count}</span>
               </button>
             ))}
           </div>
@@ -708,7 +708,7 @@ export default function AdminPage() {
                 <span className="text-xs" style={{
                   color: q.difficulty === 'Kolay' ? '#4CAF50' : q.difficulty === 'Orta' ? '#FFC107' : q.difficulty === 'Zor' ? '#FF7043' : '#E91E63'
                 }}>{q.difficulty}</span>
-                <span className="font-bold text-sm" style={{ color: '#4FC3F7' }}>{q.correct_answer}</span>
+                <span className="font-bold text-sm" style={{ color: 'var(--blue)' }}>{q.correct_answer}</span>
                 <div className="flex gap-1">
                   <button onClick={() => toggleQuestion(q.id)}
                     className="text-xs px-2 py-1 rounded"
@@ -783,8 +783,8 @@ export default function AdminPage() {
                 <span className="text-xs" style={{ color: u.role === 'admin' ? '#E91E63' : 'var(--text-dim)' }}>
                   {u.role}
                 </span>
-                <span className="text-sm" style={{ color: '#4FC3F7' }}>{u.elo_rating}</span>
-                <span className="text-sm" style={{ color: '#FFD700' }}>{u.xp}</span>
+                <span className="text-sm" style={{ color: 'var(--blue)' }}>{u.elo_rating}</span>
+                <span className="text-sm" style={{ color: 'var(--gold)' }}>{u.xp}</span>
                 <span className="text-sm">{u.total_matches}</span>
                 <div className="flex gap-1 flex-wrap">
                   <button onClick={() => toggleUser(u.id)}
@@ -897,11 +897,11 @@ export default function AdminPage() {
       {tab === 'csv' && (
         <div className="animate-fade-in">
           <div className="glass p-6 mb-4">
-            <h3 className="font-bold mb-4" style={{ color: '#FFD700' }}>CSV ile Soru Yükle</h3>
+            <h3 className="font-bold mb-4" style={{ color: 'var(--gold)' }}>CSV ile Soru Yükle</h3>
 
             {/* CSV Format */}
             <div className="rounded-xl p-4 mb-4 text-xs font-mono"
-              style={{ background: 'rgba(0,0,0,0.3)', color: '#4FC3F7' }}>
+              style={{ background: 'rgba(0,0,0,0.3)', color: 'var(--blue)' }}>
               <div style={{ color: 'var(--text-dim)', marginBottom: 8 }}>CSV sütun sırası:</div>
               kategori,zorluk,soru_tipi,soru_metni,sik_a,sik_b,sik_c,sik_d,dogru_cevap,aciklama<br />
               <br />
@@ -1007,7 +1007,7 @@ export default function AdminPage() {
         <div className="animate-fade-in space-y-4">
           {!editingPage ? (
             <div className="glass p-5">
-              <h3 className="font-bold mb-4" style={{ color: '#FFD700' }}>📄 Statik Sayfalar</h3>
+              <h3 className="font-bold mb-4" style={{ color: 'var(--gold)' }}>📄 Statik Sayfalar</h3>
               <div className="space-y-2">
                 {staticPages.map((p: any) => (
                   <div key={p.id} className="glass p-3 flex items-center justify-between">
@@ -1016,7 +1016,7 @@ export default function AdminPage() {
                       const r = await api.get(`/api/pages/${p.id}`)
                       setEditingPage(r.data)
                     }} className="text-xs px-3 py-1.5 rounded-lg font-bold"
-                      style={{ background: 'rgba(79,195,247,0.2)', color: '#4FC3F7' }}>
+                      style={{ background: 'rgba(79,195,247,0.2)', color: 'var(--blue)' }}>
                       ✏️ Düzenle
                     </button>
                   </div>
@@ -1025,7 +1025,7 @@ export default function AdminPage() {
             </div>
           ) : (
             <div className="glass p-5">
-              <h3 className="font-bold mb-4" style={{ color: '#FFD700' }}>✏️ {editingPage.title}</h3>
+              <h3 className="font-bold mb-4" style={{ color: 'var(--gold)' }}>✏️ {editingPage.title}</h3>
               <div className="mb-3">
                 <label className="text-sm mb-1 block" style={{ color: 'var(--text-dim)' }}>Başlık</label>
                 <input className="input-field w-full" value={editingPage.title}
@@ -1055,7 +1055,7 @@ export default function AdminPage() {
           {!editingPost ? (
             <div className="glass p-5">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-bold" style={{ color: '#FFD700' }}>📝 Blog Yazıları</h3>
+                <h3 className="font-bold" style={{ color: 'var(--gold)' }}>📝 Blog Yazıları</h3>
                 <button onClick={() => { setEditingPost({ title: '', summary: '', content: '', cover_image: '', is_active: true }); setNewPost(true) }}
                   className="btn-gold text-sm px-4 py-2">+ Yeni Yazı</button>
               </div>
@@ -1075,7 +1075,7 @@ export default function AdminPage() {
                           setEditingPost({ ...r.data })
                           setNewPost(false)
                         }} className="text-xs px-3 py-1.5 rounded-lg font-bold"
-                          style={{ background: 'rgba(79,195,247,0.2)', color: '#4FC3F7' }}>✏️</button>
+                          style={{ background: 'rgba(79,195,247,0.2)', color: 'var(--blue)' }}>✏️</button>
                         <button onClick={() => deleteBlogPost(p.id)}
                           className="text-xs px-3 py-1.5 rounded-lg font-bold"
                           style={{ background: 'rgba(244,67,54,0.2)', color: '#F44336' }}>🗑</button>
@@ -1087,7 +1087,7 @@ export default function AdminPage() {
             </div>
           ) : (
             <div className="glass p-5">
-              <h3 className="font-bold mb-4" style={{ color: '#FFD700' }}>
+              <h3 className="font-bold mb-4" style={{ color: 'var(--gold)' }}>
                 {newPost ? '+ Yeni Yazı' : '✏️ Yazıyı Düzenle'}
               </h3>
               <div className="space-y-3">
@@ -1132,7 +1132,7 @@ export default function AdminPage() {
                 <h3 className="font-bold" style={{ color: '#FF9800' }}>📢 Duyurular</h3>
                 <button onClick={() => setEditingAnn({
                   title: '', content: '', link_url: '', link_label: '',
-                  bg_color: '#FFD700', text_color: '#000000', is_active: true
+                  bg_color: 'var(--gold)', text_color: '#000000', is_active: true
                 })} className="btn-gold text-sm px-4 py-2">+ Yeni Duyuru</button>
               </div>
               {announcements.length === 0 ? (
@@ -1153,7 +1153,7 @@ export default function AdminPage() {
                       <div className="flex gap-2">
                         <button onClick={() => setEditingAnn({...a})}
                           className="text-xs px-3 py-1.5 rounded-lg font-bold"
-                          style={{ background: 'rgba(79,195,247,0.2)', color: '#4FC3F7' }}>✏️</button>
+                          style={{ background: 'rgba(79,195,247,0.2)', color: 'var(--blue)' }}>✏️</button>
                         <button onClick={() => deleteAnnouncement(a.id)}
                           className="text-xs px-3 py-1.5 rounded-lg font-bold"
                           style={{ background: 'rgba(244,67,54,0.2)', color: '#F44336' }}>🗑</button>
@@ -1243,7 +1243,7 @@ export default function AdminPage() {
       {tab === 'avatarlar' && (
         <div className="animate-fade-in">
           <div className="glass p-5">
-            <h3 className="font-bold mb-4" style={{ color: '#4FC3F7' }}>🖼 Avatar Onay Bekleyenler</h3>
+            <h3 className="font-bold mb-4" style={{ color: 'var(--blue)' }}>🖼 Avatar Onay Bekleyenler</h3>
             {avatarRequests.length === 0 ? (
               <div className="text-center py-8" style={{ color: '#4CAF50' }}>✓ Bekleyen avatar yok</div>
             ) : (
@@ -1281,7 +1281,7 @@ export default function AdminPage() {
       {tab === 'import' && (
         <div className="animate-fade-in">
           <div className="glass p-5">
-            <h3 className="font-bold mb-4" style={{ color: '#4FC3F7' }}>📥 URL'den Soru Import</h3>
+            <h3 className="font-bold mb-4" style={{ color: 'var(--blue)' }}>📥 URL'den Soru Import</h3>
             <div className="space-y-3">
               <div>
                 <label className="text-sm mb-1 block" style={{ color: 'var(--text-dim)' }}>URL</label>
@@ -1341,7 +1341,7 @@ export default function AdminPage() {
       {tab === 'generator' && (
         <div className="animate-fade-in space-y-4">
           <div className="glass p-5">
-            <h3 className="font-bold mb-4" style={{ color: '#4FC3F7' }}>🤖 AI Soru Üretici</h3>
+            <h3 className="font-bold mb-4" style={{ color: 'var(--blue)' }}>🤖 AI Soru Üretici</h3>
             
             {/* Dil ve Ülke */}
             <div className="grid grid-cols-2 gap-3 mb-4">
@@ -1470,14 +1470,14 @@ export default function AdminPage() {
         <div className="animate-fade-in space-y-4">
           {/* Ekstra Joker */}
           <div className="glass p-5">
-            <h3 className="font-bold mb-4" style={{ color: '#FFD700' }}>💡 Ekstra Joker</h3>
+            <h3 className="font-bold mb-4" style={{ color: 'var(--gold)' }}>💡 Ekstra Joker</h3>
             {shopItems.filter(i => i.type === 'extra_joker').map((item: any) => (
               <div key={item.id} className="glass p-4 flex items-center gap-3">
                 <div className="text-2xl">💡</div>
                 <div className="flex-1">
                   <div className="font-bold">{item.name}</div>
                   <div className="flex items-center gap-2 mt-1">
-                    <span className="text-sm" style={{ color: '#FFD700' }}>⭐</span>
+                    <span className="text-sm" style={{ color: 'var(--gold)' }}>⭐</span>
                     <input type="number" value={item.price_xp} className="input-field w-20 text-sm py-1"
                       onChange={e => updateShopItem(item.id, { price_xp: parseInt(e.target.value) })} />
                     <span className="text-xs" style={{ color: 'var(--text-dim)' }}>XP</span>
@@ -1494,7 +1494,7 @@ export default function AdminPage() {
 
           {/* Profil Kart Renkleri */}
           <div className="glass p-5">
-            <h3 className="font-bold mb-4" style={{ color: '#4FC3F7' }}>🎨 Profil Kart Renkleri</h3>
+            <h3 className="font-bold mb-4" style={{ color: 'var(--blue)' }}>🎨 Profil Kart Renkleri</h3>
             <div className="space-y-3 mb-4">
               {shopItems.filter(i => i.type === 'card_color').map((item: any) => (
                 <div key={item.id} className="glass p-3 flex items-center gap-3">
@@ -1525,7 +1525,7 @@ export default function AdminPage() {
 
             {/* Yeni renk ekle */}
             <div className="glass p-4">
-              <h4 className="text-sm font-bold mb-3" style={{ color: '#4FC3F7' }}>+ Yeni Renk Ekle</h4>
+              <h4 className="text-sm font-bold mb-3" style={{ color: 'var(--blue)' }}>+ Yeni Renk Ekle</h4>
               <div className="flex items-center gap-3 flex-wrap">
                 <input type="text" placeholder="Renk adı" value={newColorName}
                   onChange={e => setNewColorName(e.target.value)}
@@ -1616,9 +1616,9 @@ export default function AdminPage() {
 
           {/* Bot Yönetimi */}
           <div className="glass p-5">
-            <h3 className="font-bold mb-1" style={{ color: '#4FC3F7' }}>🤖 Bot Yönetimi</h3>
+            <h3 className="font-bold mb-1" style={{ color: 'var(--blue)' }}>🤖 Bot Yönetimi</h3>
             <p className="text-sm mb-4" style={{ color: 'var(--text-dim)' }}>
-              Mevcut bot sayısı: <strong style={{ color: '#FFD700' }}>{botTotal ?? '...'}</strong>
+              Mevcut bot sayısı: <strong style={{ color: 'var(--gold)' }}>{botTotal ?? '...'}</strong>
             </p>
             <div className="grid grid-cols-2 gap-3 mb-3">
               <div>
@@ -1656,7 +1656,7 @@ export default function AdminPage() {
       {tab === 'sesler' && siteSettings && (
         <div className="animate-fade-in">
           <div className="glass p-5">
-            <h3 className="font-bold mb-1" style={{ color: '#FFD700' }}>🔊 Ses Efektleri</h3>
+            <h3 className="font-bold mb-1" style={{ color: 'var(--gold)' }}>🔊 Ses Efektleri</h3>
             <p className="text-xs mb-4" style={{ color: 'var(--text-dim)' }}>
               Her ses için varsayılan sentetik ses çalar. Bir yuvaya MP3 yüklersen, o ses yerine yüklediğin dosya çalar.
               (MP3/WAV/OGG, en fazla 5MB.) 1v1 maç ve kategori maçlarında aynı sesler kullanılır.
@@ -1676,11 +1676,11 @@ export default function AdminPage() {
                     </div>
                     <button onClick={() => previewSound(slot.key as SoundKey)}
                       className="text-xs px-3 py-1.5 rounded-lg font-bold"
-                      style={{ background: 'rgba(79,195,247,0.2)', color: '#4FC3F7' }}>
+                      style={{ background: 'rgba(79,195,247,0.2)', color: 'var(--blue)' }}>
                       ▶ Dinle
                     </button>
                     <label className="text-xs px-3 py-1.5 rounded-lg font-bold cursor-pointer"
-                      style={{ background: 'rgba(255,215,0,0.15)', color: '#FFD700' }}>
+                      style={{ background: 'rgba(255,215,0,0.15)', color: 'var(--gold)' }}>
                       {busy ? '⏳ Yükleniyor...' : '⬆ MP3 Yükle'}
                       <input type="file" accept="audio/mpeg,audio/mp3,audio/wav,audio/ogg" hidden
                         disabled={busy}
@@ -1707,11 +1707,11 @@ export default function AdminPage() {
         <div className="animate-fade-in">
           <div className="glass p-5">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold" style={{ color: '#FFD700' }}>🏅 Unvan Sistemi</h3>
+              <h3 className="font-bold" style={{ color: 'var(--gold)' }}>🏅 Unvan Sistemi</h3>
               <div className="flex gap-2">
-                <button onClick={() => setTitles([...titles, { min_xp: 0, title: 'Yeni Unvan', color: '#4FC3F7', icon: '🎯' }])}
+                <button onClick={() => setTitles([...titles, { min_xp: 0, title: 'Yeni Unvan', color: 'var(--blue)', icon: '🎯' }])}
                   className="text-sm px-3 py-1.5 rounded-lg font-bold"
-                  style={{ background: 'rgba(79,195,247,0.2)', color: '#4FC3F7' }}>
+                  style={{ background: 'rgba(79,195,247,0.2)', color: 'var(--blue)' }}>
                   + Unvan Ekle
                 </button>
                 <button onClick={saveTitles} disabled={settingsSaving} className="btn-gold text-sm" style={{ padding: '6px 16px' }}>
@@ -1816,7 +1816,7 @@ export default function AdminPage() {
 
           {/* Modüller */}
           <div className="glass p-5">
-            <h3 className="font-bold mb-4" style={{ color: '#FFD700' }}>🔧 Modüller</h3>
+            <h3 className="font-bold mb-4" style={{ color: 'var(--gold)' }}>🔧 Modüller</h3>
             <div className="grid grid-cols-2 gap-3">
               {[
                 { key: 'match_1v1', label: '1v1 İnsan Maçı' },
@@ -1846,7 +1846,7 @@ export default function AdminPage() {
 
           {/* Maç Ayarları */}
           <div className="glass p-5">
-            <h3 className="font-bold mb-4" style={{ color: '#4FC3F7' }}>⚡ Maç Ayarları</h3>
+            <h3 className="font-bold mb-4" style={{ color: 'var(--blue)' }}>⚡ Maç Ayarları</h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="text-sm mb-1 block" style={{ color: 'var(--text-dim)' }}>Toplam Soru Sayısı</label>
@@ -1976,7 +1976,7 @@ export default function AdminPage() {
 
           {/* Arayüz Ayarları */}
           <div className="glass p-5">
-            <h3 className="font-bold mb-1" style={{ color: '#4FC3F7' }}>📱 Arayüz (Mobil)</h3>
+            <h3 className="font-bold mb-1" style={{ color: 'var(--blue)' }}>📱 Arayüz (Mobil)</h3>
             <p className="text-xs mb-4" style={{ color: 'var(--text-dim)' }}>Maç ekranlarında üst menü davranışı.</p>
             <div className="flex items-center justify-between glass p-3">
               <div>
@@ -2022,7 +2022,7 @@ export default function AdminPage() {
 
           {/* Zorluk Puan ve Süre Ayarları */}
           <div className="glass p-5">
-            <h3 className="font-bold mb-1" style={{ color: '#FFD700' }}>🎯 Zorluk Puan ve Süre Ayarları</h3>
+            <h3 className="font-bold mb-1" style={{ color: 'var(--gold)' }}>🎯 Zorluk Puan ve Süre Ayarları</h3>
             <p className="text-xs mb-4" style={{ color: 'var(--text-dim)' }}>Tüm maç tiplerinde geçerlidir (1v1, kategori, maraton).</p>
             {[['easy','Kolay'],['medium','Orta'],['hard','Zor'],['very_hard','Çok Zor']].map(([d, label]) => (
               <div key={d} className="grid grid-cols-3 gap-3 mb-3 items-end">
@@ -2073,7 +2073,7 @@ export default function AdminPage() {
 
           {/* Solo Level Ayarları */}
           <div className="glass p-5">
-            <h3 className="font-bold mb-1" style={{ color: '#FFD700' }}>🌟 Maraton Level Ayarları</h3>
+            <h3 className="font-bold mb-1" style={{ color: 'var(--gold)' }}>🌟 Maraton Level Ayarları</h3>
             <p className="text-xs mb-4" style={{ color: 'var(--text-dim)' }}>
               Kullanıcı bir levelde yeni yıldız kazandığında yıldız başına verilecek XP. (Sadece yeni yıldızlar için; tekrar oynayıp aynı yıldızdan XP kazanılamaz.)
             </p>
@@ -2096,7 +2096,7 @@ export default function AdminPage() {
           {/* Kalabalık */}
           <div className="glass p-5">
             <div className="flex items-center justify-between mb-1">
-              <h3 className="font-bold" style={{ color: '#FFD700' }}>👥 Kalabalık</h3>
+              <h3 className="font-bold" style={{ color: 'var(--gold)' }}>👥 Kalabalık</h3>
               <button
                 onClick={() => saveSettings('kalabalik', { ...siteSettings.kalabalik, enabled: !siteSettings.kalabalik?.enabled })}
                 className="px-3 py-1 rounded-lg text-sm font-bold"
@@ -2149,7 +2149,7 @@ export default function AdminPage() {
 
           {/* Maraton Ayarları */}
           <div className="glass p-5">
-            <h3 className="font-bold mb-4" style={{ color: '#FFD700' }}>🏆 Turnuva Ayarları</h3>
+            <h3 className="font-bold mb-4" style={{ color: 'var(--gold)' }}>🏆 Turnuva Ayarları</h3>
             <div className="grid grid-cols-3 gap-4">
               <div>
                 <label className="text-sm mb-1 block" style={{ color: 'var(--text-dim)' }}>Katılımcı Sayısı</label>

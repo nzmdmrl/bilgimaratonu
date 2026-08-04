@@ -73,8 +73,8 @@ export default function MarketPage() {
   return (
     <div className="min-h-screen p-4" style={{ maxWidth: 700, margin: '0 auto' }}>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-black" style={{ color: '#FFD700' }}>🛒 Market</h1>
-        <div className="glass px-4 py-2 font-black" style={{ color: '#FFD700' }}>
+        <h1 className="text-3xl font-black" style={{ color: 'var(--gold)' }}>🛒 Market</h1>
+        <div className="glass px-4 py-2 font-black" style={{ color: 'var(--gold)' }}>
           ⭐ {user?.xp || 0} XP
         </div>
       </div>
@@ -88,11 +88,11 @@ export default function MarketPage() {
 
       {/* Ekstra Joker */}
       <div className="glass p-5 mb-5">
-        <h2 className="font-black text-lg mb-1" style={{ color: '#FFD700' }}>💡 Ekstra Joker</h2>
+        <h2 className="font-black text-lg mb-1" style={{ color: 'var(--gold)' }}>💡 Ekstra Joker</h2>
         <p className="text-sm mb-4" style={{ color: '#555' }}>Her maçta +1 joker hakkı — tekrar tekrar satın alınabilir</p>
         <div className="flex items-center gap-3 mb-3">
           <div className="glass px-4 py-2 text-sm font-bold" style={{ color: 'var(--text-dim)' }}>
-            Şu anki ekstra joker: <span style={{ color: '#FFD700' }}>{myItems.extra_jokers || 0}</span>
+            Şu anki ekstra joker: <span style={{ color: 'var(--gold)' }}>{myItems.extra_jokers || 0}</span>
           </div>
         </div>
         {jokerItems.map(item => (
@@ -101,7 +101,7 @@ export default function MarketPage() {
             <div className="flex-1">
               <div className="font-bold">{item.name}</div>
               <div className="text-sm" style={{ color: 'var(--text-dim)' }}>{item.description}</div>
-              <div className="text-sm mt-1" style={{ color: '#FFD700' }}>⭐ {item.price_xp} XP</div>
+              <div className="text-sm mt-1" style={{ color: 'var(--gold)' }}>⭐ {item.price_xp} XP</div>
             </div>
             <button onClick={() => buy(item.id)}
               disabled={buying === item.id || (user?.xp || 0) < item.price_xp}
@@ -115,7 +115,7 @@ export default function MarketPage() {
 
       {/* Profil Kart Renkleri */}
       {colorItems.length > 0 && <div className="glass p-5 mb-5">
-        <h2 className="font-black text-lg mb-1" style={{ color: '#4FC3F7' }}>🎨 Profil Kart Rengi</h2>
+        <h2 className="font-black text-lg mb-1" style={{ color: 'var(--blue)' }}>🎨 Profil Kart Rengi</h2>
         <p className="text-sm mb-4" style={{ color: '#555' }}>Maç ekranında profil kartınızın arka plan rengi</p>
         <div className="grid grid-cols-2 gap-3">
           {colorItems.map(item => {
@@ -128,14 +128,14 @@ export default function MarketPage() {
                   style={{ background: item.value }} />
                 <div className="flex-1 min-w-0">
                   <div className="font-bold text-sm">{item.name}</div>
-                  <div className="text-xs" style={{ color: '#FFD700' }}>⭐ {item.price_xp} XP</div>
+                  <div className="text-xs" style={{ color: 'var(--gold)' }}>⭐ {item.price_xp} XP</div>
                 </div>
                 {isActive ? (
-                  <span className="text-xs font-bold px-2 py-1 rounded-lg" style={{ background: 'rgba(255,215,0,0.2)', color: '#FFD700' }}>Aktif</span>
+                  <span className="text-xs font-bold px-2 py-1 rounded-lg" style={{ background: 'rgba(255,215,0,0.2)', color: 'var(--gold)' }}>Aktif</span>
                 ) : isOwned ? (
                   <button onClick={() => equip(item.id)}
                     className="text-xs font-bold px-2 py-1 rounded-lg"
-                    style={{ background: 'rgba(79,195,247,0.2)', color: '#4FC3F7' }}>
+                    style={{ background: 'rgba(79,195,247,0.2)', color: 'var(--blue)' }}>
                     Kullan
                   </button>
                 ) : (

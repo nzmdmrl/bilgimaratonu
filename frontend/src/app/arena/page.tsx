@@ -269,7 +269,7 @@ export default function ArenaPage() {
                     <button onClick={() => {
                       const link = `${window.location.origin}/arena?event=${eventRef.current}`
                       navigator.clipboard.writeText(link); alert('Katılım linki kopyalandı!')
-                    }} className="flex-1 glass p-2 text-sm font-bold" style={{ color: '#4FC3F7', borderRadius: 10 }}>
+                    }} className="flex-1 glass p-2 text-sm font-bold" style={{ color: 'var(--blue)', borderRadius: 10 }}>
                       📋 Linki Kopyala
                     </button>
                   </div>
@@ -339,7 +339,7 @@ export default function ArenaPage() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center">
         <div className="text-sm font-bold mb-2" style={{ color: '#FF7043' }}>ARENA · {qTotal} SORU</div>
-        <div key={countdown} className="text-9xl font-black arena-pop" style={{ color: '#FFD700' }}>{countdown || 'Başla!'}</div>
+        <div key={countdown} className="text-9xl font-black arena-pop" style={{ color: 'var(--gold)' }}>{countdown || 'Başla!'}</div>
         <div className="mt-6 text-sm" style={{ color: 'var(--text-dim)' }}>{players.length} oyuncu hazır</div>
       </div>
     )
@@ -366,7 +366,7 @@ export default function ArenaPage() {
               <img src={avatarSrc(p.avatar_url, p.username)} alt=""
                 style={{ width: p.rank === 1 ? 60 : 46, height: p.rank === 1 ? 60 : 46, borderRadius: '50%', objectFit: 'cover', border: `3px solid ${p.rank === 1 ? '#FFD700' : p.rank === 2 ? 'var(--text-dim)' : '#CD7F32'}` }} />
               <div className="text-xs font-bold mt-1 truncate" style={{ maxWidth: 90, color: p.user_id === me ? '#FFD700' : '#fff' }}>{p.username}</div>
-              <div className="text-xs font-black" style={{ color: '#FFD700' }}>{p.total}</div>
+              <div className="text-xs font-black" style={{ color: 'var(--gold)' }}>{p.total}</div>
               <div className="w-full flex items-center justify-center font-black text-2xl"
                 style={{ height: podiumH[p.rank] || 40, marginTop: 4, borderRadius: '10px 10px 0 0', background: p.rank === 1 ? 'rgba(255,215,0,0.25)' : p.rank === 2 ? 'rgba(176,190,197,0.2)' : 'rgba(205,127,50,0.2)' }}>
                 {medal(p.rank)}
@@ -391,7 +391,7 @@ export default function ArenaPage() {
               <span className="text-center font-bold" style={{ color: '#4CAF50' }}>{r.correct}</span>
               <span className="text-center font-bold" style={{ color: '#FFD54F' }}>{r.flash}</span>
               <div className="text-right">
-                <div className="font-black" style={{ color: '#FFD700' }}>{r.total}</div>
+                <div className="font-black" style={{ color: 'var(--gold)' }}>{r.total}</div>
                 {r.bonus > 0 && <div style={{ fontSize: 10, color: '#E91E63' }}>+{r.bonus}</div>}
               </div>
             </div>

@@ -121,7 +121,7 @@ export default function OlusturPage() {
         {/* Paylaşım linki — link ile de katılabilirler */}
         <div className="glass p-3 mb-3">
           <p className="text-xs mb-1" style={{ color: 'var(--text-dim)' }}>Katılım linki (link ile de girebilirler):</p>
-          <div className="font-mono text-xs break-all mb-2" style={{ color: '#4FC3F7' }}>{shareLink()}</div>
+          <div className="font-mono text-xs break-all mb-2" style={{ color: 'var(--blue)' }}>{shareLink()}</div>
           <button onClick={() => { navigator.clipboard.writeText(shareLink()); alert('Link kopyalandı!') }}
             className="text-xs font-bold" style={{ color: '#FF7043' }}>📋 Linki Kopyala</button>
         </div>
@@ -207,12 +207,12 @@ export default function OlusturPage() {
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="glass p-8 max-w-md w-full text-center animate-fade-in">
         <div className="text-5xl mb-4">🎉</div>
-        <h2 className="text-2xl font-black mb-2" style={{ color: '#FFD700' }}>Test Oluşturuldu!</h2>
+        <h2 className="text-2xl font-black mb-2" style={{ color: 'var(--gold)' }}>Test Oluşturuldu!</h2>
         <p className="mb-4 text-sm" style={{ color: 'var(--text-dim)' }}>{created.question_count} soru hazır.</p>
 
         <div className="glass p-4 mb-4">
           <p className="text-xs mb-2" style={{ color: 'var(--text-dim)' }}>Test Linki:</p>
-          <div className="font-mono text-sm break-all" style={{ color: '#4FC3F7' }}>
+          <div className="font-mono text-sm break-all" style={{ color: 'var(--blue)' }}>
             {typeof window !== 'undefined' ? `${window.location.origin}/testler/${created.slug}` : ''}
           </div>
         </div>
@@ -224,7 +224,7 @@ export default function OlusturPage() {
           📋 Linki Kopyala
         </button>
         <button onClick={() => router.push(`/testler/${created.slug}`)}
-          className="w-full glass p-3 text-sm font-bold" style={{ color: '#4FC3F7' }}>
+          className="w-full glass p-3 text-sm font-bold" style={{ color: 'var(--blue)' }}>
           Teste Git →
         </button>
       </div>
@@ -234,7 +234,7 @@ export default function OlusturPage() {
   return (
     <div className="min-h-screen p-4" style={{ maxWidth: 700, margin: '0 auto' }}>
       <div className="glass p-6 animate-fade-in">
-        <h1 className="text-2xl font-black mb-6" style={{ color: '#FFD700' }}>📝 Test Oluştur</h1>
+        <h1 className="text-2xl font-black mb-6" style={{ color: 'var(--gold)' }}>📝 Test Oluştur</h1>
 
         {/* Temel Bilgiler */}
         <div className="mb-5">
@@ -368,7 +368,7 @@ export default function OlusturPage() {
                   }}>
                   <div className="font-bold text-sm">{s.label}</div>
                   <div className="text-xs" style={{ color: 'var(--text-dim)' }}>{s.desc}</div>
-                  {selected && <span className="text-xs" style={{ color: '#FFD700' }}>✓ Seçildi</span>}
+                  {selected && <span className="text-xs" style={{ color: 'var(--gold)' }}>✓ Seçildi</span>}
                 </button>
               )
             })}
@@ -388,7 +388,7 @@ export default function OlusturPage() {
                   background: selectedCats.includes(c.id) ? 'rgba(79,195,247,0.15)' : '',
                 }}>
                 <span>{c.icon}</span><span>{c.name}</span>
-                {selectedCats.includes(c.id) && <span className="ml-auto" style={{ color: '#4FC3F7' }}>✓</span>}
+                {selectedCats.includes(c.id) && <span className="ml-auto" style={{ color: 'var(--blue)' }}>✓</span>}
               </button>
             ))}
           </div>
@@ -434,7 +434,7 @@ export default function OlusturPage() {
           {type === 'duel' && (
             <div className="glass p-3 flex items-center justify-center">
               <div className="text-center">
-                <div className="font-black text-2xl" style={{ color: '#FFD700' }}>{maxParticipants}</div>
+                <div className="font-black text-2xl" style={{ color: 'var(--gold)' }}>{maxParticipants}</div>
                 <div className="text-xs" style={{ color: 'var(--text-dim)' }}>Max Katılımcı</div>
               </div>
             </div>

@@ -193,7 +193,7 @@ export default function TestPage() {
   if (screen === 'info') return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="glass p-8 max-w-md w-full animate-fade-in">
-        <h1 className="text-2xl font-black mb-2" style={{ color: '#FFD700' }}>{event.title}</h1>
+        <h1 className="text-2xl font-black mb-2" style={{ color: 'var(--gold)' }}>{event.title}</h1>
         {event.description && <p className="text-sm mb-4" style={{ color: 'var(--text-dim)' }}>{event.description}</p>}
         <div className="grid grid-cols-2 gap-3 mb-6">
           <div className="glass p-3 text-center">
@@ -214,7 +214,7 @@ export default function TestPage() {
           </div>
         </div>
         <button onClick={handleJoin} className="btn-gold w-full mb-3">▶ Teste Başla</button>
-        <button onClick={() => loadScoreboard()} className="w-full glass p-3 text-sm font-bold" style={{ color: '#4FC3F7' }}>
+        <button onClick={() => loadScoreboard()} className="w-full glass p-3 text-sm font-bold" style={{ color: 'var(--blue)' }}>
           🏆 Skor Tablosunu Gör
         </button>
         <Link href="/testler" className="block text-center mt-4 text-sm" style={{ color: 'var(--text-dim)' }}>← Testler</Link>
@@ -226,7 +226,7 @@ export default function TestPage() {
   if (screen === 'guest') return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="glass p-8 max-w-sm w-full">
-        <h2 className="text-xl font-black mb-4" style={{ color: '#FFD700' }}>👤 Adınız</h2>
+        <h2 className="text-xl font-black mb-4" style={{ color: 'var(--gold)' }}>👤 Adınız</h2>
         <input className="input-field w-full mb-4" placeholder="Adınız veya rumuzunuz"
           value={guestName} onChange={e => setGuestName(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && handleJoin()}
@@ -240,7 +240,7 @@ export default function TestPage() {
   if (screen === 'password') return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="glass p-8 max-w-sm w-full">
-        <h2 className="text-xl font-black mb-4" style={{ color: '#FFD700' }}>🔒 Şifre Gerekli</h2>
+        <h2 className="text-xl font-black mb-4" style={{ color: 'var(--gold)' }}>🔒 Şifre Gerekli</h2>
         <input type="password" className="input-field w-full mb-4" placeholder="Test şifresi"
           value={password} onChange={e => setPassword(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && handleJoin()}
@@ -255,7 +255,7 @@ export default function TestPage() {
   if (screen === 'countdown') return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="text-center">
-        <div className="text-9xl font-black mb-4" style={{ color: '#FFD700' }}>{countdown || '▶'}</div>
+        <div className="text-9xl font-black mb-4" style={{ color: 'var(--gold)' }}>{countdown || '▶'}</div>
         <p style={{ color: 'var(--text-dim)' }}>{questions.length} soru</p>
       </div>
     </div>
@@ -329,7 +329,7 @@ export default function TestPage() {
         ) : (
           <>
             <div className="text-5xl mb-4">{result.accuracy >= 80 ? '🎉' : result.accuracy >= 60 ? '👍' : '📚'}</div>
-            <h2 className="text-2xl font-black mb-6" style={{ color: '#FFD700' }}>
+            <h2 className="text-2xl font-black mb-6" style={{ color: 'var(--gold)' }}>
               {result.accuracy >= 80 ? 'Harika!' : result.accuracy >= 60 ? 'İyi!' : 'Daha çalış!'}
             </h2>
             <div className="grid grid-cols-3 gap-3 mb-6">
@@ -342,12 +342,12 @@ export default function TestPage() {
                 <div className="text-xs" style={{ color: 'var(--text-dim)' }}>Yanlış</div>
               </div>
               <div className="glass p-4">
-                <div className="text-3xl font-black" style={{ color: '#4FC3F7' }}>%{result.accuracy}</div>
+                <div className="text-3xl font-black" style={{ color: 'var(--blue)' }}>%{result.accuracy}</div>
                 <div className="text-xs" style={{ color: 'var(--text-dim)' }}>Başarı</div>
               </div>
             </div>
             <div className="glass p-3 mb-4">
-              <div className="font-black text-2xl" style={{ color: '#FFD700' }}>{result.score} puan</div>
+              <div className="font-black text-2xl" style={{ color: 'var(--gold)' }}>{result.score} puan</div>
               <div className="text-xs" style={{ color: 'var(--text-dim)' }}>⏱ {result.total_time_seconds} saniye</div>
             </div>
             <button onClick={() => loadScoreboard()} className="btn-gold w-full mb-3">
@@ -364,7 +364,7 @@ export default function TestPage() {
   if (screen === 'scoreboard') return (
     <div className="min-h-screen p-4" style={{ maxWidth: 700, margin: '0 auto' }}>
       <div className="glass p-6 animate-fade-in">
-        <h2 className="text-xl font-black mb-4" style={{ color: '#FFD700' }}>🏆 {event.title}</h2>
+        <h2 className="text-xl font-black mb-4" style={{ color: 'var(--gold)' }}>🏆 {event.title}</h2>
 
         {/* Dönem seçici */}
         <div className="flex gap-2 mb-4 flex-wrap">
@@ -414,7 +414,7 @@ export default function TestPage() {
                   <div className="text-xs" style={{ color: 'var(--text-dim)' }}>galibiyet</div>
                 </div>
                 <div className="text-center">
-                  <div className="font-black" style={{ color: '#FFD700' }}>{entry.best_score}p</div>
+                  <div className="font-black" style={{ color: 'var(--gold)' }}>{entry.best_score}p</div>
                   <div className="text-xs" style={{ color: 'var(--text-dim)' }}>rekor</div>
                 </div>
               </div>
@@ -435,14 +435,14 @@ export default function TestPage() {
                     {entry.correct}/{event.question_count} doğru • {entry.time_seconds}sn
                   </div>
                 </div>
-                <div className="font-black" style={{ color: '#FFD700' }}>{entry.score}p</div>
+                <div className="font-black" style={{ color: 'var(--gold)' }}>{entry.score}p</div>
               </div>
             ))}
           </div>
         )}
 
         <div className="flex gap-3 mt-4">
-          <button onClick={() => setScreen('info')} className="flex-1 glass p-3 text-sm font-bold" style={{ color: '#4FC3F7' }}>
+          <button onClick={() => setScreen('info')} className="flex-1 glass p-3 text-sm font-bold" style={{ color: 'var(--blue)' }}>
             ← Teste Dön
           </button>
           <Link href="/testler" className="flex-1 glass p-3 text-sm font-bold text-center" style={{ color: 'var(--text-dim)' }}>

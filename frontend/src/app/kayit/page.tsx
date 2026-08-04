@@ -63,8 +63,8 @@ export default function KayitPage() {
       <div className="w-full max-w-md animate-fade-in">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold mb-2">
-            <span style={{ color: '#FFD700' }}>Bilgi</span>
-            <span style={{ color: '#4FC3F7' }}> Maratonu</span>
+            <span style={{ color: 'var(--gold)' }}>Bilgi</span>
+            <span style={{ color: 'var(--blue)' }}> Maratonu</span>
           </h1>
           <p style={{ color: 'var(--text-dim)' }}>Aramıza katıl!</p>
         </div>
@@ -151,7 +151,7 @@ export default function KayitPage() {
 
           <p className="text-center mt-6" style={{ color: 'var(--text-dim)' }}>
             Zaten hesabın var mı?{' '}
-            <Link href="/giris" style={{ color: '#4FC3F7' }} className="font-semibold hover:underline">
+            <Link href="/giris" style={{ color: 'var(--blue)' }} className="font-semibold hover:underline">
               Giriş Yap
             </Link>
           </p>

@@ -439,7 +439,7 @@ export default function MacPage() {
             {won === true ? 'Kazandın!' : won === false ? 'Kaybettin' : 'Berabere!'}
           </h2>
           <div className="text-5xl font-bold mb-4">
-            <span style={{ color: '#4FC3F7' }}>{myFinal > 0 ? '+' : ''}{Math.round(myFinal * 100) / 100}</span>
+            <span style={{ color: 'var(--blue)' }}>{myFinal > 0 ? '+' : ''}{Math.round(myFinal * 100) / 100}</span>
             <span className="mx-4" style={{ fontSize: 28 }}>⚽</span>
             <span style={{ color: '#FF7043' }}>{oppFinal > 0 ? '+' : ''}{Math.round(oppFinal * 100) / 100}</span>
           </div>
@@ -450,23 +450,23 @@ export default function MacPage() {
           {/* XP kazanımı */}
           {matchResult.xp_gained > 0 && (
             <div className="glass p-4 mb-6 text-left">
-              <div className="font-bold mb-2" style={{ color: '#FFD700' }}>
+              <div className="font-bold mb-2" style={{ color: 'var(--gold)' }}>
                 ⭐ +{matchResult.xp_gained} XP kazandın!
               </div>
               {matchResult.xp_breakdown.map((b, i) => (
                 <div key={i} className="flex justify-between text-sm" style={{ color: 'var(--text-dim)' }}>
                   <span>{b.reason}</span>
-                  <span style={{ color: '#FFD700' }}>+{b.xp} XP</span>
+                  <span style={{ color: 'var(--gold)' }}>+{b.xp} XP</span>
                 </div>
               ))}
               {matchResult.league_new_record && (
-                <div className="mt-2 text-sm" style={{ color: '#4FC3F7' }}>
+                <div className="mt-2 text-sm" style={{ color: 'var(--blue)' }}>
                   🎯 Bugünkü lig rekorunu kırdın!
                 </div>
               )}
               {matchResult.new_badges?.length > 0 && (
                 <div className="mt-3 pt-3" style={{ borderTop: '1px solid var(--border)' }}>
-                  <div className="font-bold text-sm mb-2" style={{ color: '#FFD700' }}>🏅 Yeni Rozetler!</div>
+                  <div className="font-bold text-sm mb-2" style={{ color: 'var(--gold)' }}>🏅 Yeni Rozetler!</div>
                   {matchResult.new_badges.map(b => (
                     <div key={b.code} className="flex items-center gap-2 mb-1">
                       <span className="text-xl">{b.icon}</span>
@@ -525,7 +525,7 @@ export default function MacPage() {
           {(gameState === 'starting' || gameState === 'countdown') && opponent && (
             <>
               <div className="text-sm font-bold mb-4 px-4 py-2 rounded-full inline-block"
-                style={{ background: 'rgba(255,215,0,0.15)', color: '#FFD700' }}>
+                style={{ background: 'rgba(255,215,0,0.15)', color: 'var(--gold)' }}>
                 ⚡ Rakip Bulundu!
               </div>
               <div className="flex items-center justify-center gap-6 mb-6 mt-4" style={{ width: "100%" }}>
@@ -535,11 +535,11 @@ export default function MacPage() {
                     <img src={avatarSrc((user as any)?.avatar_url, user?.username)} alt="" className="w-full h-full object-cover" />
                   </div>
                   <div className="font-bold">{user?.username}</div>
-                  <div className="text-sm mt-1" style={{ color: '#4FC3F7' }}>
+                  <div className="text-sm mt-1" style={{ color: 'var(--blue)' }}>
                     {Math.round(user?.elo_rating || 0)} ELO
                   </div>
                 </div>
-                <div className="text-4xl font-black" style={{ color: '#FFD700' }}>VS</div>
+                <div className="text-4xl font-black" style={{ color: 'var(--gold)' }}>VS</div>
                 <div className="text-center glass p-5 rounded-2xl" style={{ flex: 1 }}>
                   <div className="w-16 h-16 rounded-full overflow-hidden flex items-center justify-center text-2xl font-black mx-auto mb-2"
                     style={{ background: 'linear-gradient(135deg, #FF7043, #B71C1C)' }}>
@@ -554,7 +554,7 @@ export default function MacPage() {
             </>
           )}
           {gameState === 'countdown' && countdown && (
-            <div className="text-9xl font-black animate-fade-in" style={{ color: '#FFD700', lineHeight: 1 }}>
+            <div className="text-9xl font-black animate-fade-in" style={{ color: 'var(--gold)', lineHeight: 1 }}>
               {countdown}
             </div>
           )}
@@ -579,7 +579,7 @@ export default function MacPage() {
               <img src={avatarSrc((user as any)?.avatar_url, user?.username)} alt="" className="w-full h-full object-cover" />
             </div>
           </div>
-          <div className="text-sm font-bold" style={{ color: '#4FC3F7' }}>{user?.username}</div>
+          <div className="text-sm font-bold" style={{ color: 'var(--blue)' }}>{user?.username}</div>
           <div className="text-3xl font-black">{Math.round(myScore * 100) / 100}</div>
           {lastPoints !== null && (
             <div className="text-xs font-bold animate-fade-in" style={{
@@ -592,7 +592,7 @@ export default function MacPage() {
         <div className="text-center px-4">
           {/* Soru sayacı — büyük ve belirgin */}
           <div className="font-black mb-1" style={{ color: 'var(--text)', fontSize: 22 }}>
-            <span style={{ color: '#4FC3F7' }}>{(question?.index ?? 0) + 1}</span>
+            <span style={{ color: 'var(--blue)' }}>{(question?.index ?? 0) + 1}</span>
             <span style={{ color: 'var(--text-dim)', fontSize: 16 }}>/{question?.total ?? QUESTIONS_PER_MATCH}</span>
           </div>
           {/* Soru ilerleme çubuğu */}
@@ -652,7 +652,7 @@ export default function MacPage() {
 
       {/* Rakip joker uyarısı */}
       {jokers > 1 && (
-        <div className="text-center text-xs mb-2 font-bold" style={{ color: '#FFD700' }}>
+        <div className="text-center text-xs mb-2 font-bold" style={{ color: 'var(--gold)' }}>
           💡 Çift joker hakkınız var
         </div>
       )}
@@ -689,10 +689,10 @@ export default function MacPage() {
             disabled={!canAnswer || !!myAnswer || eliminatedOptions.includes(label)}
             style={getOptionStyle(label)}
           >
-            <span className="font-bold mr-2" style={{ color: '#4FC3F7' }}>{label})</span>
+            <span className="font-bold mr-2" style={{ color: 'var(--blue)' }}>{label})</span>
             {text}
             {myAnswer === label && !correctAnswer && (
-              <span className="ml-2 text-xs" style={{ color: '#4FC3F7' }}>◀ Sen</span>
+              <span className="ml-2 text-xs" style={{ color: 'var(--blue)' }}>◀ Sen</span>
             )}
             {opponentAnswer === label && (
               <span className="ml-2 text-xs" style={{ color: '#FF7043' }}>◀ Rakip ✓</span>
@@ -713,7 +713,7 @@ export default function MacPage() {
             border: '1px solid rgba(255,215,0,0.3)',
             borderRadius: 12,
             padding: '10px 20px',
-            color: '#FFD700',
+            color: 'var(--gold)',
             fontWeight: 700,
             fontSize: 14,
             cursor: jokers <= 0 || myAnswer || !canAnswer || opponentWrongAnswer ? 'not-allowed' : 'pointer',
@@ -744,7 +744,7 @@ export default function MacPage() {
           <button onClick={() => setShowEmojiPicker(v => !v)} disabled={emojiSent >= 2}
             style={{
               background: 'var(--surface-2)', border: '1px solid rgba(79,195,247,0.3)',
-              borderRadius: 12, padding: '10px 16px', color: '#4FC3F7', fontWeight: 700, fontSize: 18,
+              borderRadius: 12, padding: '10px 16px', color: 'var(--blue)', fontWeight: 700, fontSize: 18,
               cursor: emojiSent >= 2 ? 'not-allowed' : 'pointer', opacity: emojiSent >= 2 ? 0.35 : 1,
             }} title={emojiSent >= 2 ? 'Emoji hakkın bitti' : 'Emoji gönder'}>😊</button>
           {showEmojiPicker && emojiSent < 2 && (
@@ -774,7 +774,7 @@ export default function MacPage() {
       {/* Joker bilgileri */}
       <div className="flex justify-center gap-6 mt-2 text-xs">
         {jokers > 1 && (
-          <span style={{ color: '#FFD700' }}>💡 Çift joker hakkınız var</span>
+          <span style={{ color: 'var(--gold)' }}>💡 Çift joker hakkınız var</span>
         )}
         {oppHasExtraJoker && (
           <span style={{ color: '#FF9800' }}>⚠️ Rakibinizin çift joker hakkı var</span>

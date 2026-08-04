@@ -333,7 +333,7 @@ export default function MaratonPage() {
             icon: wasFinal ? '🏆' : '🎉',
             title: wasFinal ? 'Turnuva Şampiyonu!' : 'Kazandınız!',
             text: wasFinal ? 'Turnuva Kupası profilinize eklendi.' : 'Sonraki tura geçtiniz.',
-            color: '#FFD700',
+            color: 'var(--gold)',
           })
         } else {
           setMatchPopup({
@@ -461,14 +461,14 @@ export default function MaratonPage() {
               style={{ background: 'linear-gradient(135deg, #4FC3F7, #1565C0)' }}>
               <img src={avatarSrc(myAvatar, user?.username)} alt="" className="w-full h-full object-cover" />
             </div>
-            <div className="text-sm font-bold" style={{ color: '#4FC3F7' }}>{user?.username}</div>
+            <div className="text-sm font-bold" style={{ color: 'var(--blue)' }}>{user?.username}</div>
             {myElo !== null && <div className="text-xs" style={{ color: 'var(--text-dim)' }}>{myElo} ELO</div>}
             <div className="text-3xl font-black">{Math.round(myScore * 100) / 100}</div>
           </div>
           <div className="text-center px-4">
             {qCat && <div className="text-xs mb-1 truncate" style={{ color: 'var(--text-dim)', maxWidth: 120 }}>📚 {qCat}</div>}
             <div className="font-black mb-1" style={{ color: 'var(--text)', fontSize: 22 }}>
-              <span style={{ color: '#4FC3F7' }}>{(question as any)?.question_index !== undefined ? (question as any).question_index + 1 : 1}</span>
+              <span style={{ color: 'var(--blue)' }}>{(question as any)?.question_index !== undefined ? (question as any).question_index + 1 : 1}</span>
               <span style={{ color: 'var(--text-dim)', fontSize: 16 }}>/{(question as any)?.total_questions || 3}</span>
             </div>
             <div className="text-3xl font-black" style={{
@@ -561,7 +561,7 @@ export default function MaratonPage() {
                   cursor: selectedAnswer || correctAnswer ? 'not-allowed' : 'pointer',
                   transition: 'all 0.2s', fontSize: 15,
                 }}>
-                <span style={{ color: '#4FC3F7', fontWeight: 700, marginRight: 8 }}>{label})</span>
+                <span style={{ color: 'var(--blue)', fontWeight: 700, marginRight: 8 }}>{label})</span>
                 {text}
                 {isOppWrong && !correctAnswer && <span style={{ color: '#FF9800', fontSize: 12, marginLeft: 6 }}>◀ Rakip ✗</span>}
                 {isOppCorrect && <span style={{ color: '#4CAF50', fontSize: 12, marginLeft: 6 }}>◀ Rakip ✓</span>}
@@ -581,7 +581,7 @@ export default function MaratonPage() {
             <h1 className="text-2xl font-bold">🏆 Turnuva</h1>
             {!marathon && (
               <p className="text-sm mt-1" style={{ color: 'var(--text-dim)' }}>
-                Geri sayım bittiğinde lobide <span style={{ color: '#4FC3F7', fontWeight: 600 }}>Katıl</span> butonuna tıklayınız.
+                Geri sayım bittiğinde lobide <span style={{ color: 'var(--blue)', fontWeight: 600 }}>Katıl</span> butonuna tıklayınız.
               </p>
             )}
 
@@ -621,7 +621,7 @@ export default function MaratonPage() {
           <div className="mt-3 text-center rounded-xl py-2" style={{
             background: 'rgba(255,215,0,0.1)', border: '1px solid rgba(255,215,0,0.3)',
           }}>
-            <div className="font-black text-xl" style={{ color: '#FFD700' }}>⚔️ {roundLabel}</div>
+            <div className="font-black text-xl" style={{ color: 'var(--gold)' }}>⚔️ {roundLabel}</div>
             <div className="text-xs mt-1" style={{ color: 'var(--text-dim)' }}>{active.length} kişi yarışıyor</div>
           </div>
         )}
@@ -629,7 +629,7 @@ export default function MaratonPage() {
           <div className="mt-2 text-center">
             <button onClick={() => { if (marathon?.id) loadBracket(marathon.id); setBracketOpen(true) }}
               className="text-sm font-bold px-4 py-1.5 rounded-lg"
-              style={{ background: 'rgba(79,195,247,0.15)', color: '#4FC3F7' }}>
+              style={{ background: 'rgba(79,195,247,0.15)', color: 'var(--blue)' }}>
               🗺 Şemayı Gör
             </button>
           </div>
@@ -641,15 +641,15 @@ export default function MaratonPage() {
           {/* Buyuk geri sayim */}
           <div className="rounded-2xl p-6 text-center" style={{ background: 'linear-gradient(135deg, rgba(255,215,0,0.12), rgba(79,195,247,0.12))', border: '1px solid rgba(255,215,0,0.25)' }}>
             <div className="text-sm mb-2" style={{ color: 'var(--text-dim)' }}>Sonraki Turnuva</div>
-            <div className="text-6xl font-black mb-2" style={{ color: '#FFD700', fontFamily: 'monospace' }}>
+            <div className="text-6xl font-black mb-2" style={{ color: 'var(--gold)', fontFamily: 'monospace' }}>
               {countdown > 0 ? `${String(Math.floor(countdown/60)).padStart(2,'0')}:${String(countdown%60).padStart(2,'0')}` : '--:--'}
             </div>
-            <div className="text-sm" style={{ color: '#4FC3F7' }}>{nextTime && `Saat ${nextTime}'de başlıyor`}</div>
+            <div className="text-sm" style={{ color: 'var(--blue)' }}>{nextTime && `Saat ${nextTime}'de başlıyor`}</div>
           </div>
 
           {/* Nasil calisir */}
           <div className="rounded-2xl p-5" style={{ background: 'var(--surface-2)', border: '1px solid var(--border)' }}>
-            <h3 className="font-bold mb-3" style={{ color: '#FFD700' }}>🏁 Nasıl Çalışır?</h3>
+            <h3 className="font-bold mb-3" style={{ color: 'var(--gold)' }}>🏁 Nasıl Çalışır?</h3>
             <div className="space-y-2 text-sm" style={{ color: 'var(--text-dim)' }}>
               <div className="flex items-center gap-3"><span className="text-lg">👥</span><span>Lobi dolunca turnuva başlar, herkes eleme usulü yarışır</span></div>
               <div className="flex items-center gap-3"><span className="text-lg">⚔️</span><span>Her tur 1v1 eşleşme — kaybeden elenir</span></div>
@@ -662,7 +662,7 @@ export default function MaratonPage() {
           {marathonStats && (
             <div className="grid grid-cols-2 gap-3">
               <div className="rounded-2xl p-4 text-center" style={{ background: 'rgba(79,195,247,0.08)', border: '1px solid rgba(79,195,247,0.2)' }}>
-                <div className="text-2xl font-black" style={{ color: '#4FC3F7' }}>{marathonStats.total_marathons}</div>
+                <div className="text-2xl font-black" style={{ color: 'var(--blue)' }}>{marathonStats.total_marathons}</div>
                 <div className="text-xs" style={{ color: 'var(--text-dim)' }}>Toplam Turnuva</div>
               </div>
               <div className="rounded-2xl p-4 text-center" style={{ background: 'rgba(129,199,132,0.08)', border: '1px solid rgba(129,199,132,0.2)' }}>
@@ -675,7 +675,7 @@ export default function MaratonPage() {
           {/* Son sampiyonlar */}
           {champions.length > 0 && (
             <div className="rounded-2xl p-5" style={{ background: 'var(--surface-2)', border: '1px solid var(--border)' }}>
-              <h3 className="font-bold mb-3" style={{ color: '#FFD700' }}>👑 Son Şampiyonlar</h3>
+              <h3 className="font-bold mb-3" style={{ color: 'var(--gold)' }}>👑 Son Şampiyonlar</h3>
               <div className="space-y-2">
                 {champions.map((c, i) => (
                   <div key={i} className="flex items-center justify-between rounded-xl px-3 py-2" style={{ background: 'var(--surface-2)' }}>
@@ -700,7 +700,7 @@ export default function MaratonPage() {
 
       {marathon && !joined && marathon.status === 'waiting' && (
         <button onClick={joinMarathon}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl mb-4 transition-all">
+          className="w-full bg-blue-600 hover:bg-blue-700  font-bold py-3 rounded-xl mb-4 transition-all">
           Turnuvaya Katıl
         </button>
       )}
@@ -760,13 +760,13 @@ export default function MaratonPage() {
       {bracketOpen && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'rgba(5,8,20,0.92)', display: 'flex', flexDirection: 'column', padding: 12 }}>
           <div className="flex items-center justify-between mb-2">
-            <div className="font-black" style={{ color: '#FFD700' }}>🏆 Turnuva Şeması</div>
+            <div className="font-black" style={{ color: 'var(--gold)' }}>🏆 Turnuva Şeması</div>
             <button onClick={() => setBracketOpen(false)}
               className="text-sm font-bold px-3 py-1.5 rounded-lg"
               style={{ background: 'var(--surface-2)', color: 'var(--text)' }}>✕ Kapat</button>
           </div>
           <div className="text-xs mb-2" style={{ color: 'var(--text-dim)' }}>
-            Sürükleyerek gez · ＋/－ ile yakınlaştır · Sen <span style={{ color: '#FFD700' }}>sarı</span> çerçeveli · Kazanan <span style={{ color: '#A5D6A7' }}>yeşil</span>, elenen soluk
+            Sürükleyerek gez · ＋/－ ile yakınlaştır · Sen <span style={{ color: 'var(--gold)' }}>sarı</span> çerçeveli · Kazanan <span style={{ color: '#A5D6A7' }}>yeşil</span>, elenen soluk
           </div>
           {bracket ? (
             <Bracket data={bracket} me={user?.username} />
