@@ -145,6 +145,35 @@ async def startup():
                 print(f"[startup] titles -> {len(_DS['titles'])} unvan (guncellendi)")
     except Exception as _e:
         print(f"[startup] titles migrate hata: {_e}")
+    # Matematik 500 soru seed (bir kereye mahsus; content_hash ile idempotent)
+    try:
+        import json as _json, hashlib as _hl, os as _os, uuid as _uuid
+        _mpath = _os.path.join(_os.path.dirname(__file__), "data", "math_seed.json")
+        if _os.path.exists(_mpath):
+            async with AsyncSessionLocal() as _mdb:
+                _cat = (await _mdb.execute(_sqltext("SELECT id FROM categories WHERE lower(name)='matematik' LIMIT 1"))).first()
+                if _cat:
+                    _cid = _cat[0]
+                    _items = _json.load(open(_mpath, encoding="utf-8"))
+                    _h0 = _hl.md5(_items[0]["text"].encode("utf-8")).hexdigest()
+                    _seeded = (await _mdb.execute(_sqltext("SELECT 1 FROM questions WHERE content_hash=:h LIMIT 1"), {"h": _h0})).first()
+                    if not _seeded:
+                        for q in _items:
+                            _h = _hl.md5(q["text"].encode("utf-8")).hexdigest()
+                            await _mdb.execute(_sqltext("""
+                                INSERT INTO questions (id, category_id, difficulty, question_type, text,
+                                    option_a, option_b, option_c, option_d, correct_answer,
+                                    is_active, is_approved, content_hash, created_at, updated_at)
+                                VALUES (:id, :cid, CAST(:diff AS difficultylevel), 'multiple_choice'::questiontype, :t,
+                                    :a, :b, :c, :d, :ca, true, true, :h, NOW(), NOW())
+                                ON CONFLICT (content_hash) DO NOTHING
+                            """), {"id": str(_uuid.uuid4()), "cid": _cid, "diff": q["difficulty"], "t": q["text"],
+                                   "a": q["option_a"], "b": q["option_b"], "c": q["option_c"], "d": q["option_d"],
+                                   "ca": q["correct_answer"], "h": _h})
+                        await _mdb.commit()
+                        print(f"[startup] {len(_items)} matematik sorusu seed edildi")
+    except Exception as _e:
+        print(f"[startup] math seed hata: {_e}")
     # Cache temizle ve zamanlayıcıyı başlat
     from app.services.settings_cache import invalidate_cache
     invalidate_cache()
