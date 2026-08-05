@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useAuthStore } from '@/lib/store'
 import api from '@/lib/api'
 import { useRouter } from 'next/navigation'
@@ -45,6 +45,21 @@ export default function OlusturPage() {
   const [friendFilter, setFriendFilter] = useState('all')
 
   useEffect(() => { fetchMe(); loadCategories() }, [])
+
+  // ?arena=1 ile gelindiyse: otomatik Arena tipi + "username Arenası" başlığı + gizli
+  const arenaPrefilled = useRef(false)
+  useEffect(() => {
+    let isArena = false
+    try { isArena = new URLSearchParams(window.location.search).get('arena') === '1' } catch {}
+    if (!isArena || arenaPrefilled.current || !user) return
+    arenaPrefilled.current = true
+    setType('arena')
+    setMaxParticipants(5)
+    setDistribution({ easy: 5, medium: 2, hard: 0, very_hard: 0 })
+    setTimeLimit(10)
+    setVisibility('hidden')
+    setTitle(`${user.username} Arenası`)
+  }, [user])
 
   const loadCategories = async () => {
     const r = await api.get('/api/solo/categories')

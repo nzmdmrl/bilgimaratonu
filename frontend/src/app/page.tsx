@@ -163,6 +163,20 @@ export default function HomePage() {
               </Link>
             )}
 
+            {/* Özel Arena — aile/arkadaş */}
+            {modules.arena !== false && (
+              <Link href="/testler/olustur?arena=1" className="block glass p-4 mb-3" style={{ borderRadius: 14, background: 'rgba(156,39,176,0.1)', border: '1px solid rgba(156,39,176,0.3)', textDecoration: 'none' }}>
+                <div className="flex items-center gap-3">
+                  <div className="text-4xl">🔒</div>
+                  <div className="flex-1 min-w-0">
+                    <div className="font-black" style={{ color: '#BA68C8' }}>Özel Arena</div>
+                    <div className="text-xs" style={{ color: 'var(--text-dim)' }}>Ailen ve arkadaşlarınla yarış</div>
+                  </div>
+                  <div className="text-2xl" style={{ color: '#BA68C8' }}>›</div>
+                </div>
+              </Link>
+            )}
+
             {/* Kategoriler — Turnuva/Arena altında tam genişlik */}
             <Link href="/kategoriler" className="block glass p-4 mb-3" style={{ borderRadius: 14, background: 'rgba(255,215,0,0.09)', border: '1px solid rgba(255,215,0,0.3)', textDecoration: 'none' }}>
               <div className="flex items-center gap-3">
@@ -386,6 +400,25 @@ export default function HomePage() {
                 </div>
                 <Link href="/arena" className="btn-gold px-6 py-3 font-black" style={{ background: 'linear-gradient(135deg,#FF7043,#FF5722)' }}>
                   🎯 Arenaya Gir
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {/* Özel Arena — aile/arkadaş */}
+          {modules.arena !== false && (
+            <div className="col-span-1 md:col-span-2 glass p-6"
+              style={{ background: 'rgba(156,39,176,0.07)', border: '1px solid rgba(156,39,176,0.25)' }}>
+              <div className="flex items-center justify-between flex-wrap gap-4">
+                <div className="flex items-center gap-4">
+                  <div className="text-5xl">🔒</div>
+                  <div>
+                    <h3 className="text-xl font-black" style={{ color: '#BA68C8' }}>Özel Arena</h3>
+                    <p className="text-sm" style={{ color: 'var(--text-dim)' }}>Ailen ve arkadaşlarınla yarış</p>
+                  </div>
+                </div>
+                <Link href="/testler/olustur?arena=1" className="btn-gold px-6 py-3 font-black" style={{ background: 'linear-gradient(135deg,#AB47BC,#8E24AA)' }}>
+                  🔒 Özel Arena Kur
                 </Link>
               </div>
             </div>
