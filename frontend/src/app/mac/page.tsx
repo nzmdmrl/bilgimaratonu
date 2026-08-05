@@ -63,7 +63,7 @@ export default function MacPage() {
   const [oppScore, setOppScore] = useState(0)
   const [timeLeft, setTimeLeft] = useState(30)
   const [maxTime, setMaxTime] = useState(30)
-  const [xpCount, setXpCount] = useState(0)
+  const [prog, setProg] = useState(0)   // maç sonu sayaç ilerlemesi 0..1
 
   // Cevap durumları
   const [myAnswer, setMyAnswer] = useState<string | null>(null)
@@ -106,21 +106,23 @@ export default function MacPage() {
     }
   }, [])
 
-  // Maç bitince XP'yi 0'dan yukarı say (sesli), bitince çlink
+  // Maç bitince sahnedeki TÜM puanları 0'dan yukarı say (sesli), bitince çlink; rozet varsa ayrı ses
   useEffect(() => {
     if (gameState !== 'finished' || !matchResult) return
-    const target = matchResult.xp_gained || 0
-    if (target <= 0) { setXpCount(0); return }
-    setXpCount(0)
+    setProg(0)
     startCountRoll()
-    const dur = Math.min(1600, Math.max(700, target * 14))
+    const xp = matchResult.xp_gained || 0
+    const dur = Math.min(1800, Math.max(800, xp * 14))
     const start = performance.now()
     let raf = 0
     const step = (t: number) => {
       const p = Math.min(1, (t - start) / dur)
-      setXpCount(Math.round(p * target))
+      setProg(p)
       if (p < 1) raf = requestAnimationFrame(step)
-      else { stopCountRoll(); playSound('count_ding') }
+      else {
+        stopCountRoll(); playSound('count_ding')
+        if (matchResult.new_badges?.length) setTimeout(() => playSound('badge'), 400)
+      }
     }
     raf = requestAnimationFrame(step)
     return () => { cancelAnimationFrame(raf); stopCountRoll() }
@@ -461,24 +463,24 @@ export default function MacPage() {
             {won === true ? 'Kazandın!' : won === false ? 'Kaybettin' : 'Berabere!'}
           </h2>
           <div className="text-5xl font-bold mb-4">
-            <span style={{ color: 'var(--blue)' }}>{myFinal > 0 ? '+' : ''}{Math.round(myFinal * 100) / 100}</span>
+            <span style={{ color: 'var(--blue)' }}>{myFinal > 0 ? '+' : ''}{Math.round(myFinal * prog * 100) / 100}</span>
             <span className="mx-4" style={{ fontSize: 28 }}>⚽</span>
-            <span style={{ color: '#FF7043' }}>{oppFinal > 0 ? '+' : ''}{Math.round(oppFinal * 100) / 100}</span>
+            <span style={{ color: '#FF7043' }}>{oppFinal > 0 ? '+' : ''}{Math.round(oppFinal * prog * 100) / 100}</span>
           </div>
           <div className="text-lg mb-2" style={{ color: myElo >= 0 ? '#4CAF50' : '#F44336' }}>
-            ELO: {myElo >= 0 ? '+' : ''}{myElo}
+            ELO: {myElo >= 0 ? '+' : ''}{Math.round(myElo * prog * 100) / 100}
           </div>
 
           {/* XP kazanımı */}
           {matchResult.xp_gained > 0 && (
             <div className="glass p-4 mb-6 text-left">
               <div className="font-bold mb-2" style={{ color: 'var(--gold)' }}>
-                ⭐ +{xpCount} XP kazandın!
+                ⭐ +{Math.round((matchResult.xp_gained || 0) * prog)} XP kazandın!
               </div>
               {matchResult.xp_breakdown.map((b, i) => (
                 <div key={i} className="flex justify-between text-sm" style={{ color: 'var(--text-dim)' }}>
                   <span>{b.reason}</span>
-                  <span style={{ color: 'var(--gold)' }}>+{b.xp} XP</span>
+                  <span style={{ color: 'var(--gold)' }}>+{Math.round(b.xp * prog)} XP</span>
                 </div>
               ))}
               {matchResult.league_new_record && (
@@ -487,11 +489,11 @@ export default function MacPage() {
                 </div>
               )}
               {matchResult.new_badges?.length > 0 && (
-                <div className="mt-3 pt-3" style={{ borderTop: '1px solid var(--border)' }}>
-                  <div className="font-bold text-sm mb-2" style={{ color: 'var(--gold)' }}>🏅 Yeni Rozetler!</div>
+                <div className="mt-3 p-3 reward-badge" style={{ borderRadius: 12 }}>
+                  <div className="font-bold text-sm mb-2 badge-pop" style={{ color: 'var(--gold)' }}>🏅 Yeni Rozet Kazandın!</div>
                   {matchResult.new_badges.map(b => (
-                    <div key={b.code} className="flex items-center gap-2 mb-1">
-                      <span className="text-xl">{b.icon}</span>
+                    <div key={b.code} className="flex items-center gap-2 mb-1 badge-pop">
+                      <span className="text-2xl">{b.icon}</span>
                       <div>
                         <span className="font-bold text-sm">{b.name}</span>
                         <span className="text-xs ml-2" style={{ color: 'var(--text-dim)' }}>{b.description}</span>

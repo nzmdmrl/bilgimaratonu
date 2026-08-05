@@ -45,7 +45,7 @@ export default function CategoryMatchPage() {
   const [maxTime, setMaxTime] = useState(30)
   const [statusMessage, setStatusMessage] = useState('Rakip aranıyor...')
   const [matchResult, setMatchResult] = useState<any>(null)
-  const [xpCount, setXpCount] = useState(0)
+  const [prog, setProg] = useState(0)   // maç sonu sayaç ilerlemesi 0..1
   const [canAnswer, setCanAnswer] = useState(true)
   const [emojiSent, setEmojiSent] = useState(0)
   const [showEmojiPicker, setShowEmojiPicker] = useState(false)
@@ -75,21 +75,23 @@ export default function CategoryMatchPage() {
     }
   }, [])
 
-  // Maç bitince XP'yi 0'dan yukarı say (sesli), bitince çlink
+  // Maç bitince sahnedeki TÜM puanları 0'dan yukarı say (sesli), bitince çlink; rozet varsa ayrı ses
   useEffect(() => {
     if (gameState !== 'finished' || !matchResult) return
-    const target = matchResult.xp_gained || 0
-    if (target <= 0) { setXpCount(0); return }
-    setXpCount(0)
+    setProg(0)
     startCountRoll()
-    const dur = Math.min(1600, Math.max(700, target * 14))
+    const xp = matchResult.xp_gained || 0
+    const dur = Math.min(1800, Math.max(800, xp * 14))
     const start = performance.now()
     let raf = 0
     const step = (t: number) => {
       const p = Math.min(1, (t - start) / dur)
-      setXpCount(Math.round(p * target))
+      setProg(p)
       if (p < 1) raf = requestAnimationFrame(step)
-      else { stopCountRoll(); playSound('count_ding') }
+      else {
+        stopCountRoll(); playSound('count_ding')
+        if (matchResult.new_badges?.length) setTimeout(() => playSound('badge'), 400)
+      }
     }
     raf = requestAnimationFrame(step)
     return () => { cancelAnimationFrame(raf); stopCountRoll() }
@@ -329,24 +331,24 @@ export default function CategoryMatchPage() {
           <div className="text-7xl mb-4">{won === true ? '🏆' : won === false ? '😔' : '🤝'}</div>
           <h2 className="text-3xl font-black mb-2">{won === true ? 'Kazandın!' : won === false ? 'Kaybettin' : 'Berabere'}</h2>
           <div className="flex justify-center gap-8 mb-4">
-            <div><div className="text-3xl font-black" style={{ color: 'var(--blue)' }}>{Math.round((myFinalScore || 0) * 100) / 100}</div><div className="text-sm" style={{ color: 'var(--text-dim)' }}>Sen</div></div>
-            <div><div className="text-3xl font-black" style={{ color: '#FF7043' }}>{Math.round((oppFinalScore || 0) * 100) / 100}</div><div className="text-sm" style={{ color: 'var(--text-dim)' }}>{opponent?.username}</div></div>
+            <div><div className="text-3xl font-black" style={{ color: 'var(--blue)' }}>{Math.round((myFinalScore || 0) * prog * 100) / 100}</div><div className="text-sm" style={{ color: 'var(--text-dim)' }}>Sen</div></div>
+            <div><div className="text-3xl font-black" style={{ color: '#FF7043' }}>{Math.round((oppFinalScore || 0) * prog * 100) / 100}</div><div className="text-sm" style={{ color: 'var(--text-dim)' }}>{opponent?.username}</div></div>
           </div>
 
           {/* ELO */}
           {eloChange !== undefined && (
             <div className="mb-3 text-sm font-bold" style={{ color: eloChange >= 0 ? '#4CAF50' : '#F44336' }}>
-              ELO: {eloChange >= 0 ? '+' : ''}{eloChange}
+              ELO: {eloChange >= 0 ? '+' : ''}{Math.round(eloChange * prog * 100) / 100}
             </div>
           )}
 
           {/* XP */}
           {xpGained > 0 && (
             <div className="glass p-4 mb-3 rounded-xl">
-              <div className="font-bold mb-2" style={{ color: 'var(--gold)' }}>⭐ +{xpCount} XP kazandın!</div>
+              <div className="font-bold mb-2" style={{ color: 'var(--gold)' }}>⭐ +{Math.round(xpGained * prog)} XP kazandın!</div>
               {xpBreakdown.map((b: any, i: number) => (
                 <div key={i} className="text-xs flex justify-between" style={{ color: 'var(--text-dim)' }}>
-                  <span>{b.reason}</span><span>+{b.xp} XP</span>
+                  <span>{b.reason}</span><span>+{Math.round(b.xp * prog)} XP</span>
                 </div>
               ))}
             </div>
@@ -354,11 +356,11 @@ export default function CategoryMatchPage() {
 
           {/* Yeni Rozetler */}
           {newBadges.length > 0 && (
-            <div className="glass p-4 mb-3 rounded-xl">
-              <div className="font-bold mb-2" style={{ color: 'var(--gold)' }}>🏅 Yeni Rozetler!</div>
+            <div className="p-4 mb-3 reward-badge" style={{ borderRadius: 12 }}>
+              <div className="font-bold mb-2 badge-pop" style={{ color: 'var(--gold)' }}>🏅 Yeni Rozet Kazandın!</div>
               {newBadges.map((b: any) => (
-                <div key={b.code} className="flex items-center gap-2 mb-1">
-                  <span className="text-xl">{b.icon}</span>
+                <div key={b.code} className="flex items-center gap-2 mb-1 badge-pop">
+                  <span className="text-2xl">{b.icon}</span>
                   <div><span className="font-bold text-sm">{b.name}</span>
                   <span className="text-xs ml-2" style={{ color: 'var(--text-dim)' }}>{b.description}</span></div>
                 </div>
