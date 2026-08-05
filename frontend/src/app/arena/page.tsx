@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useAuthStore } from '@/lib/store'
 import api from '@/lib/api'
 import { avatarSrc } from '@/lib/avatar'
-import { initSounds, playSound, playCountdownTick, playCountdownBeep, startRadar, stopRadar } from '@/lib/sound'
+import { initSounds, playSound, playCountdownTick, playCountdownBeep, startRadar, stopRadar, startCountRoll, stopCountRoll } from '@/lib/sound'
 
 interface Player { user_id: string; username: string; avatar_url: string; is_bot: boolean }
 type Screen = 'finding' | 'lobby_full' | 'countdown' | 'question' | 'result' | 'grid' | 'end'
@@ -43,6 +43,7 @@ export default function ArenaPage() {
   const [result, setResult] = useState<any>(null) // question_result
   const [scores, setScores] = useState<Record<string, number>>({})
   const [ranking, setRanking] = useState<any[]>([])
+  const [endProg, setEndProg] = useState(0)   // bitiş XP sayacı 0..1
   const [history, setHistory] = useState<Record<number, Record<string, CellRes>>>({}) // qIndex -> uid -> sonuç
 
   // Özel (davet) arena
@@ -87,9 +88,28 @@ export default function ArenaPage() {
       if (timerRef.current) clearInterval(timerRef.current)
       if (resultTimerRef.current) clearTimeout(resultTimerRef.current)
       stopRadar()
+      stopCountRoll()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  // Bitiş ekranında XP'yi 0'dan yukarı say (sesli), bitince çlink
+  useEffect(() => {
+    if (screen !== 'end' || !ranking.length) return
+    setEndProg(0)
+    startCountRoll()
+    const start = performance.now()
+    let raf = 0
+    const step = (t: number) => {
+      const p = Math.min(1, (t - start) / 1300)
+      setEndProg(p)
+      if (p < 1) raf = requestAnimationFrame(step)
+      else { stopCountRoll(); playSound('count_ding') }
+    }
+    raf = requestAnimationFrame(step)
+    return () => { cancelAnimationFrame(raf); stopCountRoll() }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [screen, ranking])
 
   const connect = (token: string) => {
     const ev = eventRef.current ? `&event=${encodeURIComponent(eventRef.current)}` : ''
@@ -375,17 +395,24 @@ export default function ArenaPage() {
           ))}
         </div>
 
+        {/* Kazanılan XP (sayaçlı) */}
+        {mine && (
+          <div className="text-center mb-5">
+            <span className="font-black" style={{ fontSize: 24, color: 'var(--gold)' }}>⭐ +{Math.round((mine.xp || 0) * endProg)} XP kazandın!</span>
+          </div>
+        )}
+
         {/* Özetlersek — tam tablo */}
         <div className="glass overflow-hidden" style={{ borderRadius: 14 }}>
-          <div className="grid px-3 py-2 text-xs font-bold" style={{ gridTemplateColumns: '30px 1fr 44px 44px 60px', color: 'var(--text-dim)', borderBottom: '1px solid var(--border)' }}>
-            <span>#</span><span>Oyuncu</span><span className="text-center">✓</span><span className="text-center">⚡</span><span className="text-right">Puan</span>
+          <div className="grid px-3 py-2 text-xs font-bold" style={{ gridTemplateColumns: '26px 1fr 34px 34px 46px 50px', color: 'var(--text-dim)', borderBottom: '1px solid var(--border)' }}>
+            <span>#</span><span>Oyuncu</span><span className="text-center">✓</span><span className="text-center">⚡</span><span className="text-right">Puan</span><span className="text-right">XP</span>
           </div>
           {ranking.map(r => (
             <div key={r.user_id} className="grid px-3 py-2 items-center"
-              style={{ gridTemplateColumns: '30px 1fr 44px 44px 60px', borderBottom: '1px solid var(--border)', background: r.user_id === me ? 'rgba(255,215,0,0.08)' : 'transparent' }}>
+              style={{ gridTemplateColumns: '26px 1fr 34px 34px 46px 50px', borderBottom: '1px solid var(--border)', background: r.user_id === me ? 'rgba(255,215,0,0.08)' : 'transparent' }}>
               <span className="font-black" style={{ color: r.rank === 1 ? '#FFD700' : r.rank === 2 ? 'var(--text-dim)' : r.rank === 3 ? '#CD7F32' : 'var(--text-dimmer)' }}>{medal(r.rank)}</span>
               <div className="flex items-center gap-2 min-w-0">
-                <img src={avatarSrc(r.avatar_url, r.username)} alt="" style={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'cover' }} />
+                <img src={avatarSrc(r.avatar_url, r.username)} alt="" style={{ width: 26, height: 26, borderRadius: '50%', objectFit: 'cover' }} />
                 <span className="font-bold truncate" style={{ color: r.user_id === me ? '#FFD700' : '#fff' }}>{r.username}</span>
               </div>
               <span className="text-center font-bold" style={{ color: '#4CAF50' }}>{r.correct}</span>
@@ -394,6 +421,7 @@ export default function ArenaPage() {
                 <div className="font-black" style={{ color: 'var(--gold)' }}>{r.total}</div>
                 {r.bonus > 0 && <div style={{ fontSize: 10, color: '#E91E63' }}>+{r.bonus}</div>}
               </div>
+              <span className="text-right font-bold" style={{ color: '#81C784' }}>+{Math.round((r.xp || 0) * endProg)}</span>
             </div>
           ))}
         </div>

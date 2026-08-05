@@ -97,6 +97,10 @@ DEFAULT_SETTINGS = {
         "bot_start_seconds": 15,   # üye gelmezse bu kadar sonra botlar girmeye başlar
         "bot_interval_seconds": 2,
         "only_easy": True,          # Arena kategorilerinden sadece KOLAY soru çek
+        "xp_1": 100,                # 1. olana XP
+        "xp_2": 60,                 # 2. olana XP
+        "xp_3": 40,                 # 3. olana XP
+        "xp_other": 20,             # 4./5. olana XP
     },
 
     # ─ Kalabalık (bot maçlarıyla ligleri doldurma)

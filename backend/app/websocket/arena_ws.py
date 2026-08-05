@@ -557,22 +557,31 @@ async def _finish(room):
             prev_rank = i + 1
             prev_total = totals[uid]
 
-    # ödüller (sadece insanlar; award_trophy_or_medal botları zaten atlar)
+    # Sıralamaya göre XP (admin ayarından) — 1./2./3./4-5.
+    xp_earned = {}
     try:
         async with AsyncSessionLocal() as db:
             from app.services.achievement import award_trophy_or_medal
+            from app.services.settings import get_settings
+            acfg = await get_settings(db, "arena")
+            xp_by_rank = {
+                1: int(acfg.get("xp_1", 100)),
+                2: int(acfg.get("xp_2", 60)),
+                3: int(acfg.get("xp_3", 40)),
+            }
+            xp_other = int(acfg.get("xp_other", 20))
             for uid, p in room.players.items():
+                r = ranks[uid]
+                xp = xp_by_rank.get(r, xp_other)
+                xp_earned[uid] = xp
                 if p["is_bot"]:
                     continue
-                r = ranks[uid]
                 # Kupa/madalya sadece genel havuz arenasında (özel/davet arenası farmlanmasın)
                 if not room.is_private:
                     if r == 1:
                         await award_trophy_or_medal(db, uid, "arena", room.id[:8], rank=1)
                     elif r == 2:
                         await award_trophy_or_medal(db, uid, "arena", room.id[:8], rank=2)
-                # XP: doğru başına 5
-                xp = room.correct[uid] * 5
                 if xp:
                     await db.execute(_sqltext("UPDATE users SET xp = xp + :xp WHERE id = :uid"), {"xp": xp, "uid": uid})
             await db.commit()
@@ -590,6 +599,7 @@ async def _finish(room):
         "total": round(totals[uid]),
         "correct": room.correct[uid],
         "flash": room.flash[uid],
+        "xp": xp_earned.get(uid, 0),
     } for uid in ranked]
 
     await _broadcast(room, {"type": "arena_end", "ranking": result})
