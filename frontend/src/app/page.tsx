@@ -163,11 +163,20 @@ export default function HomePage() {
               </Link>
             )}
 
-            <div className="grid grid-cols-2 gap-3 mb-3">
-              {playCard('/kategoriler', '🗂', 'Kategoriler', '#FFD700')}
+            {/* Kategoriler — Turnuva/Arena altında tam genişlik */}
+            <Link href="/kategoriler" className="block glass p-4 mb-3" style={{ borderRadius: 14, background: 'rgba(255,215,0,0.09)', border: '1px solid rgba(255,215,0,0.3)', textDecoration: 'none' }}>
+              <div className="flex items-center gap-3">
+                <div className="text-4xl">🗂</div>
+                <div className="flex-1 min-w-0">
+                  <div className="font-black" style={{ color: '#FFD700' }}>Kategoriler</div>
+                  <div className="text-xs" style={{ color: 'var(--text-dim)' }}>Konu konu kategori maçları ve sorular</div>
+                </div>
+                <div className="text-2xl" style={{ color: '#FFD700' }}>›</div>
+              </div>
+            </Link>
+
+            <div className="grid grid-cols-3 gap-3 mb-3">
               {playCard('/testler', '📝', 'Testler', '#E91E63')}
-            </div>
-            <div className="grid grid-cols-2 gap-3 mb-3">
               {playCard('/lig', '🏆', 'Lig', '#FFB300')}
               {playCard('/market', '🛒', 'Market', '#9C27B0')}
             </div>
@@ -381,6 +390,23 @@ export default function HomePage() {
               </div>
             </div>
           )}
+
+          {/* Kategoriler — Turnuva/Arena altında tam genişlik */}
+          <div className="col-span-1 md:col-span-2 glass p-6"
+            style={{ background: 'rgba(255,215,0,0.07)', border: '1px solid rgba(255,215,0,0.25)' }}>
+            <div className="flex items-center justify-between flex-wrap gap-4">
+              <div className="flex items-center gap-4">
+                <div className="text-5xl">🗂</div>
+                <div>
+                  <h3 className="text-xl font-black" style={{ color: '#FFD700' }}>Kategoriler</h3>
+                  <p className="text-sm" style={{ color: 'var(--text-dim)' }}>Konu konu kategori maçları — güçlü olduğun alanda yarış!</p>
+                </div>
+              </div>
+              <Link href="/kategoriler" className="btn-gold px-6 py-3 font-black">
+                🗂 Kategorilere Git
+              </Link>
+            </div>
+          </div>
 
           {/* Testler ve Lig */}
           {[
