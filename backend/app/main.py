@@ -135,6 +135,16 @@ async def startup():
         await db.commit()
     await seed_badges(db)
     await seed_settings(db)
+    # Ünvanları 20'ye yükselt (prod'da eski kısa liste varsa) — bir kereye mahsus migrasyon
+    try:
+        from app.services.settings import get_settings as _gs, set_settings as _ss, DEFAULT_SETTINGS as _DS
+        async with AsyncSessionLocal() as _tdb:
+            _cur = await _gs(_tdb, "titles")
+            if not isinstance(_cur, list) or len(_cur) < len(_DS["titles"]):
+                await _ss(_tdb, "titles", _DS["titles"])
+                print(f"[startup] titles -> {len(_DS['titles'])} unvan (guncellendi)")
+    except Exception as _e:
+        print(f"[startup] titles migrate hata: {_e}")
     # Cache temizle ve zamanlayıcıyı başlat
     from app.services.settings_cache import invalidate_cache
     invalidate_cache()
