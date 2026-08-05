@@ -370,25 +370,25 @@ export default function ArenaPage() {
     const mine = ranking.find(r => r.user_id === me)
     const top3 = ranking.slice(0, 3)
     const podiumOrder = [top3[1], top3[0], top3[2]].filter(Boolean) // 2 - 1 - 3
-    const podiumH: Record<number, number> = { 1: 96, 2: 72, 3: 56 }
+    const podiumH: Record<number, number> = { 1: 64, 2: 48, 3: 38 }
     const medal = (rank: number) => rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : rank
     return (
-      <div className="min-h-screen px-4 pt-8 pb-10" style={{ maxWidth: 520, margin: '0 auto' }}>
-        <h1 className="text-3xl font-black text-center" style={{ color: mine?.rank === 1 ? '#FFD700' : '#FF7043' }}>
+      <div className="min-h-screen px-4 pt-3 pb-4" style={{ maxWidth: 520, margin: '0 auto' }}>
+        <h1 className="text-2xl font-black text-center" style={{ color: mine?.rank === 1 ? '#FFD700' : '#FF7043' }}>
           {mine?.rank === 1 ? '🏆 Kazandın!' : mine?.rank === 2 ? '🥈 2. oldun!' : mine?.rank === 3 ? '🥉 3. oldun!' : '🏁 Sonuçlar'}
         </h1>
-        <p className="text-center text-xs mb-6" style={{ color: 'var(--text-dim)' }}>Doğru + hız + ⚡ bonusu</p>
+        <p className="text-center text-xs mb-3" style={{ color: 'var(--text-dim)' }}>Doğru + hız + ⚡ bonusu</p>
 
         {/* Podyum */}
-        <div className="flex items-end justify-center gap-2 mb-6">
+        <div className="flex items-end justify-center gap-2 mb-3">
           {podiumOrder.map(p => (
             <div key={p.user_id} className="flex flex-col items-center" style={{ width: 96 }}>
               <img src={avatarSrc(p.avatar_url, p.username)} alt=""
-                style={{ width: p.rank === 1 ? 60 : 46, height: p.rank === 1 ? 60 : 46, borderRadius: '50%', objectFit: 'cover', border: `3px solid ${p.rank === 1 ? '#FFD700' : p.rank === 2 ? 'var(--text-dim)' : '#CD7F32'}` }} />
+                style={{ width: p.rank === 1 ? 52 : 40, height: p.rank === 1 ? 52 : 40, borderRadius: '50%', objectFit: 'cover', border: `3px solid ${p.rank === 1 ? '#FFD700' : p.rank === 2 ? 'var(--text-dim)' : '#CD7F32'}` }} />
               <div className="text-xs font-bold mt-1 truncate" style={{ maxWidth: 90, color: p.user_id === me ? '#FFD700' : '#fff' }}>{p.username}</div>
               <div className="text-xs font-black" style={{ color: 'var(--gold)' }}>{p.total}</div>
-              <div className="w-full flex items-center justify-center font-black text-2xl"
-                style={{ height: podiumH[p.rank] || 40, marginTop: 4, borderRadius: '10px 10px 0 0', background: p.rank === 1 ? 'rgba(255,215,0,0.25)' : p.rank === 2 ? 'rgba(176,190,197,0.2)' : 'rgba(205,127,50,0.2)' }}>
+              <div className="w-full flex items-center justify-center font-black text-xl"
+                style={{ height: podiumH[p.rank] || 30, marginTop: 3, borderRadius: '10px 10px 0 0', background: p.rank === 1 ? 'rgba(255,215,0,0.25)' : p.rank === 2 ? 'rgba(176,190,197,0.2)' : 'rgba(205,127,50,0.2)' }}>
                 {medal(p.rank)}
               </div>
             </div>
@@ -397,8 +397,8 @@ export default function ArenaPage() {
 
         {/* Kazanılan XP (sayaçlı) */}
         {mine && (
-          <div className="text-center mb-5">
-            <span className="font-black" style={{ fontSize: 24, color: 'var(--gold)' }}>⭐ +{Math.round((mine.xp || 0) * endProg)} XP kazandın!</span>
+          <div className="text-center mb-3">
+            <span className="font-black" style={{ fontSize: 20, color: 'var(--gold)' }}>⭐ +{Math.round((mine.xp || 0) * endProg)} XP kazandın!</span>
           </div>
         )}
 
@@ -408,7 +408,7 @@ export default function ArenaPage() {
             <span>#</span><span>Oyuncu</span><span className="text-center">✓</span><span className="text-center">⚡</span><span className="text-right">Puan</span><span className="text-right">XP</span>
           </div>
           {ranking.map(r => (
-            <div key={r.user_id} className="grid px-3 py-2 items-center"
+            <div key={r.user_id} className="grid px-3 py-1.5 items-center"
               style={{ gridTemplateColumns: '26px 1fr 34px 34px 46px 50px', borderBottom: '1px solid var(--border)', background: r.user_id === me ? 'rgba(255,215,0,0.08)' : 'transparent' }}>
               <span className="font-black" style={{ color: r.rank === 1 ? '#FFD700' : r.rank === 2 ? 'var(--text-dim)' : r.rank === 3 ? '#CD7F32' : 'var(--text-dimmer)' }}>{medal(r.rank)}</span>
               <div className="flex items-center gap-2 min-w-0">
@@ -430,16 +430,16 @@ export default function ArenaPage() {
           <>
             {isHost ? (
               <button onClick={() => wsRef.current?.send(JSON.stringify({ type: 'restart' }))}
-                className="btn-gold w-full mt-6 py-3 font-black">🔁 Tekrarla</button>
+                className="btn-gold w-full mt-3 py-2.5 font-black">🔁 Tekrarla</button>
             ) : (
-              <div className="text-center text-sm mt-6 mb-1" style={{ color: 'var(--text-dim)' }}>Ev sahibi yeni tur başlatabilir…</div>
+              <div className="text-center text-sm mt-3 mb-1" style={{ color: 'var(--text-dim)' }}>Ev sahibi yeni tur başlatabilir…</div>
             )}
-            <button onClick={() => router.push('/')} className="w-full mt-2 py-3 font-black" style={{ color: 'var(--text-dim)' }}>Ana sayfaya dön</button>
+            <button onClick={() => router.push('/')} className="w-full mt-2 py-2.5 font-black" style={{ color: 'var(--text-dim)' }}>Ana sayfaya dön</button>
           </>
         ) : (
           <>
-            <button onClick={() => router.push('/')} className="btn-gold w-full mt-6 py-3 font-black">Ana sayfaya dön</button>
-            <button onClick={() => window.location.reload()} className="w-full mt-2 py-3 font-black" style={{ color: '#FF7043' }}>🎯 Yeni Arena</button>
+            <button onClick={() => router.push('/')} className="btn-gold w-full mt-3 py-2.5 font-black">Ana sayfaya dön</button>
+            <button onClick={() => window.location.reload()} className="w-full mt-1 py-2 font-black" style={{ color: '#FF7043' }}>🎯 Yeni Arena</button>
           </>
         )}
       </div>
