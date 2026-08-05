@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useAuthStore } from '@/lib/store'
 import api from '@/lib/api'
-import { initSounds, playSound, playCountdownTick, startRadar, stopRadar } from '@/lib/sound'
+import { initSounds, playSound, playCountdownTick, startRadar, stopRadar, startCountRoll, stopCountRoll } from '@/lib/sound'
 import { avatarSrc } from '@/lib/avatar'
 
 type GameState = 'connecting' | 'waiting' | 'starting' | 'question' | 'finished'
@@ -45,6 +45,7 @@ export default function CategoryMatchPage() {
   const [maxTime, setMaxTime] = useState(30)
   const [statusMessage, setStatusMessage] = useState('Rakip aranıyor...')
   const [matchResult, setMatchResult] = useState<any>(null)
+  const [xpCount, setXpCount] = useState(0)
   const [canAnswer, setCanAnswer] = useState(true)
   const [emojiSent, setEmojiSent] = useState(0)
   const [showEmojiPicker, setShowEmojiPicker] = useState(false)
@@ -70,8 +71,29 @@ export default function CategoryMatchPage() {
       wsRef.current?.close()
       if (timerRef.current) clearInterval(timerRef.current)
       stopRadar()
+      stopCountRoll()
     }
   }, [])
+
+  // Maç bitince XP'yi 0'dan yukarı say (sesli), bitince çlink
+  useEffect(() => {
+    if (gameState !== 'finished' || !matchResult) return
+    const target = matchResult.xp_gained || 0
+    if (target <= 0) { setXpCount(0); return }
+    setXpCount(0)
+    startCountRoll()
+    const dur = Math.min(1600, Math.max(700, target * 14))
+    const start = performance.now()
+    let raf = 0
+    const step = (t: number) => {
+      const p = Math.min(1, (t - start) / dur)
+      setXpCount(Math.round(p * target))
+      if (p < 1) raf = requestAnimationFrame(step)
+      else { stopCountRoll(); playSound('count_ding') }
+    }
+    raf = requestAnimationFrame(step)
+    return () => { cancelAnimationFrame(raf); stopCountRoll() }
+  }, [gameState, matchResult])
 
   const connect = () => {
     const token = localStorage.getItem('access_token')
@@ -321,7 +343,7 @@ export default function CategoryMatchPage() {
           {/* XP */}
           {xpGained > 0 && (
             <div className="glass p-4 mb-3 rounded-xl">
-              <div className="font-bold mb-2" style={{ color: 'var(--gold)' }}>⭐ +{xpGained} XP kazandın!</div>
+              <div className="font-bold mb-2" style={{ color: 'var(--gold)' }}>⭐ +{xpCount} XP kazandın!</div>
               {xpBreakdown.map((b: any, i: number) => (
                 <div key={i} className="text-xs flex justify-between" style={{ color: 'var(--text-dim)' }}>
                   <span>{b.reason}</span><span>+{b.xp} XP</span>

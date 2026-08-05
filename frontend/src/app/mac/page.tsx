@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/lib/store'
-import { initSounds, playSound, playCountdownTick, startRadar, stopRadar } from '@/lib/sound'
+import { initSounds, playSound, playCountdownTick, startRadar, stopRadar, startCountRoll, stopCountRoll } from '@/lib/sound'
 import { avatarSrc } from '@/lib/avatar'
 
 type GameState = 'connecting' | 'waiting' | 'countdown' | 'starting' | 'question' | 'result' | 'finished'
@@ -63,6 +63,7 @@ export default function MacPage() {
   const [oppScore, setOppScore] = useState(0)
   const [timeLeft, setTimeLeft] = useState(30)
   const [maxTime, setMaxTime] = useState(30)
+  const [xpCount, setXpCount] = useState(0)
 
   // Cevap durumları
   const [myAnswer, setMyAnswer] = useState<string | null>(null)
@@ -101,8 +102,29 @@ export default function MacPage() {
       wsRef.current?.close()
       if (timerRef.current) clearInterval(timerRef.current)
       stopRadar()
+      stopCountRoll()
     }
   }, [])
+
+  // Maç bitince XP'yi 0'dan yukarı say (sesli), bitince çlink
+  useEffect(() => {
+    if (gameState !== 'finished' || !matchResult) return
+    const target = matchResult.xp_gained || 0
+    if (target <= 0) { setXpCount(0); return }
+    setXpCount(0)
+    startCountRoll()
+    const dur = Math.min(1600, Math.max(700, target * 14))
+    const start = performance.now()
+    let raf = 0
+    const step = (t: number) => {
+      const p = Math.min(1, (t - start) / dur)
+      setXpCount(Math.round(p * target))
+      if (p < 1) raf = requestAnimationFrame(step)
+      else { stopCountRoll(); playSound('count_ding') }
+    }
+    raf = requestAnimationFrame(step)
+    return () => { cancelAnimationFrame(raf); stopCountRoll() }
+  }, [gameState, matchResult])
 
   useEffect(() => {
     playerNumberRef.current = playerNumber
@@ -451,7 +473,7 @@ export default function MacPage() {
           {matchResult.xp_gained > 0 && (
             <div className="glass p-4 mb-6 text-left">
               <div className="font-bold mb-2" style={{ color: 'var(--gold)' }}>
-                ⭐ +{matchResult.xp_gained} XP kazandın!
+                ⭐ +{xpCount} XP kazandın!
               </div>
               {matchResult.xp_breakdown.map((b, i) => (
                 <div key={i} className="flex justify-between text-sm" style={{ color: 'var(--text-dim)' }}>

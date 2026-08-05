@@ -20,6 +20,8 @@ export type SoundKey =
   | 'badge'
   | 'notification'
   | 'click'
+  | 'count_roll'
+  | 'count_ding'
 
 // Admin panelinde gösterilecek insan-okunur etiketler (sıra bu listeye göre)
 export const SOUND_SLOTS: { key: SoundKey; label: string; desc: string }[] = [
@@ -37,6 +39,8 @@ export const SOUND_SLOTS: { key: SoundKey; label: string; desc: string }[] = [
   { key: 'badge', label: '🎖 Rozet Kazanıldı', desc: 'Maç sonunda rozet kazanıldığında' },
   { key: 'notification', label: '🔔 Bildirim', desc: 'Yeni bildirim geldiğinde' },
   { key: 'click', label: '🖱 Buton Tık', desc: 'Butonlara tıklarken çalan kısa tık sesi' },
+  { key: 'count_roll', label: '🔢 Puan Sayacı', desc: 'Maç sonu puan/XP 0’dan yukarı sayarken (dırdır)' },
+  { key: 'count_ding', label: '🔔 Sayaç Bitiş', desc: 'Sayma bitince çalan çıngırak (çlink)' },
 ]
 
 let ctx: AudioContext | null = null
@@ -229,6 +233,15 @@ const SYNTH: Record<SoundKey, (arg?: any) => void> = {
     tone(1300, 0.03, { type: 'triangle', gain: 0.13 })
     tone(2600, 0.02, { type: 'sine', gain: 0.05, delay: 0.008 })
   },
+  count_roll: () => {
+    // çok kısa tık — hızlı tekrarla "dırdır" sesi verir
+    tone(1500, 0.02, { type: 'square', gain: 0.06 })
+  },
+  count_ding: () => {
+    // parlak "çlink"
+    tone(1046.5, 0.1, { type: 'sine', gain: 0.3 })
+    tone(1568, 0.22, { type: 'sine', gain: 0.28, delay: 0.05 })
+  },
 }
 
 // Tek seferlik ses çal
@@ -293,4 +306,34 @@ export function startRadar() {
 export function stopRadar() {
   if (radarInterval) { clearInterval(radarInterval); radarInterval = null }
   if (radarLoopEl) { try { radarLoopEl.pause() } catch {}; radarLoopEl = null }
+}
+
+// Puan sayacı döngüsü (maç sonu 0'dan yukarı sayarken)
+let countRollEl: HTMLAudioElement | null = null
+let countRollInterval: ReturnType<typeof setInterval> | null = null
+
+export function startCountRoll() {
+  if (!isBrowser() || isMuted()) return
+  unlockAudio()
+  stopCountRoll()
+  const url = overrideUrl('count_roll')
+  if (url) {
+    try {
+      countRollEl = new Audio(url)
+      countRollEl.loop = true
+      countRollEl.volume = 0.5
+      countRollEl.play().catch(() => {})
+      return
+    } catch { /* sentetiğe düş */ }
+  }
+  SYNTH.count_roll()
+  countRollInterval = setInterval(() => {
+    if (isMuted()) { stopCountRoll(); return }
+    SYNTH.count_roll()
+  }, 55)
+}
+
+export function stopCountRoll() {
+  if (countRollInterval) { clearInterval(countRollInterval); countRollInterval = null }
+  if (countRollEl) { try { countRollEl.pause() } catch {}; countRollEl = null }
 }
