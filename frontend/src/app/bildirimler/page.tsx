@@ -20,6 +20,7 @@ function iconFor(n: Notif): string {
   if (n.type === 'friend_request' || n.type === 'friend_accepted') return '🤝'
   if (n.type === 'arena_invite') return '🎯'
   if (n.type === 'duel_invite') return '⚔️'
+  if (n.type === 'title') return n.data?.icon || '🎉'
   return '🔔'
 }
 
@@ -104,10 +105,12 @@ export default function BildirimlerPage() {
         <div className="glass" style={{ borderRadius: 12, overflow: 'hidden' }}>
           {notifs.map((n, i) => (
             <div key={n.id}
+              onClick={n.type === 'title' ? () => router.push(`/p/${n.data?.username || user?.username || ''}`) : undefined}
               className="flex items-start gap-3 px-4 py-3"
               style={{
                 borderBottom: i < notifs.length - 1 ? '1px solid var(--border)' : 'none',
                 background: n.is_read ? 'transparent' : 'rgba(79,195,247,0.06)',
+                cursor: n.type === 'title' ? 'pointer' : 'default',
               }}>
               <div style={{ fontSize: 26, lineHeight: 1, marginTop: 2 }}>{iconFor(n)}</div>
               <div style={{ flex: 1, minWidth: 0 }}>

@@ -1,11 +1,42 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, update, func
+from sqlalchemy import select, update, func, text as _t
+from pydantic import BaseModel
 from app.core.database import get_db
 from app.core.deps import get_current_user
 from app.models.notification import Notification
 
 router = APIRouter(prefix="/api/notifications", tags=["notifications"])
+
+
+class TitleNotifRequest(BaseModel):
+    title: str
+    icon: str = "🎉"
+
+
+@router.post("/title")
+async def create_title_notification(req: TitleNotifRequest, db: AsyncSession = Depends(get_db),
+                                    current_user = Depends(get_current_user)):
+    """Yeni ünvan kazanıldığında bildirim oluştur (aynı ünvan için tekrar oluşturmaz)."""
+    tname = (req.title or "").strip()[:80]
+    if not tname:
+        return {"ok": False}
+    # Aynı ünvan bildirimi zaten varsa tekrar ekleme
+    exists = (await db.execute(_t(
+        "SELECT 1 FROM notifications WHERE user_id = :uid AND type = 'title' "
+        "AND (data->>'title') = :t LIMIT 1"
+    ), {"uid": str(current_user.id), "t": tname})).first()
+    if exists:
+        return {"ok": True, "duplicate": True}
+    db.add(Notification(
+        user_id=current_user.id,
+        type="title",
+        title="🎉 Yeni Ünvan!",
+        message=f"{tname} ünvanını kazandın!",
+        data={"title": tname, "icon": req.icon or "🎉", "username": current_user.username},
+    ))
+    await db.commit()
+    return {"ok": True}
 
 @router.get("/")
 async def get_notifications(db: AsyncSession = Depends(get_db), current_user = Depends(get_current_user)):

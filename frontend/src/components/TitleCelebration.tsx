@@ -2,14 +2,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { useAuthStore } from '@/lib/store'
 import { playSound } from '@/lib/sound'
+import api from '@/lib/api'
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'https://api.bilgimaratonu.com'
 
 interface TitleDef { min_xp: number; title: string; color: string; icon: string }
-
-const DEFAULT_TITLES: TitleDef[] = [
-  { min_xp: 0, title: 'Çaylak', color: '#B0BEC5', icon: '🌱' },
-]
 
 // Verilen XP için ünvan index'i (min_xp <= xp olan en yüksek)
 function titleIndexFor(xp: number, titles: TitleDef[]): number {
@@ -22,11 +19,9 @@ const CONFETTI_COLORS = ['#FFD700', '#FF7043', '#4FC3F7', '#81C784', '#E91E63', 
 
 export default function TitleCelebration() {
   const { user } = useAuthStore()
-  const [titles, setTitles] = useState<TitleDef[]>(DEFAULT_TITLES)
+  const [titles, setTitles] = useState<TitleDef[] | null>(null)   // null = henüz yüklenmedi
   const [show, setShow] = useState<TitleDef | null>(null)
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-  // İlk yüklemede kutlama yapmamak için baseline kurulduğunu izle
-  const baselineSet = useRef(false)
 
   useEffect(() => {
     fetch(`${API}/api/admin/settings/public`)
@@ -36,7 +31,8 @@ export default function TitleCelebration() {
   }, [])
 
   useEffect(() => {
-    if (!user || !titles.length) return
+    // Gerçek ünvan listesi yüklenmeden ÇALIŞMA (yanlış kutlama olmasın)
+    if (!user || !titles || !titles.length) return
     const uname = (user as any).username || 'me'
     const xp = (user as any).xp || 0
     const idx = titleIndexFor(xp, titles)
@@ -47,15 +43,15 @@ export default function TitleCelebration() {
     if (stored === null || isNaN(stored)) {
       // İlk kez: baseline kur, kutlama yok
       try { localStorage.setItem(key, String(idx)) } catch {}
-      baselineSet.current = true
       return
     }
     if (idx > stored) {
+      // Yeni ünvan! baseline yükselt, bir kere kutla + bildirim oluştur
       try { localStorage.setItem(key, String(idx)) } catch {}
       celebrate(titles[idx])
-    } else if (idx < stored) {
-      try { localStorage.setItem(key, String(idx)) } catch {}
+      api.post('/api/notifications/title', { title: titles[idx].title, icon: titles[idx].icon }).catch(() => {})
     }
+    // idx <= stored: baseline'ı ASLA düşürme, kutlama yapma
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, titles])
 
@@ -79,7 +75,6 @@ export default function TitleCelebration() {
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
         overflow: 'hidden', cursor: 'pointer',
       }}>
-      {/* konfeti */}
       {pieces.map((_, i) => {
         const left = Math.random() * 100
         const delay = Math.random() * 0.6
