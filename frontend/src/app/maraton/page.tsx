@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/lib/store'
 import api from '@/lib/api'
 import Link from 'next/link'
-import { initSounds, playSound, playCountdownTick, playCountdownBeep } from '@/lib/sound'
+import { initSounds, playSound, playCountdownTick, playCountdownBeep, startCountRoll, stopCountRoll } from '@/lib/sound'
 
 interface Question {
   id: string; text: string; difficulty: string; category_name: string
@@ -60,6 +60,7 @@ export default function SoloPage() {
   const [qStartTime, setQStartTime] = useState(0)
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<any>(null)
+  const [countProg, setCountProg] = useState(0)   // sonuç ekranı sesli sayaç 0..1
   const [showDetails, setShowDetails] = useState(false)
   const [correctAnswer, setCorrectAnswer] = useState<string | null>(null)
 
@@ -67,7 +68,27 @@ export default function SoloPage() {
     initSounds()
     fetchMe()
     loadProgress()
+    return () => stopCountRoll()
   }, [])
+
+  // Sonuç ekranındaki puanları 0'dan yukarı say (sesli), bitince çlink
+  useEffect(() => {
+    if (screen !== 'result' || !result || result.error) return
+    setCountProg(0)
+    startCountRoll()
+    const xp = result.xp_gained || 0
+    const dur = Math.min(1700, Math.max(800, xp * 14))
+    const start = performance.now()
+    let raf = 0
+    const step = (t: number) => {
+      const p = Math.min(1, (t - start) / dur)
+      setCountProg(p)
+      if (p < 1) raf = requestAnimationFrame(step)
+      else { stopCountRoll(); playSound('count_ding') }
+    }
+    raf = requestAnimationFrame(step)
+    return () => { cancelAnimationFrame(raf); stopCountRoll() }
+  }, [screen, result])
 
   const loadProgress = async () => {
     const token = localStorage.getItem('access_token')
@@ -418,15 +439,15 @@ export default function SoloPage() {
             </h2>
             <div className="grid grid-cols-3 gap-3 mb-4">
               <div className="glass p-4 text-center">
-                <div className="text-3xl font-black" style={{ color: '#4CAF50' }}>{result.correct}</div>
+                <div className="text-3xl font-black" style={{ color: '#4CAF50' }}>{Math.round(result.correct * countProg)}</div>
                 <div className="text-xs mt-1" style={{ color: 'var(--text-dim)' }}>Doğru</div>
               </div>
               <div className="glass p-4 text-center">
-                <div className="text-3xl font-black" style={{ color: '#F44336' }}>{result.total - result.correct}</div>
+                <div className="text-3xl font-black" style={{ color: '#F44336' }}>{Math.round((result.total - result.correct) * countProg)}</div>
                 <div className="text-xs mt-1" style={{ color: 'var(--text-dim)' }}>Yanlış</div>
               </div>
               <div className="glass p-4 text-center">
-                <div className="text-3xl font-black" style={{ color: 'var(--blue)' }}>%{result.accuracy}</div>
+                <div className="text-3xl font-black" style={{ color: 'var(--blue)' }}>%{Math.round(result.accuracy * countProg)}</div>
                 <div className="text-xs mt-1" style={{ color: 'var(--text-dim)' }}>Başarı</div>
               </div>
             </div>
@@ -435,7 +456,7 @@ export default function SoloPage() {
             {result.xp_gained > 0 ? (
               <div className="glass p-3 mb-4 text-center">
                 <span style={{ color: 'var(--gold)' }}>
-                  +{result.new_stars} yeni yıldız ⭐ × {result.xp_per_star} = <b>+{result.xp_gained} XP</b>
+                  +{result.new_stars} yeni yıldız ⭐ × {result.xp_per_star} = <b>+{Math.round(result.xp_gained * countProg)} XP</b>
                 </span>
               </div>
             ) : result.is_replay ? (
