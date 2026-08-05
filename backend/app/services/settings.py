@@ -113,12 +113,28 @@ DEFAULT_SETTINGS = {
     },
 
     # ─ Unvan Sistemi
+    # 20 unvan — başta hızlı (0/20/50/100), sonra aralık kademeli açılır.
     "titles": [
-        {"min_xp": 0,     "title": "Çaylak",         "color": "#B0BEC5", "icon": "🌱"},
-        {"min_xp": 500,   "title": "Sohbetçi",        "color": "#4FC3F7", "icon": "💬"},
-        {"min_xp": 2000,  "title": "Mahalli Ünlü",    "color": "#81C784", "icon": "⭐"},
-        {"min_xp": 5000,  "title": "Şehir Efsanesi",  "color": "#FFD700", "icon": "🏆"},
-        {"min_xp": 15000, "title": "Sanal Efsane",    "color": "#E91E63", "icon": "👑"},
+        {"min_xp": 0,     "title": "Çaylak",       "color": "#B0BEC5", "icon": "🌱"},
+        {"min_xp": 20,    "title": "Meraklı",      "color": "#90CAF9", "icon": "🔎"},
+        {"min_xp": 50,    "title": "Kaşif",        "color": "#4FC3F7", "icon": "🧭"},
+        {"min_xp": 100,   "title": "Bilgin",       "color": "#4DD0E1", "icon": "📚"},
+        {"min_xp": 180,   "title": "Düşünür",      "color": "#4DB6AC", "icon": "💡"},
+        {"min_xp": 300,   "title": "Araştırmacı",  "color": "#81C784", "icon": "📝"},
+        {"min_xp": 480,   "title": "Usta",         "color": "#AED581", "icon": "⚒️"},
+        {"min_xp": 720,   "title": "Uzman",        "color": "#DCE775", "icon": "🎯"},
+        {"min_xp": 1050,  "title": "Âlim",         "color": "#FFD54F", "icon": "📖"},
+        {"min_xp": 1500,  "title": "Deha",         "color": "#FFCA28", "icon": "🧠"},
+        {"min_xp": 2100,  "title": "Üstat",        "color": "#FFB300", "icon": "🏅"},
+        {"min_xp": 2900,  "title": "Fenomen",      "color": "#FFA726", "icon": "🌟"},
+        {"min_xp": 3900,  "title": "Şampiyon",     "color": "#FF8A65", "icon": "👑"},
+        {"min_xp": 5200,  "title": "Titan",        "color": "#FF7043", "icon": "⚔️"},
+        {"min_xp": 6800,  "title": "Efsane",       "color": "#F4511E", "icon": "🔥"},
+        {"min_xp": 8800,  "title": "İkon",         "color": "#EC407A", "icon": "💎"},
+        {"min_xp": 11300, "title": "Zirve",        "color": "#E91E63", "icon": "🏔️"},
+        {"min_xp": 14400, "title": "Öncü",         "color": "#AB47BC", "icon": "🚀"},
+        {"min_xp": 18200, "title": "Mit",          "color": "#7E57C2", "icon": "⚡"},
+        {"min_xp": 22800, "title": "Ölümsüz",      "color": "#5C6BC0", "icon": "♾️"},
     ],
 
     # ─ Ses Ayarları (boş = sentetik ses, dolu = yüklenen MP3 url'i)
