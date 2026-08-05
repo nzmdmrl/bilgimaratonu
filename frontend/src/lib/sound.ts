@@ -22,6 +22,7 @@ export type SoundKey =
   | 'click'
   | 'count_roll'
   | 'count_ding'
+  | 'title_up'
 
 // Admin panelinde gösterilecek insan-okunur etiketler (sıra bu listeye göre)
 export const SOUND_SLOTS: { key: SoundKey; label: string; desc: string }[] = [
@@ -41,6 +42,7 @@ export const SOUND_SLOTS: { key: SoundKey; label: string; desc: string }[] = [
   { key: 'click', label: '🖱 Buton Tık', desc: 'Butonlara tıklarken çalan kısa tık sesi' },
   { key: 'count_roll', label: '🔢 Puan Sayacı', desc: 'Maç sonu puan/XP 0’dan yukarı sayarken (dırdır)' },
   { key: 'count_ding', label: '🔔 Sayaç Bitiş', desc: 'Sayma bitince çalan çıngırak (çlink)' },
+  { key: 'title_up', label: '🎉 Yeni Ünvan', desc: 'Yeni ünvan kazanıldığında çalan kutlama müziği' },
 ]
 
 let ctx: AudioContext | null = null
@@ -241,6 +243,12 @@ const SYNTH: Record<SoundKey, (arg?: any) => void> = {
     // parlak "çlink"
     tone(1046.5, 0.1, { type: 'sine', gain: 0.3 })
     tone(1568, 0.22, { type: 'sine', gain: 0.28, delay: 0.05 })
+  },
+  title_up: () => {
+    // kutlama fanfarı
+    arpeggio([523.25, 659.25, 783.99, 1046.5, 1318.5], 0.09, 0.32, 'triangle', 0.32)
+    tone(1567.98, 0.5, { type: 'sine', gain: 0.28, delay: 0.46 })
+    tone(2093, 0.6, { type: 'sine', gain: 0.18, delay: 0.52 })
   },
 }
 
