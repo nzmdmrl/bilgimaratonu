@@ -105,6 +105,18 @@ async def join_marathon_endpoint(
     success, message = await join_marathon(db, marathon_id, str(current_user.id))
     if not success:
         raise HTTPException(status_code=400, detail=message)
+    # Diğer lobi üyelerine sesli katılım bildir
+    try:
+        from app.websocket.marathon_ws import marathon_manager
+        from sqlalchemy import func as _func
+        cnt = (await db.execute(select(_func.count(MarathonParticipant.id)).where(
+            MarathonParticipant.marathon_id == marathon_id))).scalar()
+        await marathon_manager.broadcast(marathon_id, {
+            "type": "lobby_join", "username": current_user.username,
+            "count": int(cnt or 0), "is_bot": False,
+        })
+    except Exception:
+        pass
     return {"success": True, "message": message}
 
 @router.post("/{marathon_id}/start")

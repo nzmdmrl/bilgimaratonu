@@ -169,7 +169,7 @@ async def run_match(
     p1_id: str, p2_id: str,
     questions: list, round_num: int,
     p1_is_human: bool, p2_is_human: bool,
-    p2_elo: int, time_limit: int,
+    p2_elo: int, time_limit: int, p1_elo: int = 1000,
 ) -> str:
     from app.services.bot import bot_answer as get_bot_answer, bot_response_time
     from app.services.elo import get_points, POINTS
@@ -224,12 +224,14 @@ async def run_match(
         # Bot cevaplari onceden hesapla (bagimsiz)
         p1_bot_wait = p1_bot_ans = None
         p2_bot_wait = p2_bot_ans = None
+        # Botlar GERÇEK elo'suyla + hafif handikap (insana kazanma şansı ver)
+        _bh = lambda e: max(650, int(e) - 120)
         if not p1_is_human:
-            p1_bot_wait = bot_response_time(1200, q_tl)
-            p1_bot_ans = get_bot_answer(correct, 1200)
+            p1_bot_wait = bot_response_time(_bh(p1_elo), q_tl)
+            p1_bot_ans = get_bot_answer(correct, _bh(p1_elo))
         if not p2_is_human:
-            p2_bot_wait = bot_response_time(p2_elo, q_tl)
-            p2_bot_ans = get_bot_answer(correct, p2_elo)
+            p2_bot_wait = bot_response_time(_bh(p2_elo), q_tl)
+            p2_bot_ans = get_bot_answer(correct, _bh(p2_elo))
 
         holder = {"p1": None, "p2": None}
         ev_p1 = asyncio.Event()
@@ -606,7 +608,7 @@ async def run_marathon_engine(marathon_id: str):
                 p1_id=m["p1_id"], p2_id=m["p2_id"],
                 questions=questions, round_num=round_num,
                 p1_is_human=m["p1_is_human"], p2_is_human=m["p2_is_human"],
-                p2_elo=m["p2_elo"], time_limit=time_limit,
+                p2_elo=m["p2_elo"], time_limit=time_limit, p1_elo=m["p1_elo"],
             ) for m in match_infos
         ], return_exceptions=True)
 

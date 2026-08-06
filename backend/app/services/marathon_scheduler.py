@@ -93,86 +93,77 @@ async def create_and_run_marathon():
 
 
 async def fill_lobby(marathon_id: str, max_p: int, lobby_dur: int, marathon_manager):
+    import random
     start = datetime.utcnow()
+    hold_at = max(1, max_p - 1)        # son slotu insana beklet
+    final_window = 2                   # son 2 sn kala tamamla
+    # botları öncesine yay: her ~step_interval'da 1 bot
+    step_interval = max(0.5, (lobby_dur - final_window) / hold_at)
 
+    async def _add_one_bot(db, participants):
+        bot = (await db.execute(
+            select(User).where(
+                User.is_bot == True, User.is_active == True,
+                ~User.id.in_([p.user_id for p in participants])
+            ).order_by(User.elo_rating).limit(1)
+        )).scalar_one_or_none()
+        if not bot:
+            return None
+        db.add(MarathonParticipant(marathon_id=marathon_id, user_id=str(bot.id), status=MarathonParticipantStatus.active))
+        await db.commit()
+        return bot
+
+    # 1) Yavaş yavaş botlar — hold_at'e kadar, son 2 sn'ye kadar
     while True:
         elapsed = (datetime.utcnow() - start).total_seconds()
-        if elapsed >= lobby_dur:
+        if elapsed >= lobby_dur - final_window:
             break
-
         async with AsyncSessionLocal() as db:
-            result = await db.execute(
-                select(MarathonParticipant).where(
-                    MarathonParticipant.marathon_id == marathon_id
-                )
-            )
-            participants = result.scalars().all()
-            current_count = len(participants)
-
-            if current_count >= max_p:
-                print(f"[BotFill] Lobi doldu ({current_count}/{max_p})")
-                for i in range(5, 0, -1):
+            participants = (await db.execute(
+                select(MarathonParticipant).where(MarathonParticipant.marathon_id == marathon_id)
+            )).scalars().all()
+            current = len(participants)
+            if current >= max_p:
+                break
+            if current < hold_at:
+                bot = await _add_one_bot(db, participants)
+                if bot:
+                    current += 1
                     await marathon_manager.broadcast(marathon_id, {
-                        "type": "countdown",
-                        "seconds": i,
-                        "message": f"Turnuva {i} saniye içinde başlıyor!"
+                        "type": "lobby_join", "username": bot.username,
+                        "count": current, "max": max_p, "is_bot": True,
                     })
-                    await asyncio.sleep(1)
-                return
+                    print(f"[BotFill] {current}/{max_p} (+{bot.username})")
+        await asyncio.sleep(step_interval)
 
-            needed = max_p - current_count
-            fill_rate = min(max(int(elapsed / 5) + 3, 3), needed, 15)
-
-            bots = await db.execute(
-                select(User).where(
-                    User.is_bot == True,
-                    User.is_active == True,
-                    ~User.id.in_([p.user_id for p in participants])
-                ).order_by(User.elo_rating).limit(fill_rate)
-            )
-            new_bots = bots.scalars().all()
-            for bot in new_bots:
-                db.add(MarathonParticipant(
-                    marathon_id=marathon_id,
-                    user_id=str(bot.id),
-                    status=MarathonParticipantStatus.active,
-                ))
-            await db.commit()
-            print(f"[BotFill] {current_count + len(new_bots)}/{max_p}")
-
-        await asyncio.sleep(BOT_FILL_INTERVAL)
-
-    # Lobi süresi bitti — eksikleri doldur
+    # 2) Son 2 sn: kalan slotları doldur (son bot dahil) → max_p
     async with AsyncSessionLocal() as db:
-        result = await db.execute(
-            select(MarathonParticipant).where(
-                MarathonParticipant.marathon_id == marathon_id
-            )
-        )
-        participants = result.scalars().all()
-        needed = max_p - len(participants)
-
+        participants = (await db.execute(
+            select(MarathonParticipant).where(MarathonParticipant.marathon_id == marathon_id)
+        )).scalars().all()
+        cnt = len(participants)
+        needed = max_p - cnt
         if needed > 0:
-            bots = await db.execute(
+            bots = (await db.execute(
                 select(User).where(
-                    User.is_bot == True,
-                    User.is_active == True,
+                    User.is_bot == True, User.is_active == True,
                     ~User.id.in_([p.user_id for p in participants])
                 ).order_by(User.elo_rating).limit(needed)
-            )
-            for bot in bots.scalars().all():
-                db.add(MarathonParticipant(
-                    marathon_id=marathon_id,
-                    user_id=str(bot.id),
-                    status=MarathonParticipantStatus.active,
-                ))
+            )).scalars().all()
+            for bot in bots:
+                db.add(MarathonParticipant(marathon_id=marathon_id, user_id=str(bot.id), status=MarathonParticipantStatus.active))
+                cnt += 1
             await db.commit()
-            print(f"[BotFill] Tamamlandı: {max_p}/{max_p}")
+        await marathon_manager.broadcast(marathon_id, {"type": "lobby_join", "count": cnt, "max": max_p, "final": True})
+        print(f"[BotFill] Tamamlandı: {cnt}/{max_p}")
 
+    # 3) Süre dolana kadar bekle, sonra 5→1 geri sayım
+    remaining = lobby_dur - (datetime.utcnow() - start).total_seconds()
+    if remaining > 0:
+        await asyncio.sleep(remaining)
     for i in range(5, 0, -1):
         await marathon_manager.broadcast(marathon_id, {
-            "type": "countdown",
-            "seconds": i,
+            "type": "countdown", "seconds": i,
             "message": f"Turnuva {i} saniye içinde başlıyor!"
         })
         await asyncio.sleep(1)

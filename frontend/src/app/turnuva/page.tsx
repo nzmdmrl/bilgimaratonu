@@ -265,6 +265,11 @@ export default function MaratonPage() {
       case 'connected':
         setStatusMsg('✓ Bağlandı')
         break
+      case 'lobby_join':
+        // Lobiye katılım — sesli bildir + sayacı güncelle
+        playSound(msg.is_bot === false ? 'match_found' : 'click')
+        if (msg.count) setMarathon(prev => prev ? { ...prev, current_participants: msg.count } : prev)
+        break
       case 'countdown':
         setLobbyCountdown(msg.seconds)
         setStatusMsg(`🏁 Turnuva ${msg.seconds} saniye içinde başlıyor!`)
@@ -469,6 +474,7 @@ export default function MaratonPage() {
   }
 
   const active = participants.filter(p => p.status === 'active')
+  const lobbyCount = Math.max(active.length, marathon?.current_participants || 0)  // lobide canlı sayı
   const eliminated_list = participants.filter(p => p.status === 'eliminated')
   const humanCount = active.filter(p => !p.is_bot).length
   const botCount = active.filter(p => p.is_bot).length
@@ -567,15 +573,6 @@ export default function MaratonPage() {
 
     return (
       <div className="min-h-screen flex flex-col p-3" style={{ maxWidth: 720, margin: '0 auto' }}>
-
-        {/* Tabloyu gör */}
-        <div className="flex justify-center mb-2">
-          <button onClick={() => { if (marathon?.id) loadBracket(marathon.id); setBracketOpen(true) }}
-            className="text-sm font-bold px-4 py-1.5 rounded-full"
-            style={{ background: 'rgba(255,215,0,0.15)', color: 'var(--gold)', border: '1px solid rgba(255,215,0,0.35)' }}>
-            🗺 Tabloyu Gör
-          </button>
-        </div>
 
         {/* Skor bar */}
         <div className="glass p-4 mb-3 flex items-center justify-between rounded-2xl"
@@ -713,7 +710,7 @@ export default function MaratonPage() {
           {marathon && (
             <div className="text-right">
               <span className="text-2xl font-bold text-blue-400">
-                {active.length}/{marathon.max_participants}
+                {lobbyCount}/{marathon.max_participants}
               </span>
               <p className="text-xs text-gray-400 mt-1">👤 {humanCount} · 🤖 {botCount}</p>
             </div>
@@ -723,10 +720,10 @@ export default function MaratonPage() {
           <div className="mt-3">
             <div className="h-3 bg-gray-700 rounded-full overflow-hidden">
               <div className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all"
-                style={{ width: `${(active.length / marathon.max_participants) * 100}%` }} />
+                style={{ width: `${(lobbyCount / marathon.max_participants) * 100}%` }} />
             </div>
             <div className="text-xs mt-1 text-right" style={{ color: 'var(--text-dim)' }}>
-              %{Math.round((active.length / marathon.max_participants) * 100)} dolu
+              %{Math.round((lobbyCount / marathon.max_participants) * 100)} dolu
             </div>
           </div>
         )}
