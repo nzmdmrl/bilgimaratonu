@@ -82,6 +82,7 @@ export default function MaratonPage() {
   const [marathonStats, setMarathonStats] = useState<any>(null)
   const wsRef = useRef<WebSocket | null>(null)
   const pollRef = useRef<NodeJS.Timeout | null>(null)
+  const viewerRef = useRef<NodeJS.Timeout | null>(null)  // katılmayan izleyici için durum yenileme
   const countdownRef = useRef<NodeJS.Timeout | null>(null)
   const timerRef = useRef<NodeJS.Timeout | null>(null)
   const matchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -92,6 +93,7 @@ export default function MaratonPage() {
     getChampions()
     return () => {
       if (pollRef.current) clearInterval(pollRef.current)
+      if (viewerRef.current) clearInterval(viewerRef.current)
       if (countdownRef.current) clearInterval(countdownRef.current)
       if (timerRef.current) clearInterval(timerRef.current)
       if (matchTimeoutRef.current) clearTimeout(matchTimeoutRef.current)
@@ -123,6 +125,7 @@ export default function MaratonPage() {
   const init = async () => {
     // Önceki zamanlayıcıları temizle (polling çığını önle)
     if (pollRef.current) { clearInterval(pollRef.current); pollRef.current = null }
+    if (viewerRef.current) { clearInterval(viewerRef.current); viewerRef.current = null }
     if (countdownRef.current) { clearInterval(countdownRef.current); countdownRef.current = null }
     try {
       const pubSettings = await api.get('/api/admin/settings/public')
@@ -158,8 +161,10 @@ export default function MaratonPage() {
             const target = new Date(nr.data.next_marathon_at + 'Z')
             setNextTime(target.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }))
             startCountdown(target)
+            startViewerRefresh()   // durum değişince (bitiş/yeni turnuva) otomatik güncelle
           } else {
             startPolling(m.id)
+            startViewerRefresh()   // waiting->in_progress geçişini de yakala
           }
         }
       } else {
@@ -172,6 +177,12 @@ export default function MaratonPage() {
     } catch (e) {
       console.error('Init hatası:', e)
     }
+  }
+
+  // Katılmayan izleyici: turnuva durumu (başladı/bitti/yeni turnuva) değişince otomatik güncelle
+  const startViewerRefresh = () => {
+    if (viewerRef.current) clearInterval(viewerRef.current)
+    viewerRef.current = setInterval(() => { init() }, 9000)
   }
 
   const startPolling = (marathonId: string) => {
