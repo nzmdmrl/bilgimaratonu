@@ -58,14 +58,13 @@ export default function Header() {
       {/* Mobil maç ekranı: header gizli — küçük geri oku (az yer kaplar) */}
       {hideOnMobile && (
         <button onClick={() => { try { router.back() } catch { router.push('/') } }}
-          className="md:hidden"
+          className="md:hidden flex items-center justify-center"
           aria-label="Geri"
           style={{
             position: 'fixed', top: 6, left: 6, zIndex: 120,
             width: 34, height: 34, borderRadius: '50%',
             background: 'var(--header-bg)', border: '1px solid var(--border)',
             color: 'var(--text)', fontSize: 18, lineHeight: 1, cursor: 'pointer',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
             backdropFilter: 'blur(6px)', boxShadow: '0 2px 8px rgba(0,0,0,0.18)',
           }}>
           ←
