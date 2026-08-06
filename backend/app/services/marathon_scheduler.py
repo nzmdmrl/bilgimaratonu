@@ -86,7 +86,32 @@ async def create_and_run_marathon():
 
     print(f"[Scheduler] Maraton oluşturuldu: {marathon_id[:8]} (max:{max_p}, lobi:{lobby_dur}sn)")
 
-    await fill_lobby(marathon_id, max_p, lobby_dur, marathon_manager)
+    # Lobi doldurma hata verse bile turnuva MUTLAKA başlasın (donma önlenir)
+    try:
+        await fill_lobby(marathon_id, max_p, lobby_dur, marathon_manager)
+    except Exception as e:
+        print(f"[Scheduler] fill_lobby hatası: {e}")
+
+    # Güvenlik: eksik slot kaldıysa botla doldur (turnuva geçerli sayıda başlasın)
+    try:
+        async with AsyncSessionLocal() as db:
+            parts = (await db.execute(
+                select(MarathonParticipant).where(MarathonParticipant.marathon_id == marathon_id)
+            )).scalars().all()
+            needed = max_p - len(parts)
+            if needed > 0:
+                bots = (await db.execute(
+                    select(User).where(
+                        User.is_bot == True, User.is_active == True,
+                        ~User.id.in_([p.user_id for p in parts])
+                    ).order_by(User.elo_rating).limit(needed)
+                )).scalars().all()
+                for bot in bots:
+                    db.add(MarathonParticipant(marathon_id=marathon_id, user_id=str(bot.id), status=MarathonParticipantStatus.active))
+                await db.commit()
+                print(f"[Scheduler] Güvenlik doldurma: +{len(bots)} bot")
+    except Exception as e:
+        print(f"[Scheduler] güvenlik doldurma hatası: {e}")
 
     print(f"[Scheduler] Maraton başlatılıyor: {marathon_id[:8]}")
     asyncio.ensure_future(run_marathon_engine(marathon_id))
@@ -109,31 +134,35 @@ async def fill_lobby(marathon_id: str, max_p: int, lobby_dur: int, marathon_mana
         )).scalar_one_or_none()
         if not bot:
             return None
+        uname = bot.username  # commit nesneyi expire eder — önce al
         db.add(MarathonParticipant(marathon_id=marathon_id, user_id=str(bot.id), status=MarathonParticipantStatus.active))
         await db.commit()
-        return bot
+        return uname
 
     # 1) Yavaş yavaş botlar — hold_at'e kadar, son 2 sn'ye kadar
     while True:
         elapsed = (datetime.utcnow() - start).total_seconds()
         if elapsed >= lobby_dur - final_window:
             break
-        async with AsyncSessionLocal() as db:
-            participants = (await db.execute(
-                select(MarathonParticipant).where(MarathonParticipant.marathon_id == marathon_id)
-            )).scalars().all()
-            current = len(participants)
-            if current >= max_p:
-                break
-            if current < hold_at:
-                bot = await _add_one_bot(db, participants)
-                if bot:
-                    current += 1
-                    await marathon_manager.broadcast(marathon_id, {
-                        "type": "lobby_join", "username": bot.username,
-                        "count": current, "max": max_p, "is_bot": True,
-                    })
-                    print(f"[BotFill] {current}/{max_p} (+{bot.username})")
+        try:
+            async with AsyncSessionLocal() as db:
+                participants = (await db.execute(
+                    select(MarathonParticipant).where(MarathonParticipant.marathon_id == marathon_id)
+                )).scalars().all()
+                current = len(participants)
+                if current >= max_p:
+                    break
+                if current < hold_at:
+                    uname = await _add_one_bot(db, participants)
+                    if uname:
+                        current += 1
+                        await marathon_manager.broadcast(marathon_id, {
+                            "type": "lobby_join", "username": uname,
+                            "count": current, "max": max_p, "is_bot": True,
+                        })
+                        print(f"[BotFill] {current}/{max_p} (+{uname})")
+        except Exception as e:
+            print(f"[BotFill] iterasyon hatası: {e}")
         await asyncio.sleep(step_interval)
 
     # 2) Son 2 sn: kalan slotları doldur (son bot dahil) → max_p

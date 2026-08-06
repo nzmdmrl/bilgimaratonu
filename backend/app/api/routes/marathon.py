@@ -102,6 +102,7 @@ async def join_marathon_endpoint(
     current_user: User = Depends(get_current_user),
 ):
     """Maratona katıl."""
+    _uname = current_user.username  # join commit'i user'ı expire edebilir — önce al
     success, message = await join_marathon(db, marathon_id, str(current_user.id))
     if not success:
         raise HTTPException(status_code=400, detail=message)
@@ -112,7 +113,7 @@ async def join_marathon_endpoint(
         cnt = (await db.execute(select(_func.count(MarathonParticipant.id)).where(
             MarathonParticipant.marathon_id == marathon_id))).scalar()
         await marathon_manager.broadcast(marathon_id, {
-            "type": "lobby_join", "username": current_user.username,
+            "type": "lobby_join", "username": _uname,
             "count": int(cnt or 0), "is_bot": False,
         })
     except Exception:
