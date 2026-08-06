@@ -63,6 +63,7 @@ export default function MaratonPage() {
   const [matchPopup, setMatchPopup] = useState<any>(null)
   const [matchXp, setMatchXp] = useState(0)      // maç sonu sesli sayaç değeri
   const [finalXp, setFinalXp] = useState<number | null>(null)  // turnuva bitiş dereceye göre XP (sayaçlı)
+  const [finalRank, setFinalRank] = useState<number | null>(null)  // benim turnuva derecem (1/2)
 
   // XP'yi 0'dan hedefe sesli say (dırdır + çlink)
   const animateCount = (target: number, setter: (n: number) => void) => {
@@ -263,6 +264,7 @@ export default function MaratonPage() {
         setStatusMsg(`🏁 Turnuva ${msg.seconds} saniye içinde başlıyor!`)
         break
       case 'round_start':
+        setFinalRank(null); setFinalXp(null)  // önceki turnuva final bilgisi kalmasın
         setMarathon(prev => prev ? { ...prev, status: 'in_progress' } : prev)  // bracket poll'ü açılsın
         setMatchStatus('🔍 Rakibin eşleştiriliyor, maç birazdan başlıyor…')
         setCorrectAnswer(null)
@@ -408,12 +410,14 @@ export default function MaratonPage() {
         } else {
           setStatusMsg('✅ Kazandın! Sonraki tur bekleniyor...')
           setMatchStatus('⏳ Diğer maçların bitmesi bekleniyor, sıradaki tur birazdan başlıyor…')
+          setRoundLabel('')  // eski tur bilgisi kalmasın (yeni round_start güncelleyecek)
         }
         matchTimeoutRef.current = setTimeout(() => { setShowMatch(false); setQuestion(null) }, 4500)
         if (marathon) { startPolling(marathon.id); loadBracket(marathon.id) }
         break
       case 'final_xp':
         // Dereceye göre turnuva bitiş XP'si — sesli say
+        setFinalRank(msg.rank || null)
         setFinalXp(0)
         setTimeout(() => animateCount(msg.xp || 0, setFinalXp), 400)
         break
@@ -477,15 +481,55 @@ export default function MaratonPage() {
   }
 
   if (champion) {
+    const iAmChamp = finalRank === 1
+    const iAmSecond = finalRank === 2
+    const accent = iAmChamp ? '#FFD700' : iAmSecond ? '#B0BEC5' : '#FFD700'
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-6">
-        <div className="text-6xl mb-4">🏆</div>
-        <h1 className="text-3xl font-bold mb-2">Şampiyon!</h1>
-        <p className="text-2xl text-yellow-400 font-bold">{champion}</p>
-        {finalXp !== null && finalXp > 0 && (
-          <div className="font-black mt-4" style={{ fontSize: 24, color: 'var(--gold)' }}>⭐ +{finalXp} XP kazandın!</div>
-        )}
-        <Link href="/" className="mt-8 text-blue-400 underline">Ana Sayfaya Dön</Link>
+      <div style={{
+        position: 'fixed', inset: 0, zIndex: 400,
+        background: 'radial-gradient(circle at 50% 30%, rgba(255,215,0,0.12), rgba(0,0,0,0.88))',
+        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+        overflow: 'hidden', padding: 24, textAlign: 'center',
+      }}>
+        {/* konfeti (şampiyon/2. için) */}
+        {(iAmChamp || iAmSecond) && Array.from({ length: iAmChamp ? 48 : 24 }).map((_, i) => {
+          const colors = ['#FFD700', '#FF7043', '#4FC3F7', '#81C784', '#E91E63', '#AB47BC', '#FFCA28']
+          return (
+            <span key={i} className="confetti-piece" style={{
+              left: `${Math.random() * 100}%`, width: 8 + Math.random() * 8, height: 4 + Math.random() * 5,
+              background: colors[i % colors.length],
+              animationDelay: `${Math.random() * 0.7}s`, animationDuration: `${2.2 + Math.random() * 1.8}s`,
+              transform: `rotate(${Math.random() * 360}deg)`,
+            }} />
+          )
+        })}
+
+        <div className="title-cele-in" style={{ position: 'relative', zIndex: 2 }}>
+          {iAmChamp ? (
+            <>
+              <div className="title-cele-icon" style={{ fontSize: 92 }}>🏆</div>
+              <h1 className="font-black" style={{ fontSize: 34, color: accent, textShadow: `0 0 26px ${accent}88` }}>TURNUVA ŞAMPİYONU!</h1>
+              <p className="text-lg mt-1" style={{ color: '#fff' }}>Tebrikler {user?.username}! 🎉</p>
+            </>
+          ) : iAmSecond ? (
+            <>
+              <div className="title-cele-icon" style={{ fontSize: 84 }}>🥈</div>
+              <h1 className="font-black" style={{ fontSize: 30, color: accent }}>2. OLDUN!</h1>
+              <p className="text-lg mt-1" style={{ color: '#fff' }}>Turnuvada 2. oldun, tebrikler! 👏</p>
+              <p className="text-sm mt-1" style={{ color: 'var(--text-dim)' }}>Şampiyon: {champion}</p>
+            </>
+          ) : (
+            <>
+              <div style={{ fontSize: 80 }}>🏆</div>
+              <h1 className="font-black" style={{ fontSize: 28, color: accent }}>Turnuva Bitti!</h1>
+              <p className="text-xl mt-1 font-bold" style={{ color: 'var(--gold)' }}>Şampiyon: {champion}</p>
+            </>
+          )}
+          {finalXp !== null && finalXp > 0 && (
+            <div className="font-black mt-4" style={{ fontSize: 24, color: 'var(--gold)' }}>⭐ +{finalXp} XP kazandın!</div>
+          )}
+          <Link href="/" className="inline-block mt-8" style={{ color: '#4FC3F7', textDecoration: 'underline' }}>Ana Sayfaya Dön</Link>
+        </div>
       </div>
     )
   }

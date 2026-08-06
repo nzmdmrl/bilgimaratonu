@@ -724,26 +724,7 @@ async def finish_marathon(marathon_id: str):
                 except Exception as _e:
                     print(f"[Engine] madalya hatasi: {_e}")
 
-        # 3.'ler: en son elenen tur (yarı final) kaybedenleri
-        try:
-            _semi = (await db.execute(select(func.max(MarathonParticipant.eliminated_at_round)).where(
-                MarathonParticipant.marathon_id == marathon_id,
-                MarathonParticipant.eliminated_at_round != None,
-            ))).scalar()
-            if _semi:
-                _thirds = (await db.execute(select(MarathonParticipant).where(
-                    MarathonParticipant.marathon_id == marathon_id,
-                    MarathonParticipant.eliminated_at_round == _semi,
-                ))).scalars().all()
-                for tp in _thirds:
-                    tp.xp_earned = xp3
-                    await _give_xp(tp.user_id, xp3)
-                    try: await marathon_manager.send(marathon_id, str(tp.user_id), {"type": "final_xp", "xp": xp3, "rank": 3})
-                    except Exception: pass
-                    await award_trophy_or_medal(db, str(tp.user_id), "marathon", str(marathon_id)[:8], rank=3)
-                    db.add(Notification(user_id=str(tp.user_id), type="medal", title="🥉 Turnuva Üçüncüsü!", message=f"Turnuvada 3. oldun! +{xp3} XP", data={"rank": 3, "marathon_id": str(marathon_id)}))
-        except Exception as _e:
-            print(f"[Engine] 3.luk hatasi: {_e}")
+        # Not: bracket'te 3./4. tek başına belirlenemediği için sadece 1. ve 2.'ye XP/ödül verilir.
 
         marathon = await db.get(Marathon, marathon_id)
         if marathon:

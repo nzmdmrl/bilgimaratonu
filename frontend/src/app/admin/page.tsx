@@ -2233,12 +2233,11 @@ export default function AdminPage() {
                 value={siteSettings.marathon?.xp_per_match ?? 5}
                 onChange={e => setSiteSettings((prev: any) => ({ ...prev, marathon: { ...prev.marathon, xp_per_match: parseInt(e.target.value) } }))} />
             </div>
-            <div className="text-sm font-bold mt-4 mb-2" style={{ color: 'var(--gold)' }}>Dereceye Göre XP</div>
-            <div className="grid grid-cols-3 gap-3" style={{ maxWidth: 320 }}>
+            <div className="text-sm font-bold mt-4 mb-2" style={{ color: 'var(--gold)' }}>Dereceye Göre XP <span style={{ color: 'var(--text-dim)', fontWeight: 400 }}>(sadece 1. ve 2.)</span></div>
+            <div className="grid grid-cols-2 gap-3" style={{ maxWidth: 240 }}>
               {[
                 { k: 'xp_1', label: '🏆 1. XP', def: 500 },
                 { k: 'xp_2', label: '🥈 2. XP', def: 200 },
-                { k: 'xp_3', label: '🥉 3. XP', def: 100 },
               ].map(f => (
                 <div key={f.k}>
                   <label className="text-xs mb-1 block" style={{ color: 'var(--text-dim)' }}>{f.label}</label>
