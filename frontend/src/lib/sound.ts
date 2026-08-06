@@ -56,6 +56,9 @@ let master: GainNode | null = null
 let unlocked = false
 let overrides: Partial<Record<SoundKey, string>> = {}
 let overridesLoaded = false
+// Çoklu müzik alanları: { music_wait: {tracks:[{url,name}], volume(0-100)}, ... }
+type MusicSlot = { tracks: { url: string; name?: string }[]; volume: number }
+let musicData: Record<string, MusicSlot> = {}
 const audioCache: Partial<Record<SoundKey, HTMLAudioElement>> = {}
 let radarLoopEl: HTMLAudioElement | null = null
 let radarInterval: ReturnType<typeof setInterval> | null = null
@@ -114,7 +117,10 @@ export function initSounds() {
     overridesLoaded = true
     fetch(`${API_URL}/api/admin/settings/public`)
       .then(r => r.json())
-      .then(d => { if (d && d.sounds) overrides = d.sounds })
+      .then(d => {
+        if (d && d.sounds) overrides = d.sounds
+        if (d && d.music) musicData = d.music
+      })
       .catch(() => {})
   }
   const handler = () => {
@@ -356,36 +362,73 @@ export function stopCountRoll() {
   if (countRollEl) { try { countRollEl.pause() } catch {}; countRollEl = null }
 }
 
-// ─── Arka plan müziği (turnuva fazları) — sadece MP3 yüklüyse; fade-in/out ile ───
+// ─── Arka plan müziği (turnuva fazları) — çoklu MP3, random çalar; fade-in/out ile ───
 let musicEl: HTMLAudioElement | null = null
 let musicKey: SoundKey | null = null
 let musicFadeIv: ReturnType<typeof setInterval> | null = null
-const MUSIC_VOL = 0.35
+let musicTargetVol = 0.35   // aktif alanın hedef sesi (0-1)
 
 function _clearMusicFade() { if (musicFadeIv) { clearInterval(musicFadeIv); musicFadeIv = null } }
 
-export function playMusic(key: SoundKey) {
-  if (!isBrowser() || isMuted()) { stopMusic(); return }
-  if (musicKey === key && musicEl) return   // zaten çalıyor
-  const url = overrideUrl(key)
-  stopMusic()                                // öncekini fade-out ile durdur
-  if (!url) { musicKey = null; return }       // MP3 yüklenmemişse müzik yok
+// Bir müzik alanının parça listesini ve ses seviyesini çöz.
+function _musicSlot(key: SoundKey): { urls: string[]; vol: number } {
+  const slot = musicData[key as string]
+  const raw = (slot && Array.isArray(slot.tracks)) ? slot.tracks : []
+  const urls = raw
+    .map(t => (typeof t === 'string' ? t : (t && t.url)))
+    .filter(Boolean)
+    .map(u => (u.startsWith('http') ? u : `${API_URL}${u}`))
+  // yüklü liste yoksa tekli ses override'ına düş (geriye dönük uyum)
+  if (urls.length === 0) {
+    const single = overrideUrl(key)
+    if (single) urls.push(single)
+  }
+  const vol = slot && typeof slot.volume === 'number'
+    ? Math.max(0, Math.min(1, slot.volume / 100))
+    : 0.35
+  return { urls, vol }
+}
+
+function _pickRandom(urls: string[], notUrl?: string): string {
+  if (urls.length === 1) return urls[0]
+  const pool = notUrl ? urls.filter(u => u !== notUrl) : urls
+  const list = pool.length ? pool : urls
+  const i = Math.floor(Math.random() * list.length)
+  return list[i]
+}
+
+function _playMusicUrl(url: string, urls: string[]) {
   try {
     unlockAudio()
     const el = new Audio(url)
-    el.loop = true
+    el.loop = false            // biten parçadan sonra rastgele yenisi
     el.volume = 0
+    el.onended = () => {
+      if (musicEl !== el) return          // alan değişti
+      const next = _pickRandom(urls, url)
+      _playMusicUrl(next, urls)
+    }
     el.play().catch(() => {})
     musicEl = el
-    musicKey = key
     _clearMusicFade()
-    musicFadeIv = setInterval(() => {          // fade-in
+    musicFadeIv = setInterval(() => {       // fade-in
       if (!musicEl) { _clearMusicFade(); return }
-      const v = Math.min(MUSIC_VOL, musicEl.volume + 0.03)
+      const v = Math.min(musicTargetVol, musicEl.volume + 0.03)
       musicEl.volume = v
-      if (v >= MUSIC_VOL) _clearMusicFade()
+      if (v >= musicTargetVol) _clearMusicFade()
     }, 45)
   } catch { /* yut */ }
+}
+
+export function playMusic(key: SoundKey) {
+  if (!isBrowser() || isMuted()) { stopMusic(); return }
+  if (musicKey === key && musicEl) return   // zaten bu alan çalıyor
+  const { urls, vol } = _musicSlot(key)
+  stopMusic()                                // öncekini fade-out ile durdur
+  if (urls.length === 0) { musicKey = null; return }
+  musicKey = key
+  musicTargetVol = vol
+  _playMusicUrl(_pickRandom(urls), urls)
 }
 
 export function stopMusic() {

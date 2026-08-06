@@ -401,6 +401,53 @@ export default function AdminPage() {
     }
   }
 
+  // ─ Müzik yönetimi (çoklu MP3, random)
+  const [musicUploading, setMusicUploading] = useState<string | null>(null)
+
+  const uploadMusic = async (key: string, files: FileList | File[]) => {
+    setMusicUploading(key)
+    try {
+      for (const file of Array.from(files)) {
+        const form = new FormData()
+        form.append('file', file)
+        await api.post(`/api/upload/music/${key}`, form, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        })
+      }
+      await loadSettings()
+    } catch (e: any) {
+      alert(e.response?.data?.detail || 'Yükleme hatası.')
+    } finally {
+      setMusicUploading(null)
+    }
+  }
+
+  const deleteMusicTrack = async (key: string, url: string) => {
+    setMusicUploading(key)
+    try {
+      await api.delete(`/api/upload/music/${key}`, { params: { url } })
+      await loadSettings()
+    } finally {
+      setMusicUploading(null)
+    }
+  }
+
+  const saveMusicVolume = async (key: string, volume: number) => {
+    const music = { ...(siteSettings?.music || {}) }
+    const slot = { ...(music[key] || { tracks: [] }) }
+    slot.volume = volume
+    music[key] = slot
+    await saveSettings('music', music)
+  }
+
+  const previewMusic = (url: string, volume: number) => {
+    try {
+      const a = new Audio(url.startsWith('http') ? url : `${API_URL}${url}`)
+      a.volume = Math.max(0, Math.min(1, (volume ?? 40) / 100))
+      a.play().catch(() => {})
+    } catch {}
+  }
+
   // Önizleme: MP3 yüklüyse onu, değilse sentetiği çal
   const previewSound = (key: SoundKey) => {
     const url = siteSettings?.sounds?.[key]
@@ -1694,6 +1741,93 @@ export default function AdminPage() {
                         ✗ Kaldır
                       </button>
                     )}
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* TURNUVA MÜZİKLERİ (çoklu MP3, random) */}
+          <div className="glass p-5 mt-5">
+            <h3 className="font-bold mb-1" style={{ color: 'var(--gold)' }}>🎵 Turnuva Müzikleri</h3>
+            <p className="text-xs mb-4" style={{ color: 'var(--text-dim)' }}>
+              Her alana birden fazla MP3 yükleyebilirsin (sürükle-bırak). O alandayken müzikler <b>rastgele</b> çalar,
+              biten parçadan sonra listeden yeni bir parça seçilir. Parçaları tek tek silebilir, ses seviyesini ayarlayabilirsin.
+              (MP3/WAV/OGG, en fazla 5MB.)
+            </p>
+            <div className="space-y-4">
+              {[
+                { key: 'music_wait',  label: '⏳ Bekleme Müziği', desc: 'Sonraki turnuva saati beklenirken' },
+                { key: 'music_lobby', label: '🚪 Lobi Müziği', desc: 'Lobiye geçilince, katılımcılar toplanırken' },
+                { key: 'music_round', label: '⚔️ Tur Arası Müziği', desc: 'Maç bittiğinde sonraki tur beklenirken' },
+              ].map(area => {
+                const slot = siteSettings.music?.[area.key] || { tracks: [], volume: 40 }
+                const tracks: any[] = Array.isArray(slot.tracks) ? slot.tracks : []
+                const vol = typeof slot.volume === 'number' ? slot.volume : 40
+                const busy = musicUploading === area.key
+                return (
+                  <div key={area.key} className="glass p-4">
+                    <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
+                      <div>
+                        <div className="font-bold text-sm">{area.label}</div>
+                        <div className="text-xs" style={{ color: 'var(--text-dim)' }}>{area.desc}</div>
+                      </div>
+                      <div className="text-xs" style={{ color: tracks.length ? '#4CAF50' : 'var(--text-dimmer)' }}>
+                        {tracks.length ? `🎵 ${tracks.length} parça (random)` : '🔇 Müzik yok'}
+                      </div>
+                    </div>
+
+                    {/* Sürükle-bırak yükleme alanı */}
+                    <label
+                      onDragOver={e => { e.preventDefault() }}
+                      onDrop={e => {
+                        e.preventDefault()
+                        const files = e.dataTransfer?.files
+                        if (files && files.length) uploadMusic(area.key, files)
+                      }}
+                      className="block text-center py-4 px-3 rounded-lg cursor-pointer mb-3"
+                      style={{ border: '2px dashed rgba(255,215,0,0.35)', background: 'rgba(255,215,0,0.06)' }}>
+                      <div className="text-sm font-bold" style={{ color: 'var(--gold)' }}>
+                        {busy ? '⏳ Yükleniyor...' : '⬆ MP3 sürükle-bırak veya tıkla'}
+                      </div>
+                      <div className="text-xs mt-1" style={{ color: 'var(--text-dim)' }}>Birden fazla dosya seçebilirsin</div>
+                      <input type="file" accept="audio/mpeg,audio/mp3,audio/wav,audio/ogg" hidden multiple
+                        disabled={busy}
+                        onChange={e => { const fs = e.target.files; if (fs && fs.length) uploadMusic(area.key, fs); e.target.value = '' }} />
+                    </label>
+
+                    {/* Parça listesi */}
+                    {tracks.length > 0 && (
+                      <div className="space-y-2 mb-3">
+                        {tracks.map((t, i) => {
+                          const url = typeof t === 'string' ? t : t?.url
+                          const name = typeof t === 'string' ? url.split('/').pop() : (t?.name || url.split('/').pop())
+                          return (
+                            <div key={url + i} className="flex items-center gap-2 p-2 rounded-lg" style={{ background: 'rgba(255,255,255,0.04)' }}>
+                              <span className="text-xs" style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                🎵 {name}
+                              </span>
+                              <button onClick={() => previewMusic(url, vol)}
+                                className="text-xs px-2 py-1 rounded font-bold"
+                                style={{ background: 'rgba(79,195,247,0.2)', color: 'var(--blue)' }}>▶</button>
+                              <button onClick={() => deleteMusicTrack(area.key, url)} disabled={busy}
+                                className="text-xs px-2 py-1 rounded font-bold"
+                                style={{ background: 'rgba(244,67,54,0.2)', color: '#F44336' }}>✗</button>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    )}
+
+                    {/* Ses seviyesi */}
+                    <div className="flex items-center gap-3">
+                      <span className="text-xs" style={{ color: 'var(--text-dim)' }}>🔉 Ses</span>
+                      <input key={area.key + '-' + vol} type="range" min={0} max={100} step={5} defaultValue={vol}
+                        style={{ flex: 1 }}
+                        onMouseUp={e => saveMusicVolume(area.key, parseInt((e.target as HTMLInputElement).value))}
+                        onTouchEnd={e => saveMusicVolume(area.key, parseInt((e.target as HTMLInputElement).value))} />
+                      <span className="text-xs font-bold" style={{ minWidth: 34, textAlign: 'right' }}>{vol}%</span>
+                    </div>
                   </div>
                 )
               })}

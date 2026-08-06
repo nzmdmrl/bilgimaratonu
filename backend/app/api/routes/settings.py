@@ -47,6 +47,7 @@ async def get_public_settings(db: AsyncSession = Depends(get_db)):
     sounds = await get_settings(db, "sounds")
     titles = await get_settings(db, "titles")
     ui = await get_settings(db, "ui")
+    music = await get_settings(db, "music")
     return {
         "modules": modules,
         "marathon_interval": marathon.get("interval_minutes", 15),
@@ -54,4 +55,5 @@ async def get_public_settings(db: AsyncSession = Depends(get_db)):
         "sounds": sounds,
         "titles": titles,
         "ui": ui,
+        "music": music,
     }

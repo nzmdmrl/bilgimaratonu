@@ -31,6 +31,13 @@ DEFAULT_SETTINGS = {
         "default_theme": "dark",       # Varsayılan tema: dark(gece) | light(gündüz) | auto
     },
 
+    # ─ Turnuva faz müzikleri (çoklu MP3, random çalar) — {key: {tracks:[{url,name}], volume}}
+    "music": {
+        "music_wait":  {"tracks": [], "volume": 40},
+        "music_lobby": {"tracks": [], "volume": 40},
+        "music_round": {"tracks": [], "volume": 40},
+    },
+
     # ─ Maç Ayarları
     "match": {
         "total_questions": 15,

@@ -164,6 +164,77 @@ async def upload_sound(
     return {"ok": True, "sound_key": sound_key, "url": url}
 
 
+MUSIC_KEYS = {"music_wait", "music_lobby", "music_round"}
+
+
+@router.post("/music/{music_key}")
+async def upload_music(
+    music_key: str,
+    file: UploadFile = File(...),
+    db: AsyncSession = Depends(get_db),
+    admin: User = Depends(get_current_admin),
+):
+    """Bir müzik alanına MP3 EKLE (çoklu, random çalar). (Admin)"""
+    if music_key not in MUSIC_KEYS:
+        raise HTTPException(status_code=400, detail="Geçersiz müzik anahtarı.")
+    if file.content_type not in SOUND_ALLOWED:
+        raise HTTPException(status_code=400, detail="Sadece MP3/WAV/OGG yüklenebilir.")
+    contents = await file.read()
+    if len(contents) > SOUND_MAX_SIZE:
+        raise HTTPException(status_code=400, detail="Dosya 5MB'dan büyük olamaz.")
+
+    ext = (file.filename or "muzik.mp3").split(".")[-1].lower()
+    filename = f"{music_key}_{uuid.uuid4().hex[:8]}.{ext}"
+    os.makedirs(SOUND_DIR, exist_ok=True)
+    with open(os.path.join(SOUND_DIR, filename), "wb") as f:
+        f.write(contents)
+    url = f"/uploads/sounds/{filename}"
+
+    from app.services.settings import get_settings, set_settings
+    from app.services.settings_cache import invalidate_cache
+    music = dict(await get_settings(db, "music"))
+    slot = dict(music.get(music_key) or {})
+    tracks = list(slot.get("tracks") or [])
+    tracks.append({"url": url, "name": (file.filename or filename)[:60]})
+    slot["tracks"] = tracks
+    if "volume" not in slot:
+        slot["volume"] = 40
+    music[music_key] = slot
+    await set_settings(db, "music", music)
+    invalidate_cache("music")
+    return {"ok": True, "music_key": music_key, "tracks": tracks}
+
+
+@router.delete("/music/{music_key}")
+async def delete_music_track(
+    music_key: str,
+    url: str,
+    db: AsyncSession = Depends(get_db),
+    admin: User = Depends(get_current_admin),
+):
+    """Müzik alanından bir parçayı kaldır. (Admin)"""
+    if music_key not in MUSIC_KEYS:
+        raise HTTPException(status_code=400, detail="Geçersiz müzik anahtarı.")
+    from app.services.settings import get_settings, set_settings
+    from app.services.settings_cache import invalidate_cache
+    music = dict(await get_settings(db, "music"))
+    slot = dict(music.get(music_key) or {})
+    tracks = [t for t in (slot.get("tracks") or []) if (t.get("url") if isinstance(t, dict) else t) != url]
+    slot["tracks"] = tracks
+    music[music_key] = slot
+    await set_settings(db, "music", music)
+    invalidate_cache("music")
+    # dosyayı da sil (opsiyonel)
+    try:
+        fn = url.split("/")[-1]
+        p = os.path.join(SOUND_DIR, fn)
+        if os.path.exists(p):
+            os.remove(p)
+    except Exception:
+        pass
+    return {"ok": True, "tracks": tracks}
+
+
 @router.delete("/sound/{sound_key}")
 async def delete_sound(
     sound_key: str,
