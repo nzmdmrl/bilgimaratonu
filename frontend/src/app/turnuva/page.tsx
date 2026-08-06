@@ -3,7 +3,7 @@ import { useEffect, useState, useRef } from 'react'
 import api from '@/lib/api'
 import { useAuthStore } from '@/lib/store'
 import Link from 'next/link'
-import { playSound, playCountdownTick } from '@/lib/sound'
+import { playSound, playCountdownTick, startCountRoll, stopCountRoll } from '@/lib/sound'
 import { avatarSrc } from '@/lib/avatar'
 import Bracket, { BracketData } from './Bracket'
 
@@ -61,6 +61,23 @@ export default function MaratonPage() {
   const [opponentCorrectAnswer, setOpponentCorrectAnswer] = useState<string | null>(null)
   const [matchStatus, setMatchStatus] = useState('')
   const [matchPopup, setMatchPopup] = useState<any>(null)
+  const [matchXp, setMatchXp] = useState(0)      // maç sonu sesli sayaç değeri
+  const [finalXp, setFinalXp] = useState<number | null>(null)  // turnuva bitiş dereceye göre XP (sayaçlı)
+
+  // XP'yi 0'dan hedefe sesli say (dırdır + çlink)
+  const animateCount = (target: number, setter: (n: number) => void) => {
+    setter(0)
+    if (!target) return
+    startCountRoll()
+    const start = performance.now()
+    const step = (t: number) => {
+      const p = Math.min(1, (t - start) / 1100)
+      setter(Math.round(p * target))
+      if (p < 1) requestAnimationFrame(step)
+      else { stopCountRoll(); playSound('count_ding') }
+    }
+    requestAnimationFrame(step)
+  }
   const [champions, setChampions] = useState<any[]>([])
   const [marathonStats, setMarathonStats] = useState<any>(null)
   const wsRef = useRef<WebSocket | null>(null)
@@ -346,7 +363,10 @@ export default function MaratonPage() {
         playSound(msg.won ? 'win' : 'lose')
         // Finalde kupa/madalya kazanılır — rozet sesi
         if (wasFinal) setTimeout(() => playSound('badge'), 900)
-        setTimeout(() => setMatchPopup(null), 4000)
+        // Maç XP'sini sesli say
+        if (msg.xp) setTimeout(() => animateCount(msg.xp, setMatchXp), 700)
+        else setMatchXp(0)
+        setTimeout(() => setMatchPopup(null), 4500)
       }
         if (matchTimeoutRef.current) clearTimeout(matchTimeoutRef.current)
         if (!msg.won) {
@@ -357,6 +377,11 @@ export default function MaratonPage() {
         }
         matchTimeoutRef.current = setTimeout(() => { setShowMatch(false); setQuestion(null) }, 4000)
         if (marathon) startPolling(marathon.id)
+        break
+      case 'final_xp':
+        // Dereceye göre turnuva bitiş XP'si — sesli say
+        setFinalXp(0)
+        setTimeout(() => animateCount(msg.xp || 0, setFinalXp), 400)
         break
       case 'marathon_end':
         setChampion(msg.champion)
@@ -410,6 +435,9 @@ export default function MaratonPage() {
         <div className="text-7xl mb-4">{matchPopup.icon}</div>
         <h2 className="text-3xl font-black mb-2" style={{ color: matchPopup.color }}>{matchPopup.title}</h2>
         <p className="text-base" style={{ color: 'var(--text-dim)' }}>{matchPopup.text}</p>
+        {matchXp > 0 && (
+          <div className="font-black mt-4" style={{ fontSize: 22, color: 'var(--gold)' }}>⭐ +{matchXp} XP</div>
+        )}
       </div>
     )
   }
@@ -420,6 +448,9 @@ export default function MaratonPage() {
         <div className="text-6xl mb-4">🏆</div>
         <h1 className="text-3xl font-bold mb-2">Şampiyon!</h1>
         <p className="text-2xl text-yellow-400 font-bold">{champion}</p>
+        {finalXp !== null && finalXp > 0 && (
+          <div className="font-black mt-4" style={{ fontSize: 24, color: 'var(--gold)' }}>⭐ +{finalXp} XP kazandın!</div>
+        )}
         <Link href="/" className="mt-8 text-blue-400 underline">Ana Sayfaya Dön</Link>
       </div>
     )
@@ -452,6 +483,15 @@ export default function MaratonPage() {
 
     return (
       <div className="min-h-screen flex flex-col p-3" style={{ maxWidth: 720, margin: '0 auto' }}>
+
+        {/* Tabloyu gör */}
+        <div className="flex justify-center mb-2">
+          <button onClick={() => { if (marathon?.id) loadBracket(marathon.id); setBracketOpen(true) }}
+            className="text-sm font-bold px-4 py-1.5 rounded-full"
+            style={{ background: 'rgba(255,215,0,0.15)', color: 'var(--gold)', border: '1px solid rgba(255,215,0,0.35)' }}>
+            🗺 Tabloyu Gör
+          </button>
+        </div>
 
         {/* Skor bar */}
         <div className="glass p-4 mb-3 flex items-center justify-between rounded-2xl"
@@ -612,11 +652,6 @@ export default function MaratonPage() {
           </span>
           {statusMsg && <span className="text-sm text-gray-300">{statusMsg}</span>}
         </div>
-        {lobbyCountdown > 0 && marathon?.status === 'waiting' && (
-          <div className="mt-2 text-center">
-            <span className="text-yellow-400 font-bold text-lg">🏁 {lobbyCountdown} saniye içinde başlıyor!</span>
-          </div>
-        )}
         {marathon?.status === 'in_progress' && roundLabel && (
           <div className="mt-3 text-center rounded-xl py-2" style={{
             background: 'rgba(255,215,0,0.1)', border: '1px solid rgba(255,215,0,0.3)',

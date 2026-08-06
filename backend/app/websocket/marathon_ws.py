@@ -379,6 +379,22 @@ async def run_match(
     else:
         winner_id = random.choice([p1_id, p2_id])
 
+    # Her maç sonunda oyunculara XP (admin ayarı)
+    xp_match = 5
+    try:
+        from sqlalchemy import text as _mt
+        async with AsyncSessionLocal() as _db:
+            from app.services.settings import get_settings
+            _mc = await get_settings(_db, "marathon")
+            xp_match = int(_mc.get("xp_per_match", 5))
+            if xp_match:
+                for uid, is_human in [(p1_id, p1_is_human), (p2_id, p2_is_human)]:
+                    if is_human:
+                        await _db.execute(_mt("UPDATE users SET xp = xp + :xp WHERE id = :uid"), {"xp": xp_match, "uid": str(uid)})
+                await _db.commit()
+    except Exception as e:
+        print(f"[Engine] mac xp hatasi: {e}")
+
     for uid, is_human, my_s, opp_s in [
         (p1_id, p1_is_human, p1_score, p2_score),
         (p2_id, p2_is_human, p2_score, p1_score),
@@ -393,6 +409,7 @@ async def run_match(
                 "my_score": my_s,
                 "opp_score": opp_s,
                 "winner_id": winner_id,
+                "xp": xp_match,
             })
 
     marathon_manager.clear_queues(marathon_id, match_id)
@@ -688,6 +705,8 @@ async def finish_marathon(marathon_id: str):
                 p.status = MarathonParticipantStatus.champion
                 p.xp_earned = xp1
                 await _give_xp(p.user_id, xp1)
+                try: await marathon_manager.send(marathon_id, str(p.user_id), {"type": "final_xp", "xp": xp1, "rank": 1})
+                except Exception: pass
                 try:
                     await award_trophy_or_medal(db, str(p.user_id), "marathon", str(marathon_id)[:8], rank=1)
                     db.add(Notification(user_id=str(p.user_id), type="trophy", title="🏆 Turnuva Şampiyonu!", message=f"Turnuvayı kazandın, kupa senin! +{xp1} XP", data={"rank": 1, "marathon_id": str(marathon_id)}))
@@ -697,6 +716,8 @@ async def finish_marathon(marathon_id: str):
                 p.status = MarathonParticipantStatus.second
                 p.xp_earned = xp2
                 await _give_xp(p.user_id, xp2)
+                try: await marathon_manager.send(marathon_id, str(p.user_id), {"type": "final_xp", "xp": xp2, "rank": 2})
+                except Exception: pass
                 try:
                     await award_trophy_or_medal(db, str(p.user_id), "marathon", str(marathon_id)[:8], rank=2)
                     db.add(Notification(user_id=str(p.user_id), type="medal", title="🥈 Turnuva İkincisi!", message=f"Turnuvada 2. oldun, madalya kazandın! +{xp2} XP", data={"rank": 2, "marathon_id": str(marathon_id)}))
@@ -717,6 +738,8 @@ async def finish_marathon(marathon_id: str):
                 for tp in _thirds:
                     tp.xp_earned = xp3
                     await _give_xp(tp.user_id, xp3)
+                    try: await marathon_manager.send(marathon_id, str(tp.user_id), {"type": "final_xp", "xp": xp3, "rank": 3})
+                    except Exception: pass
                     await award_trophy_or_medal(db, str(tp.user_id), "marathon", str(marathon_id)[:8], rank=3)
                     db.add(Notification(user_id=str(tp.user_id), type="medal", title="🥉 Turnuva Üçüncüsü!", message=f"Turnuvada 3. oldun! +{xp3} XP", data={"rank": 3, "marathon_id": str(marathon_id)}))
         except Exception as _e:

@@ -2227,6 +2227,12 @@ export default function AdminPage() {
                 }))}
               />
             </div>
+            <div className="mt-4" style={{ maxWidth: 160 }}>
+              <label className="text-xs mb-1 block" style={{ color: 'var(--text-dim)' }}>Maç Başına XP</label>
+              <input type="number" className="input-field w-full"
+                value={siteSettings.marathon?.xp_per_match ?? 5}
+                onChange={e => setSiteSettings((prev: any) => ({ ...prev, marathon: { ...prev.marathon, xp_per_match: parseInt(e.target.value) } }))} />
+            </div>
             <div className="text-sm font-bold mt-4 mb-2" style={{ color: 'var(--gold)' }}>Dereceye Göre XP</div>
             <div className="grid grid-cols-3 gap-3" style={{ maxWidth: 320 }}>
               {[
