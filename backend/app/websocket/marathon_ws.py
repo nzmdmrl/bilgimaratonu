@@ -419,7 +419,38 @@ async def run_match(
     return winner_id
 
 
+async def _abort_marathon(marathon_id: str, reason: str = ""):
+    """Engine çökerse maratonu güvenle bitir — donma ve gelecek turnuvaların bloklanması önlenir."""
+    try:
+        async with AsyncSessionLocal() as db:
+            marathon = await db.get(Marathon, marathon_id)
+            if marathon and marathon.status != MarathonStatus.finished:
+                marathon.status = MarathonStatus.finished
+                marathon.finished_at = datetime.utcnow()
+                await db.commit()
+        try:
+            await marathon_manager.broadcast(marathon_id, {
+                "type": "marathon_error",
+                "message": "Turnuva teknik bir nedenle sonlandırıldı. Bir sonraki turnuvaya katılabilirsiniz.",
+            })
+        except Exception:
+            pass
+    except Exception as _e:
+        print(f"[Engine] _abort_marathon hatası: {_e}")
+
+
 async def run_marathon_engine(marathon_id: str):
+    """Engine sarmalayıcı — çökme olursa maraton donmasın diye MUTLAKA bitir."""
+    try:
+        await _run_marathon_engine_impl(marathon_id)
+    except Exception as e:
+        import traceback
+        print(f"[Engine] KRİTİK HATA ({marathon_id[:8]}): {e}")
+        traceback.print_exc()
+        await _abort_marathon(marathon_id, str(e))
+
+
+async def _run_marathon_engine_impl(marathon_id: str):
     print(f"[Engine] Maraton başladı: {marathon_id[:8]}")
 
     async with AsyncSessionLocal() as db:

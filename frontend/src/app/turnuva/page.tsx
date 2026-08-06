@@ -463,6 +463,21 @@ export default function MaratonPage() {
           init()
         }, 8000)
         break
+      case 'marathon_error':
+        // Turnuva teknik nedenle sonlandı — kullanıcı donmuş ekranda kalmasın, lobiye dön
+        setStatusMsg(msg.message || 'Turnuva sonlandırıldı. Bir sonraki turnuvaya katılabilirsiniz.')
+        setShowMatch(false)
+        setQuestion(null)
+        setTimeout(() => {
+          setChampion('')
+          setMarathon(null)
+          setParticipants([])
+          setJoined(false)
+          setEliminated(false)
+          setStatusMsg('')
+          init()
+        }, 5000)
+        break
       case 'participants':
         if (msg.participants) setParticipants(msg.participants)
         break

@@ -63,6 +63,25 @@ async def create_and_run_marathon():
     questions_per_round = settings["questions_per_round"]
 
     async with AsyncSessionLocal() as db:
+        # Bayat (donmuş) maratonları temizle — aksi halde gelecek tüm turnuvaları bloklar.
+        # Bir turnuva en fazla ~15 dk sürer; created_at 25 dk öncesiyse takılmış demektir.
+        try:
+            stale_cutoff = datetime.utcnow() - timedelta(minutes=25)
+            stale = (await db.execute(
+                select(Marathon).where(
+                    Marathon.status.in_([MarathonStatus.waiting, MarathonStatus.in_progress]),
+                    Marathon.created_at < stale_cutoff,
+                )
+            )).scalars().all()
+            for m in stale:
+                m.status = MarathonStatus.finished
+                m.finished_at = datetime.utcnow()
+                print(f"[Scheduler] Bayat maraton bitirildi: {str(m.id)[:8]}")
+            if stale:
+                await db.commit()
+        except Exception as e:
+            print(f"[Scheduler] bayat temizleme hatası: {e}")
+
         # Kontrol + olusturma ayni session'da (race condition onlenir)
         existing = await db.execute(
             select(Marathon).where(
@@ -112,6 +131,44 @@ async def create_and_run_marathon():
                 print(f"[Scheduler] Güvenlik doldurma: +{len(bots)} bot")
     except Exception as e:
         print(f"[Scheduler] güvenlik doldurma hatası: {e}")
+
+    # Bracket'i temiz tut: katılımcı sayısını 2'nin kuvvetine indir (bye/tek-sayı freeze'i önlenir).
+    # Bot yetmediyse (ör. 27 kişi) fazla BOTLAR atılır → 16 kişiyle temiz tek-eleme başlar. İnsan asla atılmaz.
+    try:
+        async with AsyncSessionLocal() as db:
+            parts = (await db.execute(
+                select(MarathonParticipant).where(MarathonParticipant.marathon_id == marathon_id)
+            )).scalars().all()
+            total = len(parts)
+            # en büyük 2^k <= total
+            pow2 = 1
+            while pow2 * 2 <= total:
+                pow2 *= 2
+            if total > pow2 and pow2 >= 2:
+                # İnsanları koru; sadece botları çıkar
+                human_count = 0
+                bot_parts = []  # (participant, elo)
+                for p in parts:
+                    u = await db.get(User, p.user_id)
+                    if u and u.is_bot:
+                        bot_parts.append((p, u.elo_rating or 1000))
+                    else:
+                        human_count += 1
+                # hedef pow2, insan sayısından küçükse insanları kesme — olduğu gibi bırak
+                if human_count <= pow2:
+                    to_remove = total - pow2
+                    # en güçlü botları önce at (zayıf botlar kalsın → oyuncuya şans)
+                    bot_parts.sort(key=lambda t: t[1], reverse=True)
+                    removed = 0
+                    for p, _elo in bot_parts:
+                        if removed >= to_remove:
+                            break
+                        await db.delete(p)
+                        removed += 1
+                    await db.commit()
+                    print(f"[Scheduler] Bracket düzeltildi: {total} → {pow2} (−{removed} bot)")
+    except Exception as e:
+        print(f"[Scheduler] pow2 düzeltme hatası: {e}")
 
     print(f"[Scheduler] Maraton başlatılıyor: {marathon_id[:8]}")
     asyncio.ensure_future(run_marathon_engine(marathon_id))
