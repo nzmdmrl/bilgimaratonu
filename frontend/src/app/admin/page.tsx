@@ -2227,6 +2227,21 @@ export default function AdminPage() {
                 }))}
               />
             </div>
+            <div className="text-sm font-bold mt-4 mb-2" style={{ color: 'var(--gold)' }}>Dereceye Göre XP</div>
+            <div className="grid grid-cols-3 gap-3" style={{ maxWidth: 320 }}>
+              {[
+                { k: 'xp_1', label: '🏆 1. XP', def: 500 },
+                { k: 'xp_2', label: '🥈 2. XP', def: 200 },
+                { k: 'xp_3', label: '🥉 3. XP', def: 100 },
+              ].map(f => (
+                <div key={f.k}>
+                  <label className="text-xs mb-1 block" style={{ color: 'var(--text-dim)' }}>{f.label}</label>
+                  <input type="number" className="input-field w-full"
+                    value={siteSettings.marathon?.[f.k] ?? f.def}
+                    onChange={e => setSiteSettings((prev: any) => ({ ...prev, marathon: { ...prev.marathon, [f.k]: parseInt(e.target.value) } }))} />
+                </div>
+              ))}
+            </div>
             <button onClick={() => saveSettings('marathon', siteSettings.marathon)}
               disabled={settingsSaving}
               className="btn-gold mt-4">

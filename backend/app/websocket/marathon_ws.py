@@ -6,7 +6,7 @@ import random
 from datetime import datetime
 from typing import Dict
 from fastapi import WebSocket
-from sqlalchemy import select
+from sqlalchemy import select, func
 from app.core.database import AsyncSessionLocal
 from app.core.security import decode_token
 from app.models.marathon import (
@@ -670,27 +670,57 @@ async def finish_marathon(marathon_id: str):
             )
         )
         finalists = result.scalars().all()
+
+        # XP ayarları (admin)
+        from app.services.settings import get_settings
+        from app.models.notification import Notification
+        from app.services.achievement import award_trophy_or_medal
+        from sqlalchemy import text as _sqltext
+        _mc = await get_settings(db, "marathon")
+        xp1 = int(_mc.get("xp_1", 500)); xp2 = int(_mc.get("xp_2", 200)); xp3 = int(_mc.get("xp_3", 100))
+
+        async def _give_xp(uid, amount):
+            if amount:
+                await db.execute(_sqltext("UPDATE users SET xp = xp + :xp WHERE id = :uid"), {"xp": amount, "uid": str(uid)})
+
         for i, p in enumerate(finalists):
             if i == 0:
                 p.status = MarathonParticipantStatus.champion
-                p.xp_earned = 500
+                p.xp_earned = xp1
+                await _give_xp(p.user_id, xp1)
                 try:
-                    from app.services.achievement import award_trophy_or_medal
-                    from app.models.notification import Notification
                     await award_trophy_or_medal(db, str(p.user_id), "marathon", str(marathon_id)[:8], rank=1)
-                    db.add(Notification(user_id=str(p.user_id), type="trophy", title="🏆 Turnuva Şampiyonu!", message="Turnuvayı kazandın, kupa senin!", data={"rank": 1, "marathon_id": str(marathon_id)}))
+                    db.add(Notification(user_id=str(p.user_id), type="trophy", title="🏆 Turnuva Şampiyonu!", message=f"Turnuvayı kazandın, kupa senin! +{xp1} XP", data={"rank": 1, "marathon_id": str(marathon_id)}))
                 except Exception as _e:
                     print(f"[Engine] kupa hatasi: {_e}")
             elif i == 1:
                 p.status = MarathonParticipantStatus.second
-                p.xp_earned = 200
+                p.xp_earned = xp2
+                await _give_xp(p.user_id, xp2)
                 try:
-                    from app.services.achievement import award_trophy_or_medal
-                    from app.models.notification import Notification
                     await award_trophy_or_medal(db, str(p.user_id), "marathon", str(marathon_id)[:8], rank=2)
-                    db.add(Notification(user_id=str(p.user_id), type="medal", title="🥈 Turnuva İkincisi!", message="Turnuvada 2. oldun, madalya kazandın!", data={"rank": 2, "marathon_id": str(marathon_id)}))
+                    db.add(Notification(user_id=str(p.user_id), type="medal", title="🥈 Turnuva İkincisi!", message=f"Turnuvada 2. oldun, madalya kazandın! +{xp2} XP", data={"rank": 2, "marathon_id": str(marathon_id)}))
                 except Exception as _e:
                     print(f"[Engine] madalya hatasi: {_e}")
+
+        # 3.'ler: en son elenen tur (yarı final) kaybedenleri
+        try:
+            _semi = (await db.execute(select(func.max(MarathonParticipant.eliminated_at_round)).where(
+                MarathonParticipant.marathon_id == marathon_id,
+                MarathonParticipant.eliminated_at_round != None,
+            ))).scalar()
+            if _semi:
+                _thirds = (await db.execute(select(MarathonParticipant).where(
+                    MarathonParticipant.marathon_id == marathon_id,
+                    MarathonParticipant.eliminated_at_round == _semi,
+                ))).scalars().all()
+                for tp in _thirds:
+                    tp.xp_earned = xp3
+                    await _give_xp(tp.user_id, xp3)
+                    await award_trophy_or_medal(db, str(tp.user_id), "marathon", str(marathon_id)[:8], rank=3)
+                    db.add(Notification(user_id=str(tp.user_id), type="medal", title="🥉 Turnuva Üçüncüsü!", message=f"Turnuvada 3. oldun! +{xp3} XP", data={"rank": 3, "marathon_id": str(marathon_id)}))
+        except Exception as _e:
+            print(f"[Engine] 3.luk hatasi: {_e}")
 
         marathon = await db.get(Marathon, marathon_id)
         if marathon:

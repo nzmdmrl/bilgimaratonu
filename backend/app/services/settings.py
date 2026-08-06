@@ -65,6 +65,9 @@ DEFAULT_SETTINGS = {
         "questions_per_round": 3,
         "time_per_question": 15,
         "interval_minutes": 15,
+        "xp_1": 500,   # Şampiyon (1.) XP
+        "xp_2": 200,   # 2. XP
+        "xp_3": 100,   # 3. XP (yarı final kaybedenleri)
         "round_difficulties": {
             "1": "easy",
             "2": "easy",
