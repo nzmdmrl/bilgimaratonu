@@ -169,7 +169,7 @@ async def run_match(
     p1_id: str, p2_id: str,
     questions: list, round_num: int,
     p1_is_human: bool, p2_is_human: bool,
-    p2_elo: int, time_limit: int, p1_elo: int = 1000,
+    p2_elo: int, time_limit: int, p1_elo: int = 1000, is_final: bool = False,
 ) -> str:
     from app.services.bot import bot_answer as get_bot_answer, bot_response_time
     from app.services.elo import get_points, POINTS
@@ -412,6 +412,7 @@ async def run_match(
                 "opp_score": opp_s,
                 "winner_id": winner_id,
                 "xp": xp_match,
+                "is_final": is_final,
             })
 
     marathon_manager.clear_queues(marathon_id, match_id)
@@ -609,6 +610,7 @@ async def run_marathon_engine(marathon_id: str):
                 questions=questions, round_num=round_num,
                 p1_is_human=m["p1_is_human"], p2_is_human=m["p2_is_human"],
                 p2_elo=m["p2_elo"], time_limit=time_limit, p1_elo=m["p1_elo"],
+                is_final=(len(active) == 2),
             ) for m in match_infos
         ], return_exceptions=True)
 

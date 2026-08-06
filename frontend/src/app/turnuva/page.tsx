@@ -401,7 +401,7 @@ export default function MaratonPage() {
         if (timerRef.current) clearInterval(timerRef.current)
         break
       case 'match_end': {
-        const wasFinal = roundLabel === 'Final'
+        const wasFinal = !!msg.is_final || roundLabel === 'Final'
         if (msg.won) {
           setMatchPopup({
             icon: wasFinal ? '🏆' : '🎉',
@@ -412,9 +412,9 @@ export default function MaratonPage() {
         } else {
           setMatchPopup({
             icon: wasFinal ? '🥈' : '❌',
-            title: wasFinal ? 'İkinci Oldunuz!' : 'Elendiniz',
-            text: wasFinal ? 'Madalyanız profilinize eklendi.' : 'Turnuva sizin için burada bitti.',
-            color: wasFinal ? 'var(--text-dim)' : '#F44336',
+            title: wasFinal ? '2. Oldunuz! Tebrikler 👏' : 'Elendiniz',
+            text: wasFinal ? 'Finalde 2. oldun — madalya + XP kazandın!' : 'Turnuva sizin için burada bitti.',
+            color: wasFinal ? '#B0BEC5' : '#F44336',
           })
         }
         playSound(msg.won ? 'win' : 'lose')
@@ -424,11 +424,14 @@ export default function MaratonPage() {
         if (msg.xp) setTimeout(() => animateCount(msg.xp, setMatchXp), 700)
         else setMatchXp(0)
         setTimeout(() => setMatchPopup(null), 4500)
-      }
         if (matchTimeoutRef.current) clearTimeout(matchTimeoutRef.current)
-        if (!msg.won) {
+        if (!msg.won && !wasFinal) {
           setEliminated(true)
           setStatusMsg('❌ Elendi. Diğer maçları tablodan izleyebilirsiniz.')
+          setMatchStatus('')
+        } else if (!msg.won && wasFinal) {
+          // Finalde 2. oldu — elenmedi, tebrik + XP (celebration ekranı gelecek)
+          setStatusMsg('🥈 2. oldun! Tebrikler')
           setMatchStatus('')
         } else {
           setStatusMsg('✅ Kazandın! Sonraki tur bekleniyor...')
@@ -438,6 +441,7 @@ export default function MaratonPage() {
         matchTimeoutRef.current = setTimeout(() => { setShowMatch(false); setQuestion(null) }, 4500)
         if (marathon) { startPolling(marathon.id); loadBracket(marathon.id) }
         break
+      }
       case 'final_xp':
         // Dereceye göre turnuva bitiş XP'si — sesli say
         setFinalRank(msg.rank || null)
@@ -515,6 +519,12 @@ export default function MaratonPage() {
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
         overflow: 'hidden', padding: 24, textAlign: 'center',
       }}>
+        {/* Arka planda karartılmış turnuva şeması */}
+        {bracket && (
+          <div style={{ position: 'absolute', inset: 0, opacity: 0.12, filter: 'blur(1px)', pointerEvents: 'none', overflow: 'hidden', zIndex: 0 }}>
+            <Bracket data={bracket} me={user?.username} />
+          </div>
+        )}
         {/* konfeti (şampiyon/2. için) */}
         {(iAmChamp || iAmSecond) && Array.from({ length: iAmChamp ? 48 : 24 }).map((_, i) => {
           const colors = ['#FFD700', '#FF7043', '#4FC3F7', '#81C784', '#E91E63', '#AB47BC', '#FFCA28']
