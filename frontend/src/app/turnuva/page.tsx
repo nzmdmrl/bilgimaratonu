@@ -177,7 +177,7 @@ export default function MaratonPage() {
         } else {
           // Katılımcı değilsem — in_progress ise katılamaz
           if (m.status === 'in_progress') {
-            setStatusMsg('Turnuva devam ediyor — sonraki turnuvaya katılabilirsiniz.')
+            setStatusMsg('🏃 Turnuva devam ediyor — izleyebilirsin')
             setJoined(false)
             // Sonraki maratonu göster
             const nr = await api.get('/api/marathon/next')
@@ -807,6 +807,17 @@ export default function MaratonPage() {
               </div>
             </div>
           )}
+        </div>
+      )}
+
+      {/* Turnuvayı kaçırdıysan (devam ediyor) — sonraki turnuva saati */}
+      {marathon && !joined && marathon.status === 'in_progress' && (
+        <div className="rounded-2xl p-4 mb-4 text-center" style={{ background: 'rgba(255,215,0,0.12)', border: '1px solid rgba(255,215,0,0.4)' }}>
+          <div className="text-sm" style={{ color: 'var(--text-dim)' }}>Bu turnuvayı kaçırdın — şu an devam ediyor.</div>
+          <div className="font-black mt-1" style={{ fontSize: 24, color: 'var(--gold)' }}>
+            ⏰ Sonraki Turnuva: {nextTime || '—'}
+          </div>
+          <div className="text-xs mt-1" style={{ color: 'var(--text-dim)' }}>O saatte lobide "Katıl" ile girebilirsin.</div>
         </div>
       )}
 
