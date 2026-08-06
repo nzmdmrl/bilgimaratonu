@@ -23,8 +23,30 @@ async def get_marathon_settings() -> dict:
     }
 
 
+async def cleanup_orphaned_marathons():
+    """Backend başlarken çalışır. Process yeni başladığı için hiçbir maratonun
+    canlı task'ı (fill_lobby/engine) olamaz — restart sırasında lobide/oyunda
+    donmuş kalan maratonları bitir. Yoksa donmuş lobi tüm turnuvaları bloklar."""
+    try:
+        async with AsyncSessionLocal() as db:
+            orphans = (await db.execute(
+                select(Marathon).where(
+                    Marathon.status.in_([MarathonStatus.waiting, MarathonStatus.in_progress])
+                )
+            )).scalars().all()
+            for m in orphans:
+                m.status = MarathonStatus.finished
+                m.finished_at = datetime.utcnow()
+            if orphans:
+                await db.commit()
+                print(f"[Scheduler] Başlangıç: {len(orphans)} orphan maraton temizlendi (restart sonrası).")
+    except Exception as e:
+        print(f"[Scheduler] orphan temizleme hatası: {e}")
+
+
 async def marathon_scheduler():
     print("[Scheduler] Maraton zamanlayıcı başladı.")
+    await cleanup_orphaned_marathons()   # restart sonrası donmuş lobileri temizle
     await asyncio.sleep(5)
 
     while True:

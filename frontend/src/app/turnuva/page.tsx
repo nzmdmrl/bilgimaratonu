@@ -227,13 +227,22 @@ export default function MaratonPage() {
     if (pollRef.current) clearInterval(pollRef.current)
     const fetch = async () => {
       try {
+        // Durum değişimini yakala: maraton bittiyse/kaybolduysa (restart temizliği vb.)
+        // lobide donmuş kalmayı önle — kurtul ve sonraki turnuvayı göster.
+        const ar = await api.get('/api/marathon/active')
+        const am = ar.data.marathon
+        if (!am || am.id !== marathonId || am.status === 'finished') {
+          if (pollRef.current) { clearInterval(pollRef.current); pollRef.current = null }
+          init()
+          return
+        }
         const r = await api.get(`/api/marathon/${marathonId}/participants`)
         setParticipants(r.data.participants)
-        setMarathon(prev => prev ? { ...prev, current_participants: r.data.participants.length } : prev)
+        setMarathon(prev => prev ? { ...prev, status: am.status, current_participants: r.data.participants.length } : prev)
       } catch {}
     }
     fetch()
-    pollRef.current = setInterval(fetch, 15000)
+    pollRef.current = setInterval(fetch, 12000)
   }
 
   const startCountdown = (target: Date) => {
