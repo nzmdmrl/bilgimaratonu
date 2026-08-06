@@ -83,6 +83,8 @@ export default function MaratonPage() {
   const wsRef = useRef<WebSocket | null>(null)
   const pollRef = useRef<NodeJS.Timeout | null>(null)
   const viewerRef = useRef<NodeJS.Timeout | null>(null)  // katılmayan izleyici için durum yenileme
+  const watchedRef = useRef<{ id: string } | null>(null) // izlenen in_progress turnuva
+  const shownChampRef = useRef<Set<string>>(new Set())   // şampiyonu gösterdiğimiz turnuvalar
   const countdownRef = useRef<NodeJS.Timeout | null>(null)
   const timerRef = useRef<NodeJS.Timeout | null>(null)
   const matchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -134,8 +136,25 @@ export default function MaratonPage() {
         return
       }
       const r = await api.get('/api/marathon/active')
-      if (r.data.marathon) {
-        const m = r.data.marathon
+      const activeM = r.data.marathon
+      // İzlediğim in_progress turnuva bittiyse ŞAMPİYONU göster
+      const pw = watchedRef.current
+      if (pw && (!activeM || activeM.id !== pw.id) && !shownChampRef.current.has(pw.id)) {
+        try {
+          const br = await api.get(`/api/marathon/${pw.id}/bracket`)
+          if (br.data?.champion) {
+            shownChampRef.current.add(pw.id)
+            setBracketOpen(false)
+            setChampion(br.data.champion)
+            playSound('win')
+            setTimeout(() => setChampion(''), 7000)
+          }
+        } catch { /* ignore */ }
+      }
+      watchedRef.current = (activeM && activeM.status === 'in_progress') ? { id: activeM.id } : null
+
+      if (activeM) {
+        const m = activeM
         setMarathon(m)
         const pRes = await api.get(`/api/marathon/${m.id}/participants`)
         setParticipants(pRes.data.participants)
