@@ -142,13 +142,16 @@ export default function MaratonPage() {
       const pw = watchedRef.current
       if (pw && (!activeM || activeM.id !== pw.id) && !shownChampRef.current.has(pw.id)) {
         try {
-          const br = await api.get(`/api/marathon/${pw.id}/bracket`)
-          if (br.data?.champion) {
+          let champ: string | null = null
+          try { const br = await api.get(`/api/marathon/${pw.id}/bracket`); champ = br.data?.champion || null } catch {}
+          if (!champ) { try { const cr = await api.get('/api/marathon/champions'); champ = cr.data?.champions?.[0]?.username || null } catch {} }
+          if (champ) {
             shownChampRef.current.add(pw.id)
             setBracketOpen(false)
-            setChampion(br.data.champion)
+            setFinalRank(null)   // izleyici — kendi derecesi yok
+            setChampion(champ)
             playSound('win')
-            setTimeout(() => setChampion(''), 7000)
+            setTimeout(() => setChampion(''), 8000)
           }
         } catch { /* ignore */ }
       }
@@ -183,11 +186,14 @@ export default function MaratonPage() {
             startCountdown(target)
             startViewerRefresh()   // durum değişince (bitiş/yeni turnuva) otomatik güncelle
           } else {
+            // Yeni lobi açıldı — eski "devam ediyor" yazısı kalmasın
+            setStatusMsg('')
             startPolling(m.id)
             startViewerRefresh()   // waiting->in_progress geçişini de yakala
           }
         }
       } else {
+        setStatusMsg('')  // eski "devam ediyor" yazısı kalmasın
         const nr = await api.get('/api/marathon/next')
         const target = new Date(nr.data.next_marathon_at + 'Z')
         setNextTime(target.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }))
