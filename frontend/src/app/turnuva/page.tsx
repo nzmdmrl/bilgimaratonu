@@ -263,7 +263,8 @@ export default function MaratonPage() {
         setStatusMsg(`🏁 Turnuva ${msg.seconds} saniye içinde başlıyor!`)
         break
       case 'round_start':
-        setMatchStatus('Sorular hazırlanıyor, bekleyiniz...')
+        setMarathon(prev => prev ? { ...prev, status: 'in_progress' } : prev)  // bracket poll'ü açılsın
+        setMatchStatus('🔍 Rakibin eşleştiriliyor, maç birazdan başlıyor…')
         setCorrectAnswer(null)
         setSelectedAnswer(null)
         setOpponentWrongAnswer(null)
@@ -274,6 +275,7 @@ export default function MaratonPage() {
         setQuestion(null)
         setSelectedAnswer(null)
         setCorrectAnswer(null)
+        if (marathon?.id) loadBracket(marathon.id)
         break
       case 'match_start':
         setMatchStatus('Sorular hazırlanıyor, bekleyiniz...')
@@ -401,12 +403,14 @@ export default function MaratonPage() {
         if (matchTimeoutRef.current) clearTimeout(matchTimeoutRef.current)
         if (!msg.won) {
           setEliminated(true)
-          setStatusMsg('❌ Elendi. Diğer maçları lobiden izleyebilirsiniz.')
+          setStatusMsg('❌ Elendi. Diğer maçları tablodan izleyebilirsiniz.')
+          setMatchStatus('')
         } else {
           setStatusMsg('✅ Kazandın! Sonraki tur bekleniyor...')
+          setMatchStatus('⏳ Diğer maçların bitmesi bekleniyor, sıradaki tur birazdan başlıyor…')
         }
-        matchTimeoutRef.current = setTimeout(() => { setShowMatch(false); setQuestion(null) }, 4000)
-        if (marathon) startPolling(marathon.id)
+        matchTimeoutRef.current = setTimeout(() => { setShowMatch(false); setQuestion(null) }, 4500)
+        if (marathon) { startPolling(marathon.id); loadBracket(marathon.id) }
         break
       case 'final_xp':
         // Dereceye göre turnuva bitiş XP'si — sesli say
@@ -682,22 +686,24 @@ export default function MaratonPage() {
           </span>
           {statusMsg && <span className="text-sm text-gray-300">{statusMsg}</span>}
         </div>
-        {marathon?.status === 'in_progress' && roundLabel && (
-          <div className="mt-3 text-center rounded-xl py-2" style={{
+        {marathon?.status === 'in_progress' && (
+          <div className="mt-3 text-center rounded-xl py-4 arena-pulse" style={{
             background: 'rgba(255,215,0,0.1)', border: '1px solid rgba(255,215,0,0.3)',
           }}>
-            <div className="font-black text-xl" style={{ color: 'var(--gold)' }}>⚔️ {roundLabel}</div>
-            <div className="text-xs mt-1" style={{ color: 'var(--text-dim)' }}>{active.length} kişi yarışıyor</div>
+            {roundLabel && <div className="font-black text-xl" style={{ color: 'var(--gold)' }}>⚔️ {roundLabel}</div>}
+            <div className="text-sm mt-1 font-bold" style={{ color: 'var(--text)' }}>
+              {matchStatus || statusMsg || '🔍 Rakibin eşleştiriliyor…'}
+            </div>
+            <div className="text-xs mt-1" style={{ color: 'var(--text-dim)' }}>
+              {active.length} kişi yarışıyor · diğer maçlar sürerken bekle
+            </div>
           </div>
         )}
         {marathon?.status === 'in_progress' && (
-          <div className="mt-2 text-center">
-            <button onClick={() => { if (marathon?.id) loadBracket(marathon.id); setBracketOpen(true) }}
-              className="text-sm font-bold px-4 py-1.5 rounded-lg"
-              style={{ background: 'rgba(79,195,247,0.15)', color: 'var(--blue)' }}>
-              🗺 Şemayı Gör
-            </button>
-          </div>
+          <button onClick={() => { if (marathon?.id) loadBracket(marathon.id); setBracketOpen(true) }}
+            className="btn-gold w-full mt-3 py-2.5 font-black">
+            🗺 Turnuva Tablosunu Gör
+          </button>
         )}
       </div>
 
