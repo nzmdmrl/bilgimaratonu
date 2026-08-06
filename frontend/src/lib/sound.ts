@@ -23,6 +23,9 @@ export type SoundKey =
   | 'count_roll'
   | 'count_ding'
   | 'title_up'
+  | 'music_wait'
+  | 'music_lobby'
+  | 'music_round'
 
 // Admin panelinde gösterilecek insan-okunur etiketler (sıra bu listeye göre)
 export const SOUND_SLOTS: { key: SoundKey; label: string; desc: string }[] = [
@@ -43,6 +46,9 @@ export const SOUND_SLOTS: { key: SoundKey; label: string; desc: string }[] = [
   { key: 'count_roll', label: '🔢 Puan Sayacı', desc: 'Maç sonu puan/XP 0’dan yukarı sayarken (dırdır)' },
   { key: 'count_ding', label: '🔔 Sayaç Bitiş', desc: 'Sayma bitince çalan çıngırak (çlink)' },
   { key: 'title_up', label: '🎉 Yeni Ünvan', desc: 'Yeni ünvan kazanıldığında çalan kutlama müziği' },
+  { key: 'music_wait', label: '🎵 Turnuva Bekleme Müziği', desc: 'Sonraki turnuva geri sayımı beklenirken (döngü)' },
+  { key: 'music_lobby', label: '🎵 Lobi Müziği', desc: 'Lobide oyuncular toplanırken (döngü)' },
+  { key: 'music_round', label: '🎵 Tur Arası Müziği', desc: 'Maçlar arası / sonraki tur beklenirken (döngü)' },
 ]
 
 let ctx: AudioContext | null = null
@@ -66,7 +72,7 @@ export function isMuted(): boolean {
 export function setMuted(m: boolean) {
   if (!isBrowser()) return
   localStorage.setItem('sound_muted', m ? '1' : '0')
-  if (m) stopRadar()
+  if (m) { stopRadar(); stopMusic() }
 }
 
 export function toggleMuted(): boolean {
@@ -250,6 +256,10 @@ const SYNTH: Record<SoundKey, (arg?: any) => void> = {
     tone(1567.98, 0.5, { type: 'sine', gain: 0.28, delay: 0.46 })
     tone(2093, 0.6, { type: 'sine', gain: 0.18, delay: 0.52 })
   },
+  // Müzikler sadece MP3'ten çalar (sentetik yok)
+  music_wait: () => {},
+  music_lobby: () => {},
+  music_round: () => {},
 }
 
 // Tek seferlik ses çal
@@ -344,4 +354,53 @@ export function startCountRoll() {
 export function stopCountRoll() {
   if (countRollInterval) { clearInterval(countRollInterval); countRollInterval = null }
   if (countRollEl) { try { countRollEl.pause() } catch {}; countRollEl = null }
+}
+
+// ─── Arka plan müziği (turnuva fazları) — sadece MP3 yüklüyse; fade-in/out ile ───
+let musicEl: HTMLAudioElement | null = null
+let musicKey: SoundKey | null = null
+let musicFadeIv: ReturnType<typeof setInterval> | null = null
+const MUSIC_VOL = 0.35
+
+function _clearMusicFade() { if (musicFadeIv) { clearInterval(musicFadeIv); musicFadeIv = null } }
+
+export function playMusic(key: SoundKey) {
+  if (!isBrowser() || isMuted()) { stopMusic(); return }
+  if (musicKey === key && musicEl) return   // zaten çalıyor
+  const url = overrideUrl(key)
+  stopMusic()                                // öncekini fade-out ile durdur
+  if (!url) { musicKey = null; return }       // MP3 yüklenmemişse müzik yok
+  try {
+    unlockAudio()
+    const el = new Audio(url)
+    el.loop = true
+    el.volume = 0
+    el.play().catch(() => {})
+    musicEl = el
+    musicKey = key
+    _clearMusicFade()
+    musicFadeIv = setInterval(() => {          // fade-in
+      if (!musicEl) { _clearMusicFade(); return }
+      const v = Math.min(MUSIC_VOL, musicEl.volume + 0.03)
+      musicEl.volume = v
+      if (v >= MUSIC_VOL) _clearMusicFade()
+    }, 45)
+  } catch { /* yut */ }
+}
+
+export function stopMusic() {
+  _clearMusicFade()
+  const el = musicEl
+  musicEl = null
+  musicKey = null
+  if (!el) return
+  const iv = setInterval(() => {               // fade-out (sesi kısılarak bit)
+    const v = el.volume - 0.045
+    if (v <= 0.02) {
+      try { el.pause() } catch {}
+      clearInterval(iv)
+    } else {
+      el.volume = v
+    }
+  }, 45)
 }

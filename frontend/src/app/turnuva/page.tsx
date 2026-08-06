@@ -3,7 +3,7 @@ import { useEffect, useState, useRef } from 'react'
 import api from '@/lib/api'
 import { useAuthStore } from '@/lib/store'
 import Link from 'next/link'
-import { playSound, playCountdownTick, startCountRoll, stopCountRoll } from '@/lib/sound'
+import { playSound, playCountdownTick, startCountRoll, stopCountRoll, playMusic, stopMusic } from '@/lib/sound'
 import { avatarSrc } from '@/lib/avatar'
 import Bracket, { BracketData } from './Bracket'
 
@@ -116,6 +116,18 @@ export default function MaratonPage() {
   }, [marathon?.status, marathon?.id])
   // Elenince şemayı otomatik aç (izlemeye devam)
   useEffect(() => { if (eliminated && marathon?.id) { loadBracket(marathon.id); setBracketOpen(true) } }, [eliminated])
+
+  // Faz bazlı arka plan müziği (sadece admin MP3 yüklüyse çalar; sahne geçişinde fade-out)
+  const musicPhase = (showMatch || !!matchPopup || !!champion) ? 'none'
+    : !marathon ? 'wait'
+    : marathon.status === 'waiting' ? 'lobby'
+    : marathon.status === 'in_progress' ? 'round'
+    : 'none'
+  useEffect(() => {
+    if (musicPhase === 'none') stopMusic()
+    else playMusic(('music_' + musicPhase) as any)
+  }, [musicPhase])
+  useEffect(() => () => { stopMusic() }, [])
 
   const getChampions = async () => {
     try {
