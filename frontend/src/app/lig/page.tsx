@@ -114,8 +114,8 @@ export default function LigPage() {
               className="py-2 px-4 rounded-xl font-bold transition-all flex-shrink-0 whitespace-nowrap"
               style={{
                 background: active ? 'rgba(79,195,247,0.15)' : 'var(--surface-2)',
-                border: active ? '1px solid #4FC3F7' : '1px solid var(--border)',
-                color: active ? '#4FC3F7' : 'var(--text-dim)',
+                border: active ? '1px solid var(--blue)' : '1px solid var(--border)',
+                color: active ? 'var(--blue)' : 'var(--text-dim)',
                 fontSize: 14,
               }}>
               {c.name}
@@ -135,8 +135,8 @@ export default function LigPage() {
             className="flex-1 py-3 rounded-xl font-bold transition-all"
             style={{
               background: tab === t.key ? 'rgba(255,215,0,0.15)' : 'var(--surface-2)',
-              border: tab === t.key ? '1px solid #FFD700' : '1px solid var(--border)',
-              color: tab === t.key ? '#FFD700' : 'var(--text-dim)',
+              border: tab === t.key ? '1px solid var(--gold)' : '1px solid var(--border)',
+              color: tab === t.key ? 'var(--gold)' : 'var(--text-dim)',
             }}>
             {t.label}
           </button>
@@ -211,7 +211,7 @@ export default function LigPage() {
                   <div className="flex-1">
                     <Link href={`/p/${row.username}`}
                       className="font-bold hover:underline"
-                      style={{ color: isMe ? '#FFD700' : 'white' }}>
+                      style={{ color: isMe ? 'var(--gold)' : 'var(--text)' }}>
                       {row.username}
                       {isMe && <span className="ml-1 text-xs" style={{ color: 'var(--blue)' }}>(Sen)</span>}
                     </Link>
@@ -229,7 +229,7 @@ export default function LigPage() {
                     textAlign: 'right',
                     fontSize: 18,
                     fontWeight: 900,
-                    color: row.rank === 1 ? '#FFD700' : row.rank === 2 ? 'var(--text-dim)' : row.rank === 3 ? '#CD7F32' : 'white',
+                    color: row.rank === 1 ? 'var(--gold)' : row.rank === 2 ? 'var(--text-dim)' : row.rank === 3 ? '#CD7F32' : 'var(--text)',
                   }}>
                     {typeof row.total_score === "number" ? row.total_score.toFixed(2) : row.total_score}
                   </span>
@@ -264,7 +264,7 @@ export default function LigPage() {
                     <div key={w.rank} className="flex items-center gap-2 py-1">
                       <span style={{ width: 24, fontSize: 16, textAlign: 'center' }}>{rankEmoji(w.rank)}</span>
                       <Link href={`/p/${w.username}`} className="font-bold hover:underline text-sm"
-                        style={{ color: w.rank === 1 ? '#FFD700' : w.rank === 2 ? 'var(--text-dim)' : '#CD7F32' }}>
+                        style={{ color: w.rank === 1 ? 'var(--gold)' : w.rank === 2 ? 'var(--text-dim)' : '#CD7F32' }}>
                         {w.username}
                       </Link>
                     </div>

@@ -380,8 +380,8 @@ export default function TestPage() {
               className="px-3 py-1.5 rounded-lg text-sm font-bold"
               style={{
                 background: scoreboardPeriod === p.key ? 'rgba(255,215,0,0.2)' : 'var(--surface-2)',
-                border: scoreboardPeriod === p.key ? '1px solid #FFD700' : '1px solid var(--border)',
-                color: scoreboardPeriod === p.key ? '#FFD700' : 'var(--text-dim)',
+                border: scoreboardPeriod === p.key ? '1px solid var(--gold)' : '1px solid var(--border)',
+                color: scoreboardPeriod === p.key ? 'var(--gold)' : 'var(--text-dim)',
               }}>
               {p.label}
             </button>

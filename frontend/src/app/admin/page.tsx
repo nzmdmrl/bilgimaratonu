@@ -2159,8 +2159,8 @@ export default function AdminPage() {
                       className="py-2 rounded-lg text-sm font-bold"
                       style={{
                         background: active ? 'rgba(255,215,0,0.15)' : 'var(--surface-2)',
-                        border: active ? '2px solid #FFD700' : '1px solid var(--border)',
-                        color: active ? '#FFD700' : 'var(--text-dim)',
+                        border: active ? '2px solid var(--gold)' : '1px solid var(--border)',
+                        color: active ? 'var(--gold)' : 'var(--text-dim)',
                       }}>
                       {t.label}
                     </button>

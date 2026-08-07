@@ -175,8 +175,8 @@ export default function ProfileEdit() {
           <button key={t.key} onClick={() => setTab(t.key as any)}
             className="glass px-4 py-2 text-sm font-bold flex-1 transition-all"
             style={{
-              border: tab === t.key ? '1px solid #FFD700' : '1px solid var(--border)',
-              color: tab === t.key ? '#FFD700' : 'var(--text-dim)'
+              border: tab === t.key ? '1px solid var(--gold)' : '1px solid var(--border)',
+              color: tab === t.key ? 'var(--gold)' : 'var(--text-dim)'
             }}>
             {t.label}
           </button>

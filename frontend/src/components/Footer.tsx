@@ -22,7 +22,7 @@ export default function Footer() {
             </Link>
           ))}
         </div>
-        <p className="text-center text-xs" style={{ color: '#333' }}>
+        <p className="text-center text-xs" style={{ color: 'var(--text-dim)' }}>
           © {new Date().getFullYear()} Bilgi Maratonu. Tüm hakları saklıdır.
         </p>
       </div>

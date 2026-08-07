@@ -96,8 +96,8 @@ function ArchiveInner() {
             className="px-3 py-1.5 rounded-lg text-sm font-bold transition-all"
             style={{
               background: category === c.slug ? 'rgba(255,215,0,0.15)' : 'var(--surface-2)',
-              border: category === c.slug ? '1px solid #FFD700' : '1px solid var(--border)',
-              color: category === c.slug ? '#FFD700' : 'var(--text-dim)',
+              border: category === c.slug ? '1px solid var(--gold)' : '1px solid var(--border)',
+              color: category === c.slug ? 'var(--gold)' : 'var(--text-dim)',
             }}>
             {c.name}
           </button>
@@ -120,7 +120,7 @@ function ArchiveInner() {
                   <div key={w.rank} className="flex items-center gap-2 py-1">
                     <span style={{ width: 24, fontSize: 16, textAlign: 'center' }}>{rankEmoji(w.rank)}</span>
                     <Link href={`/p/${w.username}`} className="font-bold hover:underline text-sm"
-                      style={{ color: w.rank === 1 ? '#FFD700' : w.rank === 2 ? 'var(--text-dim)' : '#CD7F32' }}>
+                      style={{ color: w.rank === 1 ? 'var(--gold)' : w.rank === 2 ? 'var(--text-dim)' : '#CD7F32' }}>
                       {w.username}
                     </Link>
                   </div>

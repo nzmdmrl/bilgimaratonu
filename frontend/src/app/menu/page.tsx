@@ -78,8 +78,8 @@ export default function MenuPage() {
                     className="py-3 rounded-xl font-bold text-sm transition-all"
                     style={{
                       background: active ? 'rgba(255,215,0,0.15)' : 'var(--surface-2)',
-                      border: active ? '2px solid #FFD700' : '1px solid var(--border)',
-                      color: active ? '#FFD700' : 'var(--text-dim)',
+                      border: active ? '2px solid var(--gold)' : '1px solid var(--border)',
+                      color: active ? 'var(--gold)' : 'var(--text-dim)',
                     }}>
                     <div className="text-2xl mb-1">{t.icon}</div>
                     {t.label}

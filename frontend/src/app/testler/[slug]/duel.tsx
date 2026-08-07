@@ -162,11 +162,11 @@ export default function DuelRoom({ slug, event }: { slug: string; event: any }) 
                 {entry ? (
                   <>
                     <span>👤</span>
-                    <span className="text-sm font-bold truncate" style={{ color: entry[0] === myUserId ? '#FFD700' : 'white' }}>
+                    <span className="text-sm font-bold truncate" style={{ color: entry[0] === myUserId ? 'var(--gold)' : 'var(--text)' }}>
                       {entry[1]}
                     </span>
                   </>
-                ) : <span className="text-sm" style={{ color: '#333' }}>Bekleniyor...</span>}
+                ) : <span className="text-sm" style={{ color: 'var(--text-dim)' }}>Bekleniyor...</span>}
               </div>
             )
           })}
@@ -220,8 +220,8 @@ export default function DuelRoom({ slug, event }: { slug: string; event: any }) 
       <div className="glass p-5">
         <div className="grid gap-2 mb-3" style={{ gridTemplateColumns: `repeat(${Math.max(Object.keys(participants).length,1)}, 1fr)` }}>
           {Object.entries(participants).map(([uid, name]) => (
-            <div key={uid} className="glass p-2 text-center" style={{ border: uid===myUserId?'1px solid #FFD700':'1px solid var(--border)' }}>
-              <div className="text-xs truncate" style={{ color: uid===myUserId?'#FFD700':'var(--text-dim)' }}>{name}</div>
+            <div key={uid} className="glass p-2 text-center" style={{ border: uid===myUserId?'1px solid var(--gold)':'1px solid var(--border)' }}>
+              <div className="text-xs truncate" style={{ color: uid===myUserId?'var(--gold)':'var(--text-dim)' }}>{name}</div>
               <div className="text-xl font-black">{scores[uid]||0}</div>
             </div>
           ))}
@@ -312,10 +312,10 @@ export default function DuelRoom({ slug, event }: { slug: string; event: any }) 
         <div className="space-y-3 mb-6">
           {rankings.map(r => (
             <div key={r.user_id} className="glass p-3 flex items-center gap-3"
-              style={{ border: r.user_id===myUserId?'1px solid #FFD700':'1px solid var(--border)' }}>
+              style={{ border: r.user_id===myUserId?'1px solid var(--gold)':'1px solid var(--border)' }}>
               <span className="text-2xl">{r.rank===1?'🥇':r.rank===2?'🥈':r.rank===3?'🥉':`${r.rank}.`}</span>
               <div className="flex-1 text-left">
-                <div className="font-bold" style={{ color: r.user_id===myUserId?'#FFD700':'white' }}>
+                <div className="font-bold" style={{ color: r.user_id===myUserId?'var(--gold)':'var(--text)' }}>
                   {r.username}{r.user_id===myUserId?' (Sen)':''}
                 </div>
                 <div className="text-sm" style={{ color: 'var(--blue)' }}>{r.score} puan</div>
