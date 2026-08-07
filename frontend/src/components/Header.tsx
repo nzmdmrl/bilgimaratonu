@@ -5,6 +5,7 @@ import { useAuthStore } from '@/lib/store'
 import { useEffect, useState } from 'react'
 import NotificationBell from './NotificationBell'
 import SoundToggle from './SoundToggle'
+import ThemeToggle from './ThemeToggle'
 import { initSounds } from '@/lib/sound'
 import { avatarSrc } from '@/lib/avatar'
 
@@ -101,6 +102,8 @@ export default function Header() {
 
           {/* Sağ: Kullanıcı + Hamburger */}
           <div className="flex items-center gap-2">
+            {/* Desktop tema geçişi (mobilde menü > ayarlarda mevcut) */}
+            <span className="hidden md:flex"><ThemeToggle /></span>
             {user ? (
               <>
                 <span className="hidden sm:block text-sm" style={{ color: 'var(--gold)' }}>💎 {user.xp}</span>
