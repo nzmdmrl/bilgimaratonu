@@ -102,13 +102,14 @@ export default function Header() {
 
           {/* Sağ: Kullanıcı + Hamburger */}
           <div className="flex items-center gap-2">
+            {/* Sıra: ses kısma → gece/gündüz → puanlar → bildirim */}
+            <SoundToggle />
             {/* Desktop tema geçişi (mobilde menü > ayarlarda mevcut) */}
             <span className="hidden md:flex"><ThemeToggle /></span>
             {user ? (
               <>
                 <span className="hidden sm:block text-sm" style={{ color: 'var(--gold)' }}>💎 {user.xp}</span>
                 <Link href="/maraton" className="hidden sm:block text-sm" style={{ color: 'var(--gold)', textDecoration: 'none' }} title="Maraton yıldızların">🌟 {user.solo_stars ?? 0}</Link>
-                <SoundToggle />
                 <NotificationBell />
                 <Link href={`/p/${user.username}`}
                   className="text-sm font-bold px-2 py-1.5 rounded-lg"
