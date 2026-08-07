@@ -261,7 +261,7 @@ export default function ArenaPage() {
             <div key={p.user_id} className="glass flex items-center gap-3 p-3 arena-slidein"
               style={{ borderRadius: 12, animationDelay: `${i * 60}ms`, border: full ? '1px solid rgba(76,175,80,0.4)' : '1px solid var(--border)' }}>
               <img src={avatarSrc(p.avatar_url, p.username)} alt="" style={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'cover' }} />
-              <span className="font-bold" style={{ color: p.user_id === me ? '#FFD700' : '#fff' }}>{p.username}{p.user_id === me ? ' (Sen)' : ''}</span>
+              <span className="font-bold" style={{ color: p.user_id === me ? 'var(--gold)' : 'var(--text)' }}>{p.username}{p.user_id === me ? ' (Sen)' : ''}</span>
               {full && <span className="ml-auto" style={{ color: '#4CAF50' }}>✓</span>}
             </div>
           ))}
@@ -385,7 +385,7 @@ export default function ArenaPage() {
             <div key={p.user_id} className="flex flex-col items-center" style={{ width: 96 }}>
               <img src={avatarSrc(p.avatar_url, p.username)} alt=""
                 style={{ width: p.rank === 1 ? 52 : 40, height: p.rank === 1 ? 52 : 40, borderRadius: '50%', objectFit: 'cover', border: `3px solid ${p.rank === 1 ? '#FFD700' : p.rank === 2 ? 'var(--text-dim)' : '#CD7F32'}` }} />
-              <div className="text-xs font-bold mt-1 truncate" style={{ maxWidth: 90, color: p.user_id === me ? '#FFD700' : '#fff' }}>{p.username}</div>
+              <div className="text-xs font-bold mt-1 truncate" style={{ maxWidth: 90, color: p.user_id === me ? 'var(--gold)' : 'var(--text)' }}>{p.username}</div>
               <div className="text-xs font-black" style={{ color: 'var(--gold)' }}>{p.total}</div>
               <div className="w-full flex items-center justify-center font-black text-xl"
                 style={{ height: podiumH[p.rank] || 30, marginTop: 3, borderRadius: '10px 10px 0 0', background: p.rank === 1 ? 'rgba(255,215,0,0.25)' : p.rank === 2 ? 'rgba(176,190,197,0.2)' : 'rgba(205,127,50,0.2)' }}>
@@ -413,7 +413,7 @@ export default function ArenaPage() {
               <span className="font-black" style={{ color: r.rank === 1 ? '#FFD700' : r.rank === 2 ? 'var(--text-dim)' : r.rank === 3 ? '#CD7F32' : 'var(--text-dimmer)' }}>{medal(r.rank)}</span>
               <div className="flex items-center gap-2 min-w-0">
                 <img src={avatarSrc(r.avatar_url, r.username)} alt="" style={{ width: 26, height: 26, borderRadius: '50%', objectFit: 'cover' }} />
-                <span className="font-bold truncate" style={{ color: r.user_id === me ? '#FFD700' : '#fff' }}>{r.username}</span>
+                <span className="font-bold truncate" style={{ color: r.user_id === me ? 'var(--gold)' : 'var(--text)' }}>{r.username}</span>
               </div>
               <span className="text-center font-bold" style={{ color: '#4CAF50' }}>{r.correct}</span>
               <span className="text-center font-bold" style={{ color: '#FFD54F' }}>{r.flash}</span>
