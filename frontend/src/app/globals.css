@@ -67,6 +67,9 @@ body {
   box-shadow: var(--card-shadow);
 }
 
+/* Gündüz (light) temada anasayfa oyna kartları beyaz zemin (renkli kenarlık/ikon/yazı korunur) */
+html[data-theme="light"] .home-tile { background: #fff !important; }
+
 /* Maç şıkları — soru kartıyla aynı zemin, belirgin buton görünümü */
 .match-opt {
   display: flex;

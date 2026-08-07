@@ -85,7 +85,7 @@ export default function HomePage() {
 
   const playCard = (href: string, icon: string, label: string, color: string) => (
     <Link href={href} key={href}
-      className="play-card flex flex-col items-center justify-center gap-2 py-5"
+      className="play-card home-tile flex flex-col items-center justify-center gap-2 py-5"
       style={{
         borderRadius: 18,
         background: `linear-gradient(150deg, ${color}26, ${color}0d)`,
@@ -135,7 +135,7 @@ export default function HomePage() {
 
             {/* Turnuva — tam genişlik (Maraton + 1v1 altında) */}
             {marathonEnabled && (
-              <Link href="/turnuva" className="block glass p-4 mb-3" style={{ borderRadius: 14, background: 'rgba(255,215,0,0.08)', border: '1px solid rgba(255,215,0,0.25)', textDecoration: 'none' }}>
+              <Link href="/turnuva" className="block glass home-tile p-4 mb-3" style={{ borderRadius: 14, background: 'rgba(255,215,0,0.08)', border: '1px solid rgba(255,215,0,0.25)', textDecoration: 'none' }}>
                 <div className="flex items-center gap-3">
                   <div className="text-4xl">🏆</div>
                   <div className="flex-1 min-w-0">
@@ -151,7 +151,7 @@ export default function HomePage() {
 
             {/* Arena — 5 kişilik eşzamanlı */}
             {modules.arena !== false && (
-              <Link href="/arena" className="block glass p-4 mb-3" style={{ borderRadius: 14, background: 'rgba(255,112,67,0.1)', border: '1px solid rgba(255,112,67,0.3)', textDecoration: 'none' }}>
+              <Link href="/arena" className="block glass home-tile p-4 mb-3" style={{ borderRadius: 14, background: 'rgba(255,112,67,0.1)', border: '1px solid rgba(255,112,67,0.3)', textDecoration: 'none' }}>
                 <div className="flex items-center gap-3">
                   <div className="text-4xl">🎯</div>
                   <div className="flex-1 min-w-0">
@@ -165,7 +165,7 @@ export default function HomePage() {
 
             {/* Özel Arena — aile/arkadaş */}
             {modules.arena !== false && (
-              <Link href="/testler/olustur?arena=1" className="block glass p-4 mb-3" style={{ borderRadius: 14, background: 'rgba(156,39,176,0.1)', border: '1px solid rgba(156,39,176,0.3)', textDecoration: 'none' }}>
+              <Link href="/testler/olustur?arena=1" className="block glass home-tile p-4 mb-3" style={{ borderRadius: 14, background: 'rgba(156,39,176,0.1)', border: '1px solid rgba(156,39,176,0.3)', textDecoration: 'none' }}>
                 <div className="flex items-center gap-3">
                   <div className="text-4xl">🔒</div>
                   <div className="flex-1 min-w-0">
@@ -178,7 +178,7 @@ export default function HomePage() {
             )}
 
             {/* Kategoriler — Turnuva/Arena altında tam genişlik */}
-            <Link href="/kategoriler" className="block glass p-4 mb-3" style={{ borderRadius: 14, background: 'rgba(255,215,0,0.09)', border: '1px solid rgba(255,215,0,0.3)', textDecoration: 'none' }}>
+            <Link href="/kategoriler" className="block glass home-tile p-4 mb-3" style={{ borderRadius: 14, background: 'rgba(255,215,0,0.09)', border: '1px solid rgba(255,215,0,0.3)', textDecoration: 'none' }}>
               <div className="flex items-center gap-3">
                 <div className="text-4xl">🗂</div>
                 <div className="flex-1 min-w-0">
@@ -196,7 +196,7 @@ export default function HomePage() {
             </div>
 
             {/* Mini Oyunlar */}
-            <Link href="/mini-oyunlar" className="block glass p-4 mb-3" style={{ borderRadius: 14, background: 'rgba(0,188,212,0.08)', border: '1px solid rgba(0,188,212,0.25)', textDecoration: 'none' }}>
+            <Link href="/mini-oyunlar" className="block glass home-tile p-4 mb-3" style={{ borderRadius: 14, background: 'rgba(0,188,212,0.08)', border: '1px solid rgba(0,188,212,0.25)', textDecoration: 'none' }}>
               <div className="flex items-center gap-3">
                 <div className="text-4xl">🧩</div>
                 <div className="flex-1 min-w-0">
@@ -347,7 +347,7 @@ export default function HomePage() {
             },
           ].map(card => (
             <Link key={card.href} href={card.href}
-              className="glass p-7 flex gap-5 items-start hover:scale-105 transition-transform"
+              className="glass home-tile p-7 flex gap-5 items-start hover:scale-105 transition-transform"
               style={{ background: card.bg, border: `1px solid ${card.color}22` }}>
               <div className="text-5xl flex-shrink-0">{card.icon}</div>
               <div>
@@ -359,7 +359,7 @@ export default function HomePage() {
 
           {/* Maraton - tam genişlik */}
           {marathonEnabled && (
-            <div className="col-span-1 md:col-span-2 glass p-6"
+            <div className="col-span-1 md:col-span-2 glass home-tile p-6"
               style={{ background: 'rgba(255,215,0,0.06)', border: '1px solid rgba(255,215,0,0.2)' }}>
               <div className="flex items-center justify-between flex-wrap gap-4">
                 <div className="flex items-center gap-4">
@@ -389,7 +389,7 @@ export default function HomePage() {
           {/* Arena + Özel Arena — 1v1/Maraton gibi yan yana */}
           {modules.arena !== false && (
             <Link href="/arena"
-              className="glass p-7 flex gap-5 items-start hover:scale-105 transition-transform"
+              className="glass home-tile p-7 flex gap-5 items-start hover:scale-105 transition-transform"
               style={{ background: 'rgba(255,112,67,0.08)', border: '1px solid #FF704322' }}>
               <div className="text-5xl flex-shrink-0">🎯</div>
               <div>
@@ -400,7 +400,7 @@ export default function HomePage() {
           )}
           {modules.arena !== false && (
             <Link href="/testler/olustur?arena=1"
-              className="glass p-7 flex gap-5 items-start hover:scale-105 transition-transform"
+              className="glass home-tile p-7 flex gap-5 items-start hover:scale-105 transition-transform"
               style={{ background: 'rgba(156,39,176,0.08)', border: '1px solid #BA68C822' }}>
               <div className="text-5xl flex-shrink-0">🔒</div>
               <div>
@@ -411,7 +411,7 @@ export default function HomePage() {
           )}
 
           {/* Kategoriler — Turnuva/Arena altında tam genişlik */}
-          <div className="col-span-1 md:col-span-2 glass p-6"
+          <div className="col-span-1 md:col-span-2 glass home-tile p-6"
             style={{ background: 'rgba(255,215,0,0.07)', border: '1px solid rgba(255,215,0,0.25)' }}>
             <div className="flex items-center justify-between flex-wrap gap-4">
               <div className="flex items-center gap-4">
@@ -463,7 +463,7 @@ export default function HomePage() {
             },
           ].map(card => (
             <Link key={card.href} href={card.href}
-              className="glass p-7 flex gap-5 items-start hover:scale-105 transition-transform"
+              className="glass home-tile p-7 flex gap-5 items-start hover:scale-105 transition-transform"
               style={{ background: card.bg, border: `1px solid ${card.color}22` }}>
               <div className="text-5xl flex-shrink-0">{card.icon}</div>
               <div>
