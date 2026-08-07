@@ -702,16 +702,16 @@ export default function MaratonPage() {
         {/* Şıklar 2x2 */}
         <div className="grid grid-cols-2 gap-3 mb-3">
           {opts.map(({ label, text }) => {
-            let bg = 'var(--surface-2)'
-            let border = 'var(--surface-2)'
-            let color = '#FFFFFF'
+            let bg = 'var(--surface)'          // soru kartıyla aynı zemin
+            let border = 'var(--border)'
+            let color = 'var(--text)'
             const isOppWrong = opponentWrongAnswer === label
             const isOppCorrect = opponentCorrectAnswer === label
             if (correctAnswer) {
               if (label === correctAnswer) { bg = 'rgba(76,175,80,0.2)'; border = '#4CAF50' }
               else if (label === selectedAnswer) { bg = 'rgba(244,67,54,0.2)'; border = '#F44336' }
               else if (isOppWrong) { bg = 'rgba(255,152,0,0.15)'; border = '#FF9800' }
-              else { bg = 'var(--surface-2)'; color = '#555' }
+              else { bg = 'var(--surface-2)'; color = 'var(--text-dimmer)' }
             } else if (label === selectedAnswer) {
               bg = 'rgba(79,195,247,0.2)'; border = '#4FC3F7'
             } else if (isOppWrong) {
@@ -721,17 +721,20 @@ export default function MaratonPage() {
               <button key={label}
                 onClick={() => sendAnswer(label)}
                 disabled={!!selectedAnswer || !!correctAnswer}
+                className="match-opt"
                 style={{
                   background: bg, border: `2px solid ${border}`,
                   borderRadius: 14, padding: '14px 12px',
                   color, fontWeight: 600, textAlign: 'left',
                   cursor: selectedAnswer || correctAnswer ? 'not-allowed' : 'pointer',
-                  transition: 'all 0.2s', fontSize: 15,
+                  fontSize: 15,
                 }}>
-                <span style={{ color: 'var(--blue)', fontWeight: 700, marginRight: 8 }}>{label})</span>
-                {text}
-                {isOppWrong && !correctAnswer && <span style={{ color: '#FF9800', fontSize: 12, marginLeft: 6 }}>◀ Rakip ✗</span>}
-                {isOppCorrect && <span style={{ color: '#4CAF50', fontSize: 12, marginLeft: 6 }}>◀ Rakip ✓</span>}
+                <span className="match-opt-badge">{label}</span>
+                <span style={{ flex: 1, textAlign: 'left' }}>
+                  {text}
+                  {isOppWrong && !correctAnswer && <span style={{ color: '#FF9800', fontSize: 12, marginLeft: 6 }}>◀ Rakip ✗</span>}
+                  {isOppCorrect && <span style={{ color: '#4CAF50', fontSize: 12, marginLeft: 6 }}>◀ Rakip ✓</span>}
+                </span>
               </button>
             )
           })}

@@ -394,10 +394,10 @@ export default function MacPage() {
     const isCorrect = correctAnswer === label
     const isMyWrong = isMine && !isCorrect && !!correctAnswer  // Benim yanlış şıkkım
 
-    let bg = 'var(--surface-2)'
+    let bg = 'var(--surface)'          // soru kartıyla aynı zemin
     let border = '1px solid var(--border)'
     let opacity = 1
-    let transform = 'scale(1)'
+    let transform: string | undefined = undefined  // default: CSS hover/active devrede
 
     if (isEliminated) {
       bg = 'rgba(244,67,54,0.12)'
@@ -429,13 +429,12 @@ export default function MacPage() {
       background: bg,
       border,
       opacity,
-      transform,
+      ...(transform ? { transform } : {}),
       borderRadius: 12,
-      padding: '16px 20px',
+      padding: '15px 16px',
       color: 'var(--text)',
       textDecoration: isEliminated ? 'line-through' : 'none',
       cursor: disabled ? 'not-allowed' : 'pointer',
-      transition: 'all 0.3s ease',
       textAlign: 'left' as const,
       fontSize: 15,
       width: '100%',
@@ -711,19 +710,22 @@ export default function MacPage() {
             key={label}
             onClick={() => sendAnswer(label)}
             disabled={!canAnswer || !!myAnswer || eliminatedOptions.includes(label)}
+            className="match-opt"
             style={getOptionStyle(label)}
           >
-            <span className="font-bold mr-2" style={{ color: 'var(--blue)' }}>{label})</span>
-            {text}
-            {myAnswer === label && !correctAnswer && (
-              <span className="ml-2 text-xs" style={{ color: 'var(--blue)' }}>◀ Sen</span>
-            )}
-            {opponentAnswer === label && (
-              <span className="ml-2 text-xs" style={{ color: '#FF7043' }}>◀ Rakip ✓</span>
-            )}
-            {opponentWrongAnswer === label && (
-              <span className="ml-2 text-xs" style={{ color: '#FF9800' }}>◀ Rakip ✗</span>
-            )}
+            <span className="match-opt-badge">{label}</span>
+            <span style={{ flex: 1, textAlign: 'left' }}>
+              {text}
+              {myAnswer === label && !correctAnswer && (
+                <span className="ml-2 text-xs" style={{ color: 'var(--blue)' }}>◀ Sen</span>
+              )}
+              {opponentAnswer === label && (
+                <span className="ml-2 text-xs" style={{ color: '#FF7043' }}>◀ Rakip ✓</span>
+              )}
+              {opponentWrongAnswer === label && (
+                <span className="ml-2 text-xs" style={{ color: '#FF9800' }}>◀ Rakip ✗</span>
+              )}
+            </span>
           </button>
         ))}
       </div>

@@ -385,7 +385,7 @@ export default function SoloPage() {
             const isCorrect = correctAnswer === label
             const isWrong = isMine && correctAnswer && label !== correctAnswer
 
-            let bg = 'var(--surface-2)'
+            let bg = 'var(--surface)'          // soru kartıyla aynı zemin
             let border = '1px solid var(--border)'
             if (isCorrect) { bg = 'rgba(76,175,80,0.4)'; border = '2px solid #4CAF50' }
             else if (isWrong) { bg = 'rgba(244,67,54,0.35)'; border = '2px solid #F44336' }
@@ -394,17 +394,19 @@ export default function SoloPage() {
             return (
               <button key={label} onClick={() => !myAnswer && handleAnswer(label)}
                 disabled={!!myAnswer}
+                className="match-opt"
                 style={{
                   background: bg, border,
                   borderRadius: 12, padding: '14px 16px', color: 'var(--text)',
                   cursor: myAnswer ? 'not-allowed' : 'pointer',
-                  textAlign: 'left', fontSize: 14, transition: 'all 0.2s',
+                  textAlign: 'left', fontSize: 14,
                 }}>
-                <span className="font-bold mr-2" style={{
-                  color: isCorrect ? '#4CAF50' : isWrong ? '#F44336' : '#4FC3F7'
-                }}>{label})</span>{text}
-                {isCorrect && <span className="ml-2">✓</span>}
-                {isWrong && <span className="ml-2">✗</span>}
+                <span className="match-opt-badge">{label}</span>
+                <span style={{ flex: 1, textAlign: 'left' }}>
+                  {text}
+                  {isCorrect && <span className="ml-2">✓</span>}
+                  {isWrong && <span className="ml-2">✗</span>}
+                </span>
               </button>
             )
           })}

@@ -292,9 +292,9 @@ export default function CategoryMatchPage() {
     const isOpponentWrong = opponentWrongAnswer === label
     const isBlocked = jokerActive && !iAmJokerUser && !eliminatedOptions.includes(label) && label !== myAnswer
 
-    let bg = 'var(--surface-2)'
-    let border = 'var(--surface-2)'
-    let color = '#FFFFFF'
+    let bg = 'var(--surface)'          // soru kartıyla aynı zemin
+    let border = 'var(--border)'
+    let color = 'var(--text)'
     let opacity = 1
 
     if (isEliminated) { bg = 'rgba(244,67,54,0.12)'; border = 'rgba(244,67,54,0.45)'; color = '#EF9A9A'; opacity = 0.65 }
@@ -312,8 +312,7 @@ export default function CategoryMatchPage() {
       padding: '14px 12px', color, fontWeight: 600, textAlign: 'left' as const,
       textDecoration: isEliminated ? 'line-through' : 'none',
       cursor: (!canAnswer || myAnswer || isEliminated || isBlocked) ? 'not-allowed' : 'pointer',
-      transition: 'all 0.2s', fontSize: 15, opacity,
-      display: 'flex', alignItems: 'center', gap: 8,
+      fontSize: 15, opacity,
     }
   }
 
@@ -527,12 +526,14 @@ export default function CategoryMatchPage() {
       {/* Şıklar 2x2 */}
       <div className="grid grid-cols-2 gap-3 mb-3">
         {options.map(({ label, text }) => (
-          <button key={label} onClick={() => sendAnswer(label)} style={getOptionStyle(label)}
+          <button key={label} onClick={() => sendAnswer(label)} className="match-opt" style={getOptionStyle(label)}
             disabled={!canAnswer || !!myAnswer || eliminatedOptions.includes(label) || (jokerActive && !iAmJokerUser)}>
-            <span style={{ color: 'var(--blue)', fontWeight: 700 }}>{label})</span>
-            {text}
-            {opponentWrongAnswer === label && !correctAnswer && <span style={{ color: '#FF9800', fontSize: 12 }}>◀ Rakip ✗</span>}
-            {myAnswer === label && !correctAnswer && <span style={{ color: 'var(--blue)', fontSize: 12 }}>◀ Sen</span>}
+            <span className="match-opt-badge">{label}</span>
+            <span style={{ flex: 1, textAlign: 'left' }}>
+              {text}
+              {opponentWrongAnswer === label && !correctAnswer && <span style={{ color: '#FF9800', fontSize: 12 }} className="ml-2">◀ Rakip ✗</span>}
+              {myAnswer === label && !correctAnswer && <span style={{ color: 'var(--blue)', fontSize: 12 }} className="ml-2">◀ Sen</span>}
+            </span>
           </button>
         ))}
       </div>

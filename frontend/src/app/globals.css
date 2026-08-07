@@ -67,6 +67,37 @@ body {
   box-shadow: var(--card-shadow);
 }
 
+/* Maç şıkları — soru kartıyla aynı zemin, belirgin buton görünümü */
+.match-opt {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  box-shadow: var(--card-shadow);
+  transition: transform .15s ease, box-shadow .2s ease, border-color .2s ease, background .2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+@media (hover: hover) {
+  .match-opt:not(:disabled):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.16);
+    border-color: var(--blue) !important;
+  }
+}
+.match-opt:not(:disabled):active { transform: scale(.97); }
+.match-opt-badge {
+  flex: 0 0 auto;
+  width: 30px; height: 30px;
+  border-radius: 9px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 14px;
+  background: rgba(79, 195, 247, 0.15);
+  color: var(--blue);
+  border: 1px solid rgba(79, 195, 247, 0.4);
+}
+
 .btn-primary {
   background: linear-gradient(135deg, #4FC3F7, #1E88E5);
   color: white;

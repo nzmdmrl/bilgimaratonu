@@ -563,7 +563,7 @@ export default function ArenaPage() {
           const answerers = players.filter(p => answeredBy[p.user_id] === letter)
           const isCorrect = result && correctLetter === letter
           const isMineWrong = result && myAnswer === letter && correctLetter !== letter
-          let bg = 'var(--surface-2)'
+          let bg = 'var(--surface)'          // soru zemini ile aynı
           let border = '1px solid var(--border)'
           let txt = 'var(--text)'
           if (isCorrect) { bg = 'rgba(76,175,80,0.35)'; border = '2px solid #4CAF50' }
