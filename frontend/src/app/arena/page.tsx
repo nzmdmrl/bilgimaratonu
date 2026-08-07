@@ -565,14 +565,15 @@ export default function ArenaPage() {
           const isMineWrong = result && myAnswer === letter && correctLetter !== letter
           let bg = 'var(--surface-2)'
           let border = '1px solid var(--border)'
+          let txt = 'var(--text)'
           if (isCorrect) { bg = 'rgba(76,175,80,0.35)'; border = '2px solid #4CAF50' }
           else if (isMineWrong) { bg = 'rgba(244,67,54,0.3)'; border = '2px solid #F44336' }
-          else if (myAnswer === letter) { bg = 'rgba(55,60,72,0.95)'; border = '2px solid #6B7280' }
+          else if (myAnswer === letter) { bg = 'rgba(55,60,72,0.95)'; border = '2px solid #6B7280'; txt = '#fff' }
           return (
             <button key={letter} onClick={() => answer(letter)} disabled={!!myAnswer || screen !== 'question'}
               style={{
                 position: 'relative', width: '100%', textAlign: 'left', padding: '16px 18px',
-                borderRadius: 14, background: bg, border, color: 'var(--text)', fontWeight: 700, fontSize: 16,
+                borderRadius: 14, background: bg, border, color: txt, fontWeight: 700, fontSize: 16,
                 cursor: myAnswer || screen !== 'question' ? 'default' : 'pointer',
               }}>
               <span style={{ display: 'inline-block', width: 22, height: 22, lineHeight: '22px', textAlign: 'center', borderRadius: 6, background: 'var(--surface-2)', marginRight: 10, fontSize: 13 }}>{letter}</span>
