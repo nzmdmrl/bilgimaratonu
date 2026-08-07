@@ -19,7 +19,7 @@ export default function SkyBackground() {
         const ui = d?.ui || {}
         setEnabled(ui.background_animation !== false) // varsayılan açık
         const v = ui.background_theme
-        if (v === 'night' || v === 'sunset' || v === 'aurora' || v === 'galaxy') setVariant(v)
+        if (v === 'night' || v === 'day' || v === 'sunset' || v === 'aurora' || v === 'galaxy') setVariant(v)
       })
       .catch(() => {})
   }, [])
@@ -43,6 +43,7 @@ export default function SkyBackground() {
 
   return (
     <div className={`sky-bg sky-${variant}`} aria-hidden="true">
+      <span className="sun" />
       <span className="cloud c1" />
       <span className="cloud c2" />
       <span className="cloud c3" />
@@ -62,9 +63,6 @@ export default function SkyBackground() {
           />
         ))}
       </div>
-      <div className="shooting s1" />
-      <div className="shooting s2" />
-      <div className="shooting s3" />
     </div>
   )
 }

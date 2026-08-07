@@ -2191,6 +2191,7 @@ export default function AdminPage() {
               <div className="grid grid-cols-2 gap-2" style={{ maxWidth: 420 }}>
                 {[
                   { key: 'night', label: '🌙 Gece (mavi)' },
+                  { key: 'day', label: '☀️ Gündüz (mavi gökyüzü)' },
                   { key: 'sunset', label: '🌇 Gün Batımı (mor-pembe)' },
                   { key: 'aurora', label: '🌌 Aurora (yeşil ışık)' },
                   { key: 'galaxy', label: '🌠 Galaksi (mor bulutsu)' },
