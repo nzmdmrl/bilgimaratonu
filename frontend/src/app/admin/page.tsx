@@ -2184,14 +2184,14 @@ export default function AdminPage() {
                 </button>
               </div>
               <div className="text-xs mb-3" style={{ color: 'var(--text-dim)' }}>
-                Tüm ekranların arkasında parlayan yıldızlar, kayan yıldızlar ve ağır bulutlar. (Gündüz temada yıldızlar sönümlenir.)
+                Gökyüzü kullanıcının temasını takip eder: <b>Gündüz</b> temada otomatik <b>mavi gökyüzü</b> (güneş + bulutlar),
+                <b> Gece</b> temada aşağıda seçtiğin gece modu (yıldızlı) gösterilir.
               </div>
-              <div className="text-sm font-bold mb-1">Gökyüzü Modu</div>
-              <div className="text-xs mb-2" style={{ color: 'var(--text-dim)' }}>Belirli zamanlarda buradan modu değiştirebilirsin.</div>
+              <div className="text-sm font-bold mb-1">Gece Modu (yıldızlı gökyüzü)</div>
+              <div className="text-xs mb-2" style={{ color: 'var(--text-dim)' }}>Gece temasında gösterilir — belirli zamanlarda buradan değiştirebilirsin.</div>
               <div className="grid grid-cols-2 gap-2" style={{ maxWidth: 420 }}>
                 {[
                   { key: 'night', label: '🌙 Gece (mavi)' },
-                  { key: 'day', label: '☀️ Gündüz (mavi gökyüzü)' },
                   { key: 'sunset', label: '🌇 Gün Batımı (mor-pembe)' },
                   { key: 'aurora', label: '🌌 Aurora (yeşil ışık)' },
                   { key: 'galaxy', label: '🌠 Galaksi (mor bulutsu)' },
@@ -2203,8 +2203,8 @@ export default function AdminPage() {
                       className="py-2 rounded-lg text-sm font-bold"
                       style={{
                         background: active ? 'rgba(79,195,247,0.15)' : 'var(--surface-2)',
-                        border: active ? '2px solid #4FC3F7' : '1px solid var(--border)',
-                        color: active ? '#4FC3F7' : 'var(--text-dim)',
+                        border: active ? '2px solid var(--blue)' : '1px solid var(--border)',
+                        color: active ? 'var(--blue)' : 'var(--text-dim)',
                       }}>
                       {t.label}
                     </button>
