@@ -224,3 +224,111 @@ body {
   50%      { transform: scale(1.06); }
 }
 .arena-pulse { animation: arenaPulse 1s ease-in-out infinite; }
+
+/* ═══════════════════════════════════════════════════════════
+   GECE GÖKYÜZÜ ARKA PLAN ANİMASYONU
+   Tüm ekranların arkasında (z-index:-1) — yıldız, kayan yıldız, bulut
+   ═══════════════════════════════════════════════════════════ */
+.sky-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+}
+/* Gökyüzü modları (admin'den seçilir) */
+.sky-bg.sky-night  { background: radial-gradient(ellipse at 50% -20%, #1b2b5a 0%, #0a0e27 55%, #05060f 100%); }
+.sky-bg.sky-sunset { background: radial-gradient(ellipse at 50% 118%, #7a2f5e 0%, #331a52 45%, #0a0e27 100%); }
+.sky-bg.sky-aurora { background: radial-gradient(ellipse at 50% -20%, #10394a 0%, #0a1e33 55%, #05060f 100%); }
+.sky-bg.sky-galaxy { background: radial-gradient(ellipse at 32% 22%, #2a1a5a 0%, #150a35 50%, #05060f 100%); }
+
+/* Yıldızlar */
+.sky-stars { position: absolute; inset: 0; }
+.star {
+  position: absolute;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 6px 1px rgba(255, 255, 255, 0.55);
+  animation: twinkle linear infinite;
+  will-change: opacity, transform;
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 0.12; transform: scale(0.75); }
+  50%      { opacity: 1;    transform: scale(1.2); }
+}
+
+/* Çok ağır hareket eden bulutlar (bulanık ışık lekeleri) */
+.cloud {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.22;
+  will-change: transform;
+}
+.sky-night  .cloud, .sky-aurora .cloud { background: rgba(80, 120, 220, 0.55); }
+.sky-sunset .cloud { background: rgba(225, 120, 165, 0.5); }
+.sky-galaxy .cloud { background: rgba(155, 90, 225, 0.55); }
+.cloud.c1 { width: 60vw; height: 42vh; top: -10vh;   left: -15vw; animation: drift1 140s ease-in-out infinite; }
+.cloud.c2 { width: 52vw; height: 36vh; top: 38vh;    right: -20vw; animation: drift2 185s ease-in-out infinite; }
+.cloud.c3 { width: 46vw; height: 32vh; bottom: -12vh; left: 22vw;  animation: drift3 225s ease-in-out infinite; }
+@keyframes drift1 { 0%,100% { transform: translateX(0); }        50% { transform: translateX(26vw); } }
+@keyframes drift2 { 0%,100% { transform: translateX(0); }        50% { transform: translateX(-26vw); } }
+@keyframes drift3 { 0%,100% { transform: translate(0, 0); }      50% { transform: translate(16vw, -6vh); } }
+
+/* Aurora modu için ekstra ışık perdesi */
+.sky-aurora::after {
+  content: '';
+  position: absolute;
+  top: -12%; left: -12%; right: -12%; height: 58%;
+  background: linear-gradient(120deg, rgba(0, 255, 170, 0.10), rgba(0, 180, 255, 0.06), rgba(120, 0, 255, 0.10));
+  filter: blur(55px);
+  opacity: 0.55;
+  animation: aurora 26s ease-in-out infinite alternate;
+}
+@keyframes aurora {
+  0%   { transform: translateX(-10%) skewX(-6deg); }
+  100% { transform: translateX(10%)  skewX(6deg); }
+}
+
+/* Kayan yıldızlar */
+.shooting {
+  position: absolute;
+  width: 2px; height: 2px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 8px 2px rgba(255, 255, 255, 0.85);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+.shooting::before {
+  content: '';
+  position: absolute;
+  top: 50%; right: 2px;
+  width: 130px; height: 1px;
+  transform: translateY(-50%);
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.85), transparent);
+}
+.shooting.s1 { top: 10%; left: 72%; animation: shoot 9s ease-in 2s infinite; }
+.shooting.s2 { top: 24%; left: 88%; animation: shoot 12s ease-in 7s infinite; }
+.shooting.s3 { top: 6%;  left: 52%; animation: shoot 16s ease-in 12s infinite; }
+@keyframes shoot {
+  0%   { opacity: 0; transform: translate(0, 0) rotate(20deg); }
+  1.5% { opacity: 1; }
+  10%  { opacity: 1; }
+  16%  { opacity: 0; transform: translate(-360px, 190px) rotate(20deg); }
+  100% { opacity: 0; transform: translate(-360px, 190px) rotate(20deg); }
+}
+
+/* Gündüz (light) temada: okunabilirlik için gökyüzü sönük — yıldız/kayan yıldız gizli,
+   yalnızca çok hafif yumuşak bulutlar kalır, arka plan body gradyeniyle uyumlu */
+html[data-theme="light"] .sky-bg { background: transparent; }
+html[data-theme="light"] .sky-stars,
+html[data-theme="light"] .shooting,
+html[data-theme="light"] .sky-aurora::after { display: none; }
+html[data-theme="light"] .cloud { background: rgba(120, 160, 230, 0.28); opacity: 0.35; }
+
+/* Hareket azaltma tercihi olanlar için animasyonları durdur */
+@media (prefers-reduced-motion: reduce) {
+  .star, .cloud, .shooting, .sky-aurora::after { animation: none !important; }
+  .shooting { display: none; }
+}

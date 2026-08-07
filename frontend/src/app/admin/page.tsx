@@ -2168,6 +2168,49 @@ export default function AdminPage() {
                 })}
               </div>
             </div>
+
+            {/* Gece gökyüzü arka plan animasyonu */}
+            <div className="mt-5 pt-4" style={{ borderTop: '1px solid var(--border)' }}>
+              <div className="flex items-center justify-between mb-1">
+                <div className="text-sm font-bold">🌌 Gökyüzü Arka Plan Animasyonu</div>
+                <button
+                  onClick={() => saveSettings('ui', { ...siteSettings.ui, background_animation: !(siteSettings.ui?.background_animation !== false) })}
+                  className="text-sm px-3 py-1 rounded-lg font-bold"
+                  style={{
+                    background: (siteSettings.ui?.background_animation !== false) ? 'rgba(76,175,80,0.2)' : 'rgba(244,67,54,0.2)',
+                    color: (siteSettings.ui?.background_animation !== false) ? '#4CAF50' : '#F44336',
+                  }}>
+                  {(siteSettings.ui?.background_animation !== false) ? '✓ Açık' : '✗ Kapalı'}
+                </button>
+              </div>
+              <div className="text-xs mb-3" style={{ color: 'var(--text-dim)' }}>
+                Tüm ekranların arkasında parlayan yıldızlar, kayan yıldızlar ve ağır bulutlar. (Gündüz temada yıldızlar sönümlenir.)
+              </div>
+              <div className="text-sm font-bold mb-1">Gökyüzü Modu</div>
+              <div className="text-xs mb-2" style={{ color: 'var(--text-dim)' }}>Belirli zamanlarda buradan modu değiştirebilirsin.</div>
+              <div className="grid grid-cols-2 gap-2" style={{ maxWidth: 420 }}>
+                {[
+                  { key: 'night', label: '🌙 Gece (mavi)' },
+                  { key: 'sunset', label: '🌇 Gün Batımı (mor-pembe)' },
+                  { key: 'aurora', label: '🌌 Aurora (yeşil ışık)' },
+                  { key: 'galaxy', label: '🌠 Galaksi (mor bulutsu)' },
+                ].map(t => {
+                  const active = (siteSettings.ui?.background_theme || 'night') === t.key
+                  return (
+                    <button key={t.key}
+                      onClick={() => saveSettings('ui', { ...siteSettings.ui, background_theme: t.key })}
+                      className="py-2 rounded-lg text-sm font-bold"
+                      style={{
+                        background: active ? 'rgba(79,195,247,0.15)' : 'var(--surface-2)',
+                        border: active ? '2px solid #4FC3F7' : '1px solid var(--border)',
+                        color: active ? '#4FC3F7' : 'var(--text-dim)',
+                      }}>
+                      {t.label}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
           </div>
 
           {/* Zorluk Puan ve Süre Ayarları */}

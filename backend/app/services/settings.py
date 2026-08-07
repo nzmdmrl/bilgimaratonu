@@ -29,6 +29,8 @@ DEFAULT_SETTINGS = {
     "ui": {
         "mobile_match_header": False,  # Mobilde maç ekranlarında üst menü görünsün mü (varsayılan: hayır)
         "default_theme": "dark",       # Varsayılan tema: dark(gece) | light(gündüz) | auto
+        "background_animation": True,  # Gece gökyüzü animasyonu (yıldız/kayan yıldız/bulut) açık mı
+        "background_theme": "night",   # Gökyüzü modu: night | sunset | aurora | galaxy
     },
 
     # ─ Turnuva faz müzikleri (çoklu MP3, random çalar) — {key: {tracks:[{url,name}], volume}}
