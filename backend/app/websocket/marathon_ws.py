@@ -129,7 +129,10 @@ async def get_round_questions(db, marathon_id: str, round_num: int, count: int) 
     from app.models.question import Question as Q
     from app.models.question import Category as Cat
     from sqlalchemy import func
-    difficulty = ROUND_DIFFICULTIES.get(round_num, "easy")
+    from app.services.settings import get_settings
+    _mc = await get_settings(db, "marathon")
+    only_easy = bool(_mc.get("only_easy", False))
+    difficulty = "easy" if only_easy else ROUND_DIFFICULTIES.get(round_num, "easy")
     result = await db.execute(
         select(Q).join(Cat, Q.category_id == Cat.id).where(
             Q.difficulty == difficulty,

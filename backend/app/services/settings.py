@@ -74,6 +74,7 @@ DEFAULT_SETTINGS = {
         "questions_per_round": 3,
         "time_per_question": 15,
         "interval_minutes": 15,
+        "only_easy": True,  # Turnuvada sadece KOLAY sorular çıksın (admin iptal edebilir)
         "xp_per_match": 5,  # Her turnuva maçı sonrası XP
         "xp_1": 500,   # Şampiyon (1.) XP
         "xp_2": 200,   # 2. XP

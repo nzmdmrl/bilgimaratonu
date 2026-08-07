@@ -2344,6 +2344,21 @@ export default function AdminPage() {
           {/* Maraton Ayarları */}
           <div className="glass p-5">
             <h3 className="font-bold mb-4" style={{ color: 'var(--gold)' }}>🏆 Turnuva Ayarları</h3>
+            <div className="flex items-center justify-between glass p-3 mb-4">
+              <div>
+                <div className="text-sm font-bold">Sadece Kolay Sorular</div>
+                <div className="text-xs" style={{ color: 'var(--text-dim)' }}>Turnuvanın tüm turlarında yalnızca kolay soru çıkar (tur zorlukları yok sayılır).</div>
+              </div>
+              <button
+                onClick={() => setSiteSettings((prev: any) => ({ ...prev, marathon: { ...prev.marathon, only_easy: !(prev.marathon?.only_easy ?? true) } }))}
+                className="px-3 py-1 rounded-lg text-sm font-bold flex-shrink-0 ml-3"
+                style={{
+                  background: (siteSettings.marathon?.only_easy ?? true) ? 'rgba(76,175,80,0.2)' : 'rgba(244,67,54,0.2)',
+                  color: (siteSettings.marathon?.only_easy ?? true) ? '#4CAF50' : '#F44336',
+                }}>
+                {(siteSettings.marathon?.only_easy ?? true) ? '✓ Açık' : '✗ Kapalı'}
+              </button>
+            </div>
             <div className="grid grid-cols-3 gap-4">
               <div>
                 <label className="text-sm mb-1 block" style={{ color: 'var(--text-dim)' }}>Katılımcı Sayısı</label>
