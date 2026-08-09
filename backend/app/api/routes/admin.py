@@ -635,3 +635,57 @@ async def toggle_category(category_id: str, db: AsyncSession = Depends(get_db), 
     
     await db.commit()
     return {"ok": True, "is_active": new_active}
+
+
+# ===================== ÜYE VERİLERİNİ SIFIRLAMA (TEHLİKELİ) =====================
+@router.post("/reset-user-data")
+async def reset_user_data(
+    confirm: str = Query(...),
+    db: AsyncSession = Depends(get_db),
+    admin: User = Depends(get_current_admin),
+):
+    """
+    TÜM üye kazanımlarını sıfırlar: maçlar, turnuvalar, lig, başarılar/kupa/madalya,
+    rozetler, solo ilerleme, bildirimler, etkinlik katılımları ve XP/ELO/maç sayaçları.
+
+    KORUNUR: üyelik hesapları (kullanıcı adı/şifre/rol/avatar), site ayarları,
+    sorular/kategoriler, rozet kataloğu, blog/sayfalar, etkinlik & soru tanımları, ARKADAŞLIKLAR.
+    BOTLAR: ELO korunur, sadece maç sayaçları/XP sıfırlanır.
+
+    Geri ALINAMAZ. Onay: confirm=HERSEYI-SIFIRLA
+    """
+    from sqlalchemy import text
+    if confirm != "HERSEYI-SIFIRLA":
+        raise HTTPException(status_code=400, detail="Onay hatalı. confirm=HERSEYI-SIFIRLA gönderilmeli.")
+
+    summary = {}
+    # Çocuk tablolar önce silinir (FK sırası)
+    delete_order = [
+        "match_answers", "matches",
+        "marathon_matches", "marathon_participants", "marathons",
+        "event_answers", "event_participants",
+        "daily_scores", "league_entries",
+        "achievements", "user_badges",
+        "solo_progress", "notifications",
+    ]
+    for tbl in delete_order:
+        try:
+            res = await db.execute(text(f"DELETE FROM {tbl}"))
+            summary[tbl] = res.rowcount
+        except Exception as e:
+            summary[tbl] = f"HATA: {e}"
+
+    # Gerçek üyeler: XP/ELO/maç sayaçları varsayılana
+    r1 = await db.execute(text(
+        "UPDATE users SET xp = 0, elo_rating = 1000, total_matches = 0, total_wins = 0, total_losses = 0 "
+        "WHERE is_bot = false"))
+    summary["users_reset"] = r1.rowcount
+    # Botlar: ELO KORUNUR, sadece maç sayaçları + XP sıfır
+    r2 = await db.execute(text(
+        "UPDATE users SET xp = 0, total_matches = 0, total_wins = 0, total_losses = 0 "
+        "WHERE is_bot = true"))
+    summary["bots_reset"] = r2.rowcount
+
+    await db.commit()
+    print(f"[RESET] Üye verileri sıfırlandı (admin: {admin.username}) → {summary}")
+    return {"ok": True, "summary": summary}

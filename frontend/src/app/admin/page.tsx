@@ -2503,6 +2503,32 @@ export default function AdminPage() {
             </button>
           </div>
 
+          {/* ⚠️ Tehlikeli Bölge — Üye verilerini sıfırla */}
+          <div className="glass p-5" style={{ border: '1px solid rgba(244,67,54,0.45)' }}>
+            <h3 className="font-bold mb-1" style={{ color: '#F44336' }}>⚠️ Tehlikeli Bölge — Üye Verilerini Sıfırla</h3>
+            <p className="text-xs mb-4" style={{ color: 'var(--text-dim)' }}>
+              TÜM üyelerin maçları, turnuvaları, lig durumları, XP/ELO, başarıları, kupa/madalya, rozetleri,
+              solo yıldızları, bildirimleri ve etkinlik katılımları <b>KALICI olarak silinir</b>.
+              Üyelik hesapları, site ayarları, sorular, rozet kataloğu ve <b>arkadaşlıklar korunur</b>.
+              Botların ELO'su korunur, maç sayaçları sıfırlanır. <b style={{ color: '#F44336' }}>Bu işlem GERİ ALINAMAZ.</b>
+            </p>
+            <button
+              onClick={async () => {
+                const c = window.prompt('Bu işlem GERİ ALINAMAZ! Onaylamak için büyük harflerle şunu yazın:\n\nHERSEYI-SIFIRLA')
+                if (c !== 'HERSEYI-SIFIRLA') { if (c !== null) alert('Onay metni hatalı — işlem iptal edildi.'); return }
+                try {
+                  const r = await api.post('/api/admin/reset-user-data?confirm=HERSEYI-SIFIRLA')
+                  alert('✅ Sıfırlandı.\n\n' + JSON.stringify(r.data.summary, null, 2))
+                } catch (e: any) {
+                  alert(e.response?.data?.detail || 'Hata oluştu.')
+                }
+              }}
+              className="text-sm px-4 py-2 rounded-lg font-bold"
+              style={{ background: '#F44336', color: '#fff' }}>
+              🗑 Tüm Üye Verilerini Sıfırla
+            </button>
+          </div>
+
         </div>
       )}
     </div>
