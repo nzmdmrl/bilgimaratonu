@@ -938,13 +938,13 @@ export default function MaratonPage() {
       {bracketOpen && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'rgba(5,8,20,0.92)', display: 'flex', flexDirection: 'column', padding: 12 }}>
           <div className="flex items-center justify-between mb-2">
-            <div className="font-black" style={{ color: 'var(--gold)' }}>🏆 Turnuva Şeması</div>
+            <div className="font-black" style={{ color: '#FFD700' }}>🏆 Turnuva Şeması</div>
             <button onClick={() => setBracketOpen(false)}
               className="text-sm font-bold px-3 py-1.5 rounded-lg"
-              style={{ background: 'var(--surface-2)', color: 'var(--text)' }}>✕ Kapat</button>
+              style={{ background: 'rgba(255,255,255,0.18)', color: '#fff', border: '1px solid rgba(255,255,255,0.35)' }}>✕ Kapat</button>
           </div>
-          <div className="text-xs mb-2" style={{ color: 'var(--text-dim)' }}>
-            Sürükleyerek gez · ＋/－ ile yakınlaştır · Sen <span style={{ color: 'var(--gold)' }}>sarı</span> çerçeveli · Kazanan <span style={{ color: '#A5D6A7' }}>yeşil</span>, elenen soluk
+          <div className="text-xs mb-2" style={{ color: 'rgba(255,255,255,0.7)' }}>
+            Sürükleyerek gez · ＋/－ ile yakınlaştır · Sen <span style={{ color: '#FFD700' }}>sarı</span> çerçeveli · Kazanan <span style={{ color: '#A5D6A7' }}>yeşil</span>, elenen soluk
           </div>
           {bracket ? (
             <Bracket data={bracket} me={user?.username} />
