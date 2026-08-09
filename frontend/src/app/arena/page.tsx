@@ -474,7 +474,7 @@ export default function ArenaPage() {
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         background: r ? (r.is_correct ? '#6d7d54' : '#b07f88') : 'transparent',
         border: r ? 'none' : '2px solid rgba(79,195,247,0.55)',
-        color: 'var(--text)', fontSize: 'min(6vw,3.4vh)', fontWeight: 900,
+        color: '#fff', fontSize: 'min(6vw,3.4vh)', fontWeight: 900,
       }}>
         {r ? (r.is_correct ? '✓' : '✕') : ''}
         {r?.flash && (
