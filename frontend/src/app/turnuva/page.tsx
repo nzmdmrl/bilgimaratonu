@@ -745,10 +745,10 @@ export default function MaratonPage() {
 
   return (
     <div className="min-h-screen p-4 max-w-2xl mx-auto">
-      <div className="bg-gray-800 rounded-2xl p-4 mb-4">
+      <div className="glass rounded-2xl p-4 mb-4">
         <div className="flex justify-between items-start">
           <div>
-            <h1 className="text-2xl font-bold">🏆 Turnuva</h1>
+            <h1 className="text-2xl font-bold" style={{ color: 'var(--text)' }}>🏆 Turnuva</h1>
             {!marathon && (
               <p className="text-sm mt-1" style={{ color: 'var(--text-dim)' }}>
                 Geri sayım bittiğinde lobide <span style={{ color: 'var(--blue)', fontWeight: 600 }}>Katıl</span> butonuna tıklayınız.
@@ -758,16 +758,16 @@ export default function MaratonPage() {
           </div>
           {marathon && (
             <div className="text-right">
-              <span className="text-2xl font-bold text-blue-400">
+              <span className="text-2xl font-bold" style={{ color: 'var(--blue)' }}>
                 {lobbyCount}/{marathon.max_participants}
               </span>
-              <p className="text-xs text-gray-400 mt-1">👤 {humanCount} · 🤖 {botCount}</p>
+              <p className="text-xs mt-1" style={{ color: 'var(--text-dim)' }}>👤 {humanCount} · 🤖 {botCount}</p>
             </div>
           )}
         </div>
         {marathon && (
           <div className="mt-3">
-            <div className="h-3 bg-gray-700 rounded-full overflow-hidden">
+            <div className="h-3 rounded-full overflow-hidden" style={{ background: 'var(--surface-2)' }}>
               <div className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all"
                 style={{ width: `${(lobbyCount / marathon.max_participants) * 100}%` }} />
             </div>
@@ -777,10 +777,10 @@ export default function MaratonPage() {
           </div>
         )}
         <div className="mt-3 flex justify-between items-center">
-          <span className={`text-sm ${joined ? 'text-green-400' : 'text-gray-400'}`}>
+          <span className="text-sm" style={{ color: joined ? '#4CAF50' : 'var(--text-dim)' }}>
             {joined ? '✓ Bağlandı' : marathon ? '• Lobide' : ''}
           </span>
-          {statusMsg && <span className="text-sm text-gray-300">{statusMsg}</span>}
+          {statusMsg && <span className="text-sm" style={{ color: 'var(--text-dim)' }}>{statusMsg}</span>}
         </div>
         {marathon?.status === 'in_progress' && (
           <div className="mt-3 text-center rounded-xl py-4 arena-pulse" style={{
