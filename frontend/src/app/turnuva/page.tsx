@@ -906,7 +906,7 @@ export default function MaratonPage() {
                   <img src={avatarSrc(p.avatar_url, p.username)} alt="" className="rounded-full flex-shrink-0"
                     style={{ width: 32, height: 32, objectFit: 'cover' }} />
                   <div className="min-w-0 flex-1">
-                    <div className="text-sm font-bold truncate" style={{ color: isMe ? '#4FC3F7' : '#fff' }}>
+                    <div className="text-sm font-bold truncate" style={{ color: isMe ? 'var(--blue)' : 'var(--text)' }}>
                       {p.username}
                     </div>
                     <div className="text-xs" style={{ color: 'var(--text-dim)' }}>{p.elo_rating || 1200} ELO</div>
