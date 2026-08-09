@@ -270,16 +270,16 @@ export default function HomePage() {
       {/* ─── MASAÜSTÜ ─── */}
       <main className="max-w-5xl mx-auto px-4 py-12 hidden md:block">
 
-        {/* Hero */}
-        <div className="text-center mb-14 animate-fade-in">
-          <h2 className="text-5xl font-black mb-4">
-            <span style={{ color: 'var(--gold)' }}>Bilginin Rekabetle</span><br />
-            Buluştuğu Adres
-          </h2>
-          <p className="text-lg mb-8" style={{ color: 'var(--text-dim)' }}>
-            1v1 düellolar · Maraton · Testler · Lig
-          </p>
-          {!user && (
+        {/* Hero — sadece giriş yapmamış kullanıcıya göster */}
+        {!user && (
+          <div className="text-center mb-14 animate-fade-in">
+            <h2 className="text-5xl font-black mb-4">
+              <span style={{ color: 'var(--gold)' }}>Bilginin Rekabetle</span><br />
+              Buluştuğu Adres
+            </h2>
+            <p className="text-lg mb-8" style={{ color: 'var(--text-dim)' }}>
+              1v1 düellolar · Maraton · Testler · Lig
+            </p>
             <div className="flex gap-4 justify-center flex-wrap">
               <Link href="/kayit" className="btn-gold" style={{ fontSize: 18, padding: '14px 36px' }}>
                 🏆 Hemen Başla — Ücretsiz!
@@ -288,9 +288,8 @@ export default function HomePage() {
                 Giriş Yap
               </Link>
             </div>
-          )}
-          {user && null}
-        </div>
+          </div>
+        )}
 
         {/* Duyuru */}
         {announcement && !announcementClosed && (
