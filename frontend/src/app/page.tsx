@@ -110,20 +110,32 @@ export default function HomePage() {
       <div className="md:hidden px-3 pt-3" style={{ paddingBottom: 96 }}>
         {user ? (
           <>
-            {/* XP çizgisi + ünvan */}
+            {/* Profil gelişim kartı: sol kare foto + ünvan/username + XP çizgisi */}
             <div className="glass p-3 mb-3" style={{ borderRadius: 14 }}>
-              <div className="flex items-center justify-between mb-2">
-                <span className="font-black text-sm" style={{ color: unvan.color }}>{unvan.icon} {unvan.title}</span>
-                <span className="text-xs" style={{ color: 'var(--text-dim)' }}>💎 {xp.toLocaleString()} XP · 🌟 {user.solo_stars ?? 0}</span>
-              </div>
-              <div style={{ height: 10, borderRadius: 999, background: 'var(--surface-2)', overflow: 'hidden' }}>
-                <div style={{ width: `${xpProgress}%`, height: '100%', background: 'linear-gradient(90deg,#4FC3F7,#FFD700)', borderRadius: 999, transition: 'width .4s' }} />
-              </div>
-              {nextUnvan && (
-                <div className="text-right mt-1" style={{ fontSize: 10, color: 'var(--text-dimmer)' }}>
-                  Sonraki: {nextUnvan.icon} {nextUnvan.title} ({nextUnvan.min_xp.toLocaleString()} XP)
+              <div className="flex items-center gap-3">
+                {/* Kare profil foto — tıklanabilir */}
+                <Link href={`/p/${user.username}`} className="flex-shrink-0">
+                  <img src={avatarSrc(user.avatar_url, user.username)} alt=""
+                    style={{ width: 54, height: 54, borderRadius: 12, objectFit: 'cover', border: '2px solid var(--blue)' }} />
+                </Link>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start justify-between gap-2 mb-1">
+                    <div className="min-w-0">
+                      <div className="font-black text-sm" style={{ color: unvan.color }}>{unvan.icon} {unvan.title}</div>
+                      <Link href={`/p/${user.username}`} className="block text-xs font-bold truncate hover:underline" style={{ color: 'var(--blue)' }}>@{user.username}</Link>
+                    </div>
+                    <span className="text-xs flex-shrink-0" style={{ color: 'var(--text-dim)' }}>💎 {xp.toLocaleString()} · 🌟 {user.solo_stars ?? 0}</span>
+                  </div>
+                  <div style={{ height: 10, borderRadius: 999, background: 'var(--surface-2)', overflow: 'hidden' }}>
+                    <div style={{ width: `${xpProgress}%`, height: '100%', background: 'linear-gradient(90deg,#4FC3F7,#FFD700)', borderRadius: 999, transition: 'width .4s' }} />
+                  </div>
+                  {nextUnvan && (
+                    <div className="text-right mt-1" style={{ fontSize: 10, color: 'var(--text-dimmer)' }}>
+                      Sonraki: {nextUnvan.icon} {nextUnvan.title} ({nextUnvan.min_xp.toLocaleString()} XP)
+                    </div>
+                  )}
                 </div>
-              )}
+              </div>
             </div>
 
             {/* Oyna */}
@@ -309,7 +321,15 @@ export default function HomePage() {
 
         {/* Kullanıcı istatistikleri */}
         {user && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12 animate-fade-in">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-12 animate-fade-in">
+            {/* Profil kartı — foto + username (tıklanabilir) */}
+            <Link href={`/p/${user.username}`}
+              className="glass p-5 flex flex-col items-center justify-center text-center hover:scale-105 transition-transform"
+              style={{ textDecoration: 'none' }}>
+              <img src={avatarSrc(user.avatar_url, user.username)} alt=""
+                style={{ width: 56, height: 56, borderRadius: '50%', objectFit: 'cover', marginBottom: 8, border: '2px solid var(--blue)' }} />
+              <div className="text-sm font-black truncate" style={{ color: 'var(--blue)', maxWidth: '100%' }}>{user.username}</div>
+            </Link>
             {[
               { label: 'Toplam Maç', value: user.total_matches, icon: '🎮' },
               { label: 'Galibiyet', value: user.total_wins, icon: '🏆' },
