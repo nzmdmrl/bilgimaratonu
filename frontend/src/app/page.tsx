@@ -140,12 +140,29 @@ export default function HomePage() {
 
             {/* Oyna */}
             <div className="font-black text-lg mb-2" style={{ color: 'var(--text)' }}>🎮 Oyna</div>
+            {/* Arena + Özel Arena — Oyna'nın hemen altında, yan yana eşit yükseklik */}
+            {modules.arena !== false && (
+              <div className="grid grid-cols-2 gap-3 mb-3">
+                <Link href="/arena" className="glass home-tile p-3 h-full flex flex-col items-center text-center" style={{ borderRadius: 14, background: 'rgba(255,112,67,0.1)', border: '1px solid rgba(255,112,67,0.3)', textDecoration: 'none' }}>
+                  <div className="text-3xl mb-1">🎯</div>
+                  <div className="font-black" style={{ color: '#FF7043' }}>Arena</div>
+                  <div className="text-xs mt-0.5" style={{ color: 'var(--text-dim)' }}>5 kişi aynı anda yarışır</div>
+                </Link>
+                <Link href="/testler/olustur?arena=1" className="glass home-tile p-3 h-full flex flex-col items-center text-center" style={{ borderRadius: 14, background: 'rgba(156,39,176,0.1)', border: '1px solid rgba(156,39,176,0.3)', textDecoration: 'none' }}>
+                  <div className="text-3xl mb-1">🔒</div>
+                  <div className="font-black" style={{ color: '#BA68C8' }}>Özel Arena</div>
+                  <div className="text-xs mt-0.5" style={{ color: 'var(--text-dim)' }}>Ailen ve arkadaşlarınla</div>
+                </Link>
+              </div>
+            )}
+
+            {/* 1v1 Maç + Maraton (yer değişti) */}
             <div className="grid grid-cols-2 gap-3 mb-3">
-              {playCard('/maraton', '🏅', 'Maraton', '#81C784')}
               {playCard('/mac', '⚡', '1v1 Maç', '#4FC3F7')}
+              {playCard('/maraton', '🏅', 'Maraton', '#81C784')}
             </div>
 
-            {/* Turnuva — tam genişlik (Maraton + 1v1 altında) */}
+            {/* Turnuva — tam genişlik */}
             {marathonEnabled && (
               <Link href="/turnuva" className="block glass home-tile p-4 mb-3" style={{ borderRadius: 14, background: 'rgba(255,215,0,0.08)', border: '1px solid rgba(255,215,0,0.25)', textDecoration: 'none' }}>
                 <div className="flex items-center gap-3">
@@ -157,34 +174,6 @@ export default function HomePage() {
                     </div>
                   </div>
                   <div className="text-2xl" style={{ color: 'var(--gold)' }}>›</div>
-                </div>
-              </Link>
-            )}
-
-            {/* Arena — 5 kişilik eşzamanlı */}
-            {modules.arena !== false && (
-              <Link href="/arena" className="block glass home-tile p-4 mb-3" style={{ borderRadius: 14, background: 'rgba(255,112,67,0.1)', border: '1px solid rgba(255,112,67,0.3)', textDecoration: 'none' }}>
-                <div className="flex items-center gap-3">
-                  <div className="text-4xl">🎯</div>
-                  <div className="flex-1 min-w-0">
-                    <div className="font-black" style={{ color: '#FF7043' }}>Arena</div>
-                    <div className="text-xs" style={{ color: 'var(--text-dim)' }}>5 kişi aynı anda yarışır — en hızlı ve en doğru kazanır!</div>
-                  </div>
-                  <div className="text-2xl" style={{ color: '#FF7043' }}>›</div>
-                </div>
-              </Link>
-            )}
-
-            {/* Özel Arena — aile/arkadaş */}
-            {modules.arena !== false && (
-              <Link href="/testler/olustur?arena=1" className="block glass home-tile p-4 mb-3" style={{ borderRadius: 14, background: 'rgba(156,39,176,0.1)', border: '1px solid rgba(156,39,176,0.3)', textDecoration: 'none' }}>
-                <div className="flex items-center gap-3">
-                  <div className="text-4xl">🔒</div>
-                  <div className="flex-1 min-w-0">
-                    <div className="font-black" style={{ color: '#BA68C8' }}>Özel Arena</div>
-                    <div className="text-xs" style={{ color: 'var(--text-dim)' }}>Ailen ve arkadaşlarınla yarış</div>
-                  </div>
-                  <div className="text-2xl" style={{ color: '#BA68C8' }}>›</div>
                 </div>
               </Link>
             )}
@@ -344,92 +333,69 @@ export default function HomePage() {
           </div>
         )}
 
-        {/* 4 Ana Bölüm */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-12 animate-fade-in">
-          {/* 1v1 ve Solo */}
-          {[
-            {
-              href: '/mac',
-              icon: '⚡',
-              title: '1v1 Maç',
-              desc: 'Gerçek rakiplerle anlık bilgi yarışması. İlk doğru cevaplayan puan alır!',
-              color: 'var(--blue)',
-              bg: 'rgba(79,195,247,0.08)',
-            },
-            {
-              href: '/maraton',
-              icon: '🏅',
-              title: 'Maraton',
-              desc: 'Seviye seviye ilerle, yıldız topla, bilgini geliştir.',
-              color: '#81C784',
-              bg: 'rgba(129,199,132,0.08)',
-            },
-          ].map(card => (
-            <Link key={card.href} href={card.href}
-              className="glass home-tile p-7 flex gap-5 items-start hover:scale-105 transition-transform"
-              style={{ background: card.bg, border: `1px solid ${card.color}22` }}>
-              <div className="text-5xl flex-shrink-0">{card.icon}</div>
-              <div>
-                <h3 className="text-xl font-black mb-2" style={{ color: card.color }}>{card.title}</h3>
-                <p className="text-sm" style={{ color: 'var(--text-dim)', lineHeight: 1.6 }}>{card.desc}</p>
-              </div>
-            </Link>
-          ))}
-
-          {/* Maraton - tam genişlik */}
-          {marathonEnabled && (
-            <div className="col-span-1 md:col-span-2 glass home-tile p-6"
-              style={{ background: 'rgba(255,215,0,0.06)', border: '1px solid rgba(255,215,0,0.2)' }}>
-              <div className="flex items-center justify-between flex-wrap gap-4">
-                <div className="flex items-center gap-4">
-                  <div className="text-5xl">🏆</div>
-                  <div>
-                    <h3 className="text-xl font-black" style={{ color: 'var(--gold)' }}>Turnuva</h3>
-                    {marathonInfo?.status === 'waiting' || marathonInfo?.status === 'lobby' ? (
-                      <p className="text-sm" style={{ color: 'var(--text-dim)' }}>
-                        Lobi açık — {marathonInfo.current_participants || 0}/{marathonInfo.max_participants || 32} katılımcı
-                      </p>
-                    ) : marathonInfo?.next_at ? (
-                      <p className="text-sm" style={{ color: 'var(--text-dim)' }}>
-                        Sonraki turnuva: ⏰ {new Date(new Date(marathonInfo.next_at).getTime() + 3*60*60*1000).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
-                      </p>
-                    ) : (
-                      <p className="text-sm" style={{ color: 'var(--text-dim)' }}>{marathonInfo?.max_participants || 32} kişilik turnuva — en bilgili sen misin?</p>
-                    )}
-                  </div>
+        {/* Oyna kartları — Satır 1: Arena·Özel Arena·Maraton, Satır 2: 1v1 Maç·Turnuva */}
+        <div className="mb-8 animate-fade-in">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-5">
+            {modules.arena !== false && (
+              <Link href="/arena" className="glass home-tile p-7 h-full flex gap-5 items-start hover:scale-105 transition-transform"
+                style={{ background: 'rgba(255,112,67,0.08)', border: '1px solid #FF704322' }}>
+                <div className="text-5xl flex-shrink-0">🎯</div>
+                <div>
+                  <h3 className="text-xl font-black mb-2" style={{ color: '#FF7043' }}>Arena</h3>
+                  <p className="text-sm" style={{ color: 'var(--text-dim)', lineHeight: 1.6 }}>5 kişi aynı anda yarışır — en hızlı ve en doğru kazanır! Kupa ve madalya seni bekliyor.</p>
                 </div>
-                <Link href="/turnuva" className="btn-gold px-6 py-3 font-black">
-                  {marathonInfo?.status === 'waiting' || marathonInfo?.status === 'lobby' ? '🏆 Katıl' : '🏆 Turnuvaya Git'}
-                </Link>
-              </div>
-            </div>
-          )}
-
-          {/* Arena + Özel Arena — 1v1/Maraton gibi yan yana */}
-          {modules.arena !== false && (
-            <Link href="/arena"
-              className="glass home-tile p-7 flex gap-5 items-start hover:scale-105 transition-transform"
-              style={{ background: 'rgba(255,112,67,0.08)', border: '1px solid #FF704322' }}>
-              <div className="text-5xl flex-shrink-0">🎯</div>
+              </Link>
+            )}
+            {modules.arena !== false && (
+              <Link href="/testler/olustur?arena=1" className="glass home-tile p-7 h-full flex gap-5 items-start hover:scale-105 transition-transform"
+                style={{ background: 'rgba(156,39,176,0.08)', border: '1px solid #BA68C822' }}>
+                <div className="text-5xl flex-shrink-0">🔒</div>
+                <div>
+                  <h3 className="text-xl font-black mb-2" style={{ color: '#BA68C8' }}>Özel Arena</h3>
+                  <p className="text-sm" style={{ color: 'var(--text-dim)', lineHeight: 1.6 }}>Ailen ve arkadaşlarınla yarış — kendi arenanı kur, davet et.</p>
+                </div>
+              </Link>
+            )}
+            <Link href="/maraton" className="glass home-tile p-7 h-full flex gap-5 items-start hover:scale-105 transition-transform"
+              style={{ background: 'rgba(129,199,132,0.08)', border: '1px solid #81C78422' }}>
+              <div className="text-5xl flex-shrink-0">🏅</div>
               <div>
-                <h3 className="text-xl font-black mb-2" style={{ color: '#FF7043' }}>Arena</h3>
-                <p className="text-sm" style={{ color: 'var(--text-dim)', lineHeight: 1.6 }}>5 kişi aynı anda yarışır — en hızlı ve en doğru kazanır! Kupa ve madalya seni bekliyor.</p>
+                <h3 className="text-xl font-black mb-2" style={{ color: '#81C784' }}>Maraton</h3>
+                <p className="text-sm" style={{ color: 'var(--text-dim)', lineHeight: 1.6 }}>Seviye seviye ilerle, yıldız topla, bilgini geliştir.</p>
               </div>
             </Link>
-          )}
-          {modules.arena !== false && (
-            <Link href="/testler/olustur?arena=1"
-              className="glass home-tile p-7 flex gap-5 items-start hover:scale-105 transition-transform"
-              style={{ background: 'rgba(156,39,176,0.08)', border: '1px solid #BA68C822' }}>
-              <div className="text-5xl flex-shrink-0">🔒</div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <Link href="/mac" className="glass home-tile p-7 h-full flex gap-5 items-start hover:scale-105 transition-transform"
+              style={{ background: 'rgba(79,195,247,0.08)', border: '1px solid #4FC3F722' }}>
+              <div className="text-5xl flex-shrink-0">⚡</div>
               <div>
-                <h3 className="text-xl font-black mb-2" style={{ color: '#BA68C8' }}>Özel Arena</h3>
-                <p className="text-sm" style={{ color: 'var(--text-dim)', lineHeight: 1.6 }}>Ailen ve arkadaşlarınla yarış — kendi arenanı kur, davet et.</p>
+                <h3 className="text-xl font-black mb-2" style={{ color: 'var(--blue)' }}>1v1 Maç</h3>
+                <p className="text-sm" style={{ color: 'var(--text-dim)', lineHeight: 1.6 }}>Gerçek rakiplerle anlık bilgi yarışması. İlk doğru cevaplayan puan alır!</p>
               </div>
             </Link>
-          )}
+            {marathonEnabled && (
+              <Link href="/turnuva" className="glass home-tile p-7 h-full flex gap-5 items-start hover:scale-105 transition-transform"
+                style={{ background: 'rgba(255,215,0,0.06)', border: '1px solid #FFD70033' }}>
+                <div className="text-5xl flex-shrink-0">🏆</div>
+                <div>
+                  <h3 className="text-xl font-black mb-2" style={{ color: 'var(--gold)' }}>Turnuva</h3>
+                  <p className="text-sm" style={{ color: 'var(--text-dim)', lineHeight: 1.6 }}>
+                    {marathonInfo?.status === 'waiting' || marathonInfo?.status === 'lobby'
+                      ? `Lobi açık — ${marathonInfo.current_participants || 0}/${marathonInfo.max_participants || 32} katılımcı`
+                      : marathonInfo?.next_at
+                        ? `Sonraki turnuva: ⏰ ${new Date(new Date(marathonInfo.next_at).getTime() + 3*60*60*1000).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}`
+                        : `${marathonInfo?.max_participants || 32} kişilik eleme usulü büyük yarış — en bilgili sen misin?`}
+                  </p>
+                </div>
+              </Link>
+            )}
+          </div>
+        </div>
 
-          {/* Kategoriler — Turnuva/Arena altında tam genişlik */}
+        {/* Kategoriler + Testler/Lig/Market */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-12 animate-fade-in">
+          {/* Kategoriler — tam genişlik */}
           <div className="col-span-1 md:col-span-2 glass home-tile p-6"
             style={{ background: 'rgba(255,215,0,0.07)', border: '1px solid rgba(255,215,0,0.25)' }}>
             <div className="flex items-center justify-between flex-wrap gap-4">
