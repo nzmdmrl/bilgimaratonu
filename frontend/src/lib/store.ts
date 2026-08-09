@@ -19,6 +19,7 @@ interface User {
 interface AuthStore {
   user: User | null
   loading: boolean
+  authReady: boolean          // fetchMe tamamlandı mı (ilk yükleme flaşını önlemek için)
   setUser: (user: User | null) => void
   login: (email: string, password: string) => Promise<void>
   register: (username: string, email: string, password: string) => Promise<void>
@@ -29,6 +30,7 @@ interface AuthStore {
 export const useAuthStore = create<AuthStore>((set) => ({
   user: null,
   loading: false,
+  authReady: false,
 
   setUser: (user) => set({ user }),
 
@@ -39,7 +41,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
       localStorage.setItem('access_token', res.data.access_token)
       localStorage.setItem('refresh_token', res.data.refresh_token)
       const me = await api.get('/api/auth/me')
-      set({ user: me.data, loading: false })
+      set({ user: me.data, loading: false, authReady: true })
     } catch (e) {
       set({ loading: false })
       throw e
@@ -53,7 +55,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
       localStorage.setItem('access_token', res.data.access_token)
       localStorage.setItem('refresh_token', res.data.refresh_token)
       const me = await api.get('/api/auth/me')
-      set({ user: me.data, loading: false })
+      set({ user: me.data, loading: false, authReady: true })
     } catch (e) {
       set({ loading: false })
       throw e
@@ -70,12 +72,12 @@ export const useAuthStore = create<AuthStore>((set) => ({
   fetchMe: async () => {
     if (typeof window === 'undefined') return
     const token = localStorage.getItem('access_token')
-    if (!token) return
+    if (!token) { set({ user: null, authReady: true }); return }
     try {
       const me = await api.get('/api/auth/me')
-      set({ user: me.data })
+      set({ user: me.data, authReady: true })
     } catch {
-      set({ user: null })
+      set({ user: null, authReady: true })
     }
   },
 }))

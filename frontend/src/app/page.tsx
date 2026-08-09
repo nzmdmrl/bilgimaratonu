@@ -17,7 +17,7 @@ interface LeagueRow {
 
 
 export default function HomePage() {
-  const { user, fetchMe } = useAuthStore()
+  const { user, fetchMe, authReady } = useAuthStore()
   const [leagueTop, setLeagueTop] = useState<LeagueRow[]>([])
   const [recentMatches, setRecentMatches] = useState<any[]>([])
   const [categories, setCategories] = useState<any[]>([])
@@ -102,6 +102,18 @@ export default function HomePage() {
       <div className="font-black text-sm" style={{ color }}>{label}</div>
     </Link>
   )
+
+  // Auth çözülene kadar içerik gösterme — yanlış/eksik içerik flaşını önler
+  if (!authReady) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin" style={{
+          width: 40, height: 40, borderRadius: '50%',
+          border: '3px solid var(--surface-2)', borderTopColor: 'var(--blue)',
+        }} />
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen">
