@@ -483,7 +483,7 @@ export default function ArenaPage() {
       </div>
     )
     return (
-      <div style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'linear-gradient(180deg,#141a3a,var(--bg))', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'var(--bg-gradient)', display: 'flex', flexDirection: 'column' }}>
         {/* banner */}
         <div className="flex items-center gap-3 px-4" style={{ background: myLast?.is_correct ? '#7CB342' : '#EF6C00', paddingTop: 'min(3vh,16px)', paddingBottom: 'min(3vh,16px)', flexShrink: 0 }}>
           <Link href="/" style={{ background: 'rgba(255,255,255,0.25)', borderRadius: '50%', width: 34, height: 34, minWidth: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text)', fontSize: 20, textDecoration: 'none' }}>←</Link>
@@ -510,13 +510,10 @@ export default function ArenaPage() {
               </div>
             ))}
           </div>
-        </div>
-
-        {/* alt oyuncu şeridi — ızgarayla aynı genişlikte ve ortalı */}
-        <div className="flex justify-center px-2" style={{ borderTop: '1px solid var(--border)', background: 'var(--surface-2)', paddingTop: 'min(1.4vh,10px)', paddingBottom: 'min(1.4vh,10px)', flexShrink: 0 }}>
-          <div className="flex items-start justify-around" style={{ width: '100%', maxWidth: `calc(${cols} * 68px + ${cols - 1} * 12px + 40px)` }}>
+          {/* profil fotoları — puan satırının hemen altında, sütunlarla hizalı */}
+          <div style={{ display: 'grid', gridTemplateColumns: gridCols, gap, marginTop: 'min(1.4vh,10px)' }}>
             {players.map(p => (
-              <div key={p.user_id} className="flex flex-col items-center" style={{ minWidth: 0, flex: 1 }}>
+              <div key={p.user_id} className="flex flex-col items-center" style={{ minWidth: 0 }}>
                 <img src={avatarSrc(p.avatar_url, p.username)} alt=""
                   style={{ width: 'min(11vw,44px)', height: 'min(11vw,44px)', borderRadius: '50%', objectFit: 'cover', border: p.user_id === me ? '2px solid #FFD700' : '2px solid var(--border)' }} />
                 <span style={{ fontSize: 10, color: 'var(--text-dim)', marginTop: 3, maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.username}</span>
