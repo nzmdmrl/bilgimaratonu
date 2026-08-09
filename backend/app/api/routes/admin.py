@@ -659,7 +659,8 @@ async def reset_user_data(
         raise HTTPException(status_code=400, detail="Onay hatalı. confirm=HERSEYI-SIFIRLA gönderilmeli.")
 
     summary = {}
-    # Çocuk tablolar önce silinir (FK sırası)
+    # Çocuk tablolar önce silinir (FK sırası). Her biri SAVEPOINT içinde —
+    # bir tablo yoksa/hata verirse yalnızca o atlanır, transaction bozulmaz.
     delete_order = [
         "match_answers", "matches",
         "marathon_matches", "marathon_participants", "marathons",
@@ -670,21 +671,30 @@ async def reset_user_data(
     ]
     for tbl in delete_order:
         try:
-            res = await db.execute(text(f"DELETE FROM {tbl}"))
-            summary[tbl] = res.rowcount
+            async with db.begin_nested():
+                res = await db.execute(text(f"DELETE FROM {tbl}"))
+                summary[tbl] = res.rowcount
         except Exception as e:
-            summary[tbl] = f"HATA: {e}"
+            summary[tbl] = f"ATLANDI ({type(e).__name__})"
 
     # Gerçek üyeler: XP/ELO/maç sayaçları varsayılana
-    r1 = await db.execute(text(
-        "UPDATE users SET xp = 0, elo_rating = 1000, total_matches = 0, total_wins = 0, total_losses = 0 "
-        "WHERE is_bot = false"))
-    summary["users_reset"] = r1.rowcount
+    try:
+        async with db.begin_nested():
+            r1 = await db.execute(text(
+                "UPDATE users SET xp = 0, elo_rating = 1000, total_matches = 0, total_wins = 0, total_losses = 0 "
+                "WHERE is_bot = false"))
+            summary["users_reset"] = r1.rowcount
+    except Exception as e:
+        summary["users_reset"] = f"ATLANDI ({type(e).__name__})"
     # Botlar: ELO KORUNUR, sadece maç sayaçları + XP sıfır
-    r2 = await db.execute(text(
-        "UPDATE users SET xp = 0, total_matches = 0, total_wins = 0, total_losses = 0 "
-        "WHERE is_bot = true"))
-    summary["bots_reset"] = r2.rowcount
+    try:
+        async with db.begin_nested():
+            r2 = await db.execute(text(
+                "UPDATE users SET xp = 0, total_matches = 0, total_wins = 0, total_losses = 0 "
+                "WHERE is_bot = true"))
+            summary["bots_reset"] = r2.rowcount
+    except Exception as e:
+        summary["bots_reset"] = f"ATLANDI ({type(e).__name__})"
 
     await db.commit()
     print(f"[RESET] Üye verileri sıfırlandı (admin: {admin.username}) → {summary}")
