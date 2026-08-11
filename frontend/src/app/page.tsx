@@ -354,7 +354,7 @@ export default function HomePage() {
                 <div className="text-5xl flex-shrink-0">🎯</div>
                 <div>
                   <h3 className="text-xl font-black mb-2" style={{ color: '#FF7043' }}>Arena</h3>
-                  <p className="text-sm" style={{ color: 'var(--text-dim)', lineHeight: 1.6 }}>5 kişi aynı anda yarışır — en hızlı ve en doğru kazanır! Kupa ve madalya seni bekliyor.</p>
+                  <p className="text-sm" style={{ color: 'var(--text-dim)', lineHeight: 1.6 }}>5 kişi aynı anda en hızlı ve en doğru olmak için yarışır.</p>
                 </div>
               </Link>
             )}
@@ -364,7 +364,7 @@ export default function HomePage() {
                 <div className="text-5xl flex-shrink-0">🔒</div>
                 <div>
                   <h3 className="text-xl font-black mb-2" style={{ color: '#BA68C8' }}>Özel Arena</h3>
-                  <p className="text-sm" style={{ color: 'var(--text-dim)', lineHeight: 1.6 }}>Ailen ve arkadaşlarınla yarış — kendi arenanı kur, davet et.</p>
+                  <p className="text-sm" style={{ color: 'var(--text-dim)', lineHeight: 1.6 }}>Ailen veya arkadaşların için arena kur.</p>
                 </div>
               </Link>
             )}
