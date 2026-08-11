@@ -130,6 +130,11 @@ DEFAULT_SETTINGS = {
         "openai": "",  # OpenAI API key
     },
 
+    # ─ Google Analytics (GA4)
+    "analytics": {
+        "ga_id": "",  # Ölçüm Kimliği: G-XXXXXXXXXX (boşsa analytics yüklenmez)
+    },
+
     # ─ Unvan Sistemi
     # 20 unvan — başta hızlı (0/20/50/100), sonra aralık kademeli açılır.
     "titles": [

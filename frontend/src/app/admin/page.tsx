@@ -2503,6 +2503,32 @@ export default function AdminPage() {
             </button>
           </div>
 
+          {/* Google Analytics */}
+          <div className="glass p-5">
+            <h3 className="font-bold mb-4" style={{ color: '#FF9800' }}>📊 Google Analytics</h3>
+            <div className="mb-3" style={{ maxWidth: 320 }}>
+              <label className="text-sm mb-1 block" style={{ color: 'var(--text-dim)' }}>Ölçüm Kimliği (Measurement ID)</label>
+              <input
+                type="text"
+                className="input-field w-full"
+                placeholder="G-XXXXXXXXXX"
+                value={siteSettings.analytics?.ga_id || ''}
+                onChange={e => setSiteSettings((prev: any) => ({
+                  ...prev,
+                  analytics: { ...prev.analytics, ga_id: e.target.value.trim() }
+                }))}
+              />
+              <p className="text-xs mt-1" style={{ color: '#555' }}>
+                GA4 property'nizin <b>G-</b> ile başlayan kimliği. Boş bırakılırsa analytics yüklenmez. Kaydettikten sonra sitede aktif olur.
+              </p>
+            </div>
+            <button onClick={() => saveSettings('analytics', siteSettings.analytics)}
+              disabled={settingsSaving}
+              className="btn-gold mt-2">
+              {settingsSaving ? 'Kaydediliyor...' : '💾 Kaydet'}
+            </button>
+          </div>
+
           {/* ⚠️ Tehlikeli Bölge — Üye verilerini sıfırla */}
           <div className="glass p-5" style={{ border: '1px solid rgba(244,67,54,0.45)' }}>
             <h3 className="font-bold mb-1" style={{ color: '#F44336' }}>⚠️ Tehlikeli Bölge — Üye Verilerini Sıfırla</h3>

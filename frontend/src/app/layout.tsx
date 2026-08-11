@@ -8,6 +8,7 @@ import ClickSound from '@/components/ClickSound'
 import ThemeProvider from '@/components/ThemeProvider'
 import TitleCelebration from '@/components/TitleCelebration'
 import SkyBackground from '@/components/SkyBackground'
+import GoogleAnalytics from '@/components/GoogleAnalytics'
 
 // İlk boyamadan önce temayı uygula (flash olmasın)
 const themeInit = `try{var m=localStorage.getItem('theme_mode')||'dark';var t=m;if(m==='auto'){var h=new Date().getHours();t=(h>=7&&h<19)?'light':'dark';}document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}`
@@ -26,6 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script dangerouslySetInnerHTML={{ __html: themeInit }} />
       </head>
       <body className={inter.className}>
+        <GoogleAnalytics />
         <SkyBackground />
         <ThemeProvider />
         <HeaderWrapper />
