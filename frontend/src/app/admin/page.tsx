@@ -2214,6 +2214,25 @@ export default function AdminPage() {
             </div>
           </div>
 
+          {/* Soru Resimleri */}
+          <div className="glass p-5">
+            <h3 className="font-bold mb-1" style={{ color: 'var(--blue)' }}>🖼 Soru Resimleri</h3>
+            <p className="text-xs mb-4" style={{ color: 'var(--text-dim)' }}>
+              Resimli sorularda resmin maksimum yüksekliği (px). Genişlik orantılı hesaplanır — böylece mobilde de düzgün oturur.
+            </p>
+            <div style={{ maxWidth: 200 }}>
+              <label className="text-sm mb-1 block" style={{ color: 'var(--text-dim)' }}>Maks. Yükseklik (px)</label>
+              <input type="number" min={60} max={600} className="input-field w-full"
+                value={siteSettings.ui?.question_image_max_height ?? 200}
+                onChange={e => setSiteSettings((prev: any) => ({ ...prev, ui: { ...prev.ui, question_image_max_height: parseInt(e.target.value) || 0 } }))} />
+            </div>
+            <button onClick={() => saveSettings('ui', siteSettings.ui)}
+              disabled={settingsSaving}
+              className="btn-gold mt-3">
+              {settingsSaving ? 'Kaydediliyor...' : '💾 Kaydet'}
+            </button>
+          </div>
+
           {/* Zorluk Puan ve Süre Ayarları */}
           <div className="glass p-5">
             <h3 className="font-bold mb-1" style={{ color: 'var(--gold)' }}>🎯 Zorluk Puan ve Süre Ayarları</h3>

@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState, useRef } from 'react'
+import QuestionImage from '@/components/QuestionImage'
 import { useAuthStore } from '@/lib/store'
 import api from '@/lib/api'
 import { useParams, useSearchParams } from 'next/navigation'
@@ -279,12 +280,7 @@ export default function TestPage() {
           }} />
         </div>
         <div className="glass p-5 mb-4 text-center" style={{ minHeight: 80 }}>
-          {(q as any)?.question_image && (
-            <div style={{ display: 'flex', justifyContent: 'center', width: '100%', marginBottom: 16 }}>
-              <img src={`https://api.bilgimaratonu.com${(q as any).question_image}`} alt=""
-                style={{ maxHeight: 160, maxWidth: '100%', width: 'auto', objectFit: 'contain', borderRadius: 12 }} />
-            </div>
-          )}
+          <QuestionImage src={(q as any)?.question_image} />
           <p className="text-base font-semibold leading-relaxed" style={{ textAlign: 'center' }}>{q.text}</p>
         </div>
         <div className="grid grid-cols-2 gap-2">

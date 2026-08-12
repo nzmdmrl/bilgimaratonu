@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState, useRef, useMemo } from 'react'
+import QuestionImage from '@/components/QuestionImage'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/lib/store'
 import api from '@/lib/api'
@@ -370,12 +371,7 @@ export default function SoloPage() {
         </div>
 
         <div className="glass p-5 mb-4 text-center" style={{ minHeight: 80 }}>
-          {q?.question_image && (
-            <div style={{ display: 'flex', justifyContent: 'center', width: '100%', marginBottom: 16 }}>
-              <img src={`https://api.bilgimaratonu.com${q.question_image}`} alt=""
-                style={{ maxHeight: 160, maxWidth: '100%', width: 'auto', objectFit: 'contain', borderRadius: 12 }} />
-            </div>
-          )}
+          <QuestionImage src={q?.question_image} />
           <p className="text-base font-semibold leading-relaxed" style={{ textAlign: 'center' }}>{q.text}</p>
         </div>
 

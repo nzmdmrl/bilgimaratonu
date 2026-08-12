@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState, useRef } from 'react'
+import QuestionImage from '@/components/QuestionImage'
 import api from '@/lib/api'
 import { useAuthStore } from '@/lib/store'
 import Link from 'next/link'
@@ -690,12 +691,7 @@ export default function MaratonPage() {
         {/* Soru */}
         <div className="p-6 mb-3 flex flex-col items-center justify-center text-center rounded-2xl"
           style={{ minHeight: 120, background: 'var(--surface-2)' }}>
-        {(question as any)?.question_image && (
-          <div style={{ display: 'flex', justifyContent: 'center', width: '100%', marginBottom: 20 }}>
-            <img src={`https://api.bilgimaratonu.com${(question as any).question_image}`} alt=""
-              style={{ maxHeight: 180, maxWidth: '100%', width: 'auto', objectFit: 'contain', borderRadius: 12 }} />
-          </div>
-        )}
+        <QuestionImage src={(question as any)?.question_image} />
           <p className="text-xl font-semibold leading-relaxed text-center">{question?.text || 'Soru yükleniyor...'}</p>
         </div>
 

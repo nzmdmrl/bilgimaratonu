@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
+import QuestionImage from '@/components/QuestionImage'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuthStore } from '@/lib/store'
@@ -543,12 +544,7 @@ export default function ArenaPage() {
 
       {/* soru */}
       <div className="px-4 mt-4">
-        {q?.image && (
-          <div className="flex justify-center mb-3">
-            <img src={q.image.startsWith('http') ? q.image : `https://api.bilgimaratonu.com${q.image}`} alt=""
-              style={{ maxHeight: 150, maxWidth: '100%', borderRadius: 12, objectFit: 'contain' }} />
-          </div>
-        )}
+        <QuestionImage src={q?.image} />
         <h2 className="text-xl font-black mb-4" style={{ color: 'var(--text)' }}>{q?.text}</h2>
       </div>
 

@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
+import QuestionImage from '@/components/QuestionImage'
 import { useParams, useRouter } from 'next/navigation'
 import { useAuthStore } from '@/lib/store'
 import api from '@/lib/api'
@@ -514,12 +515,7 @@ export default function CategoryMatchPage() {
 
       {/* Soru */}
       <div className="glass p-6 mb-3 flex flex-col items-center justify-center text-center" style={{ minHeight: 120 }}>
-        {(question as any)?.question_image && (
-          <div style={{ display: 'flex', justifyContent: 'center', width: '100%', marginBottom: 20 }}>
-            <img src={`https://api.bilgimaratonu.com${(question as any).question_image}`} alt=""
-              style={{ maxHeight: 180, maxWidth: '100%', width: 'auto', objectFit: 'contain', borderRadius: 12 }} />
-          </div>
-        )}
+        <QuestionImage src={(question as any)?.question_image} />
         <p className="text-xl font-semibold leading-relaxed" style={{ textAlign: 'center', width: '100%' }}>{question?.text || '...'}</p>
       </div>
 

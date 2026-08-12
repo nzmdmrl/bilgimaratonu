@@ -31,6 +31,7 @@ DEFAULT_SETTINGS = {
         "default_theme": "dark",       # Varsayılan tema: dark(gece) | light(gündüz) | auto
         "background_animation": True,  # Gece gökyüzü animasyonu (yıldız/kayan yıldız/bulut) açık mı
         "background_theme": "night",   # Gökyüzü modu: night | sunset | aurora | galaxy
+        "question_image_max_height": 200,  # Soru resimlerinin maks yüksekliği (px); genişlik orantılı
     },
 
     # ─ Turnuva faz müzikleri (çoklu MP3, random çalar) — {key: {tracks:[{url,name}], volume}}
